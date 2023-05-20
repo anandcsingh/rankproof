@@ -26,7 +26,7 @@
           "@/*": ["./src/*"]
     }
       },
-    "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+    "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/components/layout/Header.js"],
     "exclude": ["node_modules"]
     }
   

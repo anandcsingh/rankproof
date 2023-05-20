@@ -1,8 +1,6 @@
 
 import Head from 'next/head';
-import Link from 'next/link'
 import Image from 'next/image';
-import Header from '../components/layout/Header'
 import { useEffect } from 'react';
 import GradientBG from '../components/GradientBG.js';
 import styles from '../styles/Home.module.css';
@@ -11,7 +9,7 @@ export default function Home() {
   useEffect(() => {
     (async () => {
       const { Mina, PublicKey } = await import('snarkyjs');
-      const { Add } = await import('../../../contracts/build/src/');
+      const { Add } = await import('../../../contracts/build/src/index.js');
 
       // Update this to use the address (public key) for your zkApp account.
       // To try it out, you can try this address for an example "Add" smart contract that we've deployed to
@@ -35,7 +33,6 @@ export default function Home() {
         <link rel="icon" href="/assets/favicon.ico" />
       </Head>
       <GradientBG>
-        <Header />
         <main className={styles.main}>
           <div className={styles.center}>
             <a
@@ -62,11 +59,14 @@ export default function Home() {
             <code className={styles.code}> src/pages/index.tsx</code>
           </p>
           <div className={styles.grid}>
-           
-            <Link className={styles.card} href="login">
-
+            <a
+              href="https://docs.minaprotocol.com/zkapps"
+              className={styles.card}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <h2>
-                <span>Login</span>
+                <span>DOCS</span>
                 <div>
                   <Image
                     src="/assets/arrow-right-small.svg"
@@ -78,8 +78,7 @@ export default function Home() {
                 </div>
               </h2>
               <p>Explore zkApps, how to build one, and in-depth references</p>
-            
-            </Link>
+            </a>
             <a
               href="https://docs.minaprotocol.com/zkapps/tutorials/hello-world"
               className={styles.card}
