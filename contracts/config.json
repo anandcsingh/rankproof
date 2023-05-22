@@ -1,4 +1,11 @@
 {
   "version": 1,
-  "deployAliases": {}
+  "deployAliases": {
+    "berkeley-ranked": {
+      "url": "https://proxy.berkeley.minaexplorer.com/graphql",
+      "keyPath": "keys/berkeley-ranked.json",
+      "fee": "0.1",
+      "smartContract": "RankProof"
+    }
+  }
 }
