@@ -104,8 +104,8 @@ const AuthPage = ({ children }) => {
     <div className='keito-page'>
       
       <div className='keito-content-wrap'>
-        <Header />
-        <main className="site-content">
+        
+       
           {!state.hasBeenSetup ?
             <section className="hero section center-content has-top-divider">
               <div className="container-sm">
@@ -160,10 +160,9 @@ const AuthPage = ({ children }) => {
               {children}
             </div>
           }
-        </main>
-      
+       
       </div>
-      <Footer />
+      
     </div>
 
   );
