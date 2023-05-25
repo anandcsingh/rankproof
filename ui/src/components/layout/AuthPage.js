@@ -37,13 +37,31 @@ const AuthPage = ({ children }) => {
   });
 
   useEffect(() => {
+
+    function timeout(seconds) {
+      return new Promise(function(resolve) {
+        setTimeout(function() {
+          resolve();
+        }, seconds * 1000);
+      });
+    }
+    
+
     (async () => {
       if (!Authentication.loggedIn) {
         if (!state.hasBeenSetup) {
-
+console.log("setting up");
           const zkappWorkerClient = new ZkappWorkerClient();
           Authentication.setZkClient(zkappWorkerClient);
+          await timeout(5);
+          console.log("loading snarky");
+          try {
           const loadedSnarky = await Authentication.loadSnarky();
+          } catch (e) {
+            console.log("error loading snarky", e);
+          }
+
+          console.log("loadedSnarky");
           setState({ ...state, snarkyLoaded: true });
           const hasWallet = await Authentication.checkForWallet();
           if (!hasWallet) {
@@ -52,10 +70,11 @@ const AuthPage = ({ children }) => {
           }
           else {
             setState({ ...state, hasWallet: true, snarkyLoaded: true, showRequestingAccount: true });
+            console.log("has wallet");
           }
-
+          console.log("requesting account");
           const loginResult = await Authentication.login();
-
+          console.log("login result", loginResult);
           if (loginResult.error == "user reject") {
             Snackbar("You cancelled connection with Mina wallet!", 1500);
           }
