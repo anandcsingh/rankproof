@@ -53,7 +53,7 @@ const AuthPage = ({ children }) => {
 console.log("setting up");
           const zkappWorkerClient = new ZkappWorkerClient();
           Authentication.setZkClient(zkappWorkerClient);
-          await timeout(5);
+          await timeout(15);
           console.log("loading snarky");
           try {
           const loadedSnarky = await Authentication.loadSnarky();
@@ -82,7 +82,7 @@ console.log("setting up");
             setState({ ...state, showCreateWallet: true, hasWallet: true, snarkyLoaded: true, showRequestingAccount: false });
           }
 
-
+          console.log("checking account");
           const accountExists = await Authentication.doesAccountExist();
           if (!accountExists) {
             setState({ ...state, showFundAccount: true, showCreateWallet: false, hasWallet: true, snarkyLoaded: true, showRequestingAccount: false });
@@ -90,6 +90,7 @@ console.log("setting up");
           else {
             setState({ ...state, showLoadingContracts: true, showFundAccount: false, showCreateWallet: false, hasWallet: true, snarkyLoaded: true, showRequestingAccount: false });
             const hasBeenSetup = await Authentication.setupContracts();
+            console.log("contracts has been setup", hasBeenSetup);
 
             setState({ ...state, hasBeenSetup: hasBeenSetup, showLoadingContracts: false, showFundAccount: false, showCreateWallet: false, hasWallet: true, snarkyLoaded: true, showRequestingAccount: false });
           }
