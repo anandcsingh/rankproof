@@ -8,7 +8,7 @@ export default function Dashboard() {
 
     return (
         <Master>
-            <AuthPage>
+            <AuthPage validate={false}>
             <p className={styles.tagline}>
                 Dashboard    
             </p>
