@@ -3,7 +3,16 @@ const nextConfig = {
   reactStrictMode: false,
   pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js'],
 
-
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'robohash.org',
+        port: '',
+        pathname: '**',
+      },
+    ],
+  },
   webpack(config) {
     config.resolve.alias = {
       ...config.resolve.alias,

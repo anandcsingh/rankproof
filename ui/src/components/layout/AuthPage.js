@@ -17,13 +17,13 @@ import {
   Field,
 } from 'snarkyjs'
 
-const AuthPage = ({ children }) => {
+const AuthPage = ({ validate, children }) => {
   // load from Authentication values
   //Authentication.getNum();
   let [state, setState] = useState({
     authentication: null,
     hasWallet: Authentication.hasWallet,
-    hasBeenSetup: Authentication.hasBeenSetup,
+    hasBeenSetup: validate ? Authentication.hasBeenSetup : true,
     accountExists: Authentication.accountExists,
     currentNum: null,
     publicKey: null,
