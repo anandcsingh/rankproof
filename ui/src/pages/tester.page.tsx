@@ -96,7 +96,7 @@ export default function Tester() {
     }, []);
     return (
         <Master>
-            <AuthPage>
+            <AuthPage validate={false}>
                 <h1>Tester</h1>
                 <div>
 <form className="m-4 flex">
