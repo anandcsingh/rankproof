@@ -1,20 +1,10 @@
-import {
-  Field,
-  Mina,
-  PrivateKey,
-  AccountUpdate,
-  MerkleMap,
-  Bool,
-  CircuitString,
-} from 'snarkyjs';
+import { Field, Bool, CircuitString } from 'snarkyjs';
 import { InMemoryMaRepository } from '../models/MartialArtistRepository.js';
-import {
-  ContractInteractor,
-  LocalContractDeployer,
-} from './ContractInteractor.js';
+import { LocalContractDeployer } from './ContractInteractor.js';
 import { MartialArtist } from '../models/MartialArtist.js';
 import { MinaLocalBlockchain } from './MinaLocalBlockchain.js';
 
+// deploy localy bruv
 const useProof = false;
 const [deployerAccount, studentAccount, instructorAccount] =
   new MinaLocalBlockchain(useProof).accounts;
@@ -37,7 +27,7 @@ let studentData = {
 let student = new MartialArtist(studentData);
 
 let transaction = await repo.add(student);
-console.log('Student rank:', repo.get(1n)?.rank.toString());
+console.log('Student first rank:', repo.get(1n)?.rank.toString());
 
 // get the final changed value
 const mapRoot = zkApp.mapRoot.get();
