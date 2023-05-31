@@ -12,7 +12,7 @@ type Transaction = Awaited<ReturnType<typeof Mina.transaction>>;
 // ---------------------------------------------------------------------------------------
 
 //import type { RankProof } from '../../contracts/src/RankProof';
-import type { RankProof } from '../../../contracts/src/RankProof';
+import type { RankProof } from '../../../contracts/src/contracts/RankProof';
 
 const state = {
   Ranked: null as null | typeof RankProof,
@@ -33,7 +33,7 @@ const functions = {
     Mina.setActiveInstance(Berkeley);
   },
   loadContract: async (args: {}) => {
-    const { RankProof } = await import('../../../contracts/build/src/RankProof.js');
+    const { RankProof } = await import('../../../contracts/build/src/contracts/RankProof.js');
     state.Ranked = RankProof;
   },
   compileContract: async (args: {}) => {

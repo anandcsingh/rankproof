@@ -1,5 +1,7 @@
-import { Add } from './Add.js';
-import { RankProof } from './RankProof.js';
+import { Add } from './contracts/Add.js';
+import { RankProof } from './contracts/RankProof.js';
+import { ProofOfRank } from './contracts/ProofOfRank.js';
 
 export { Add };
 export { RankProof };
+export { ProofOfRank };
