@@ -1,13 +1,28 @@
-import { AccountUpdate, Mina } from 'snarkyjs';
-import { Sender } from '.';
+import { AccountUpdate, Mina, PrivateKey } from 'snarkyjs';
+import { ProofOfRank, Sender } from './index.js';
 
 export class LocalContractDeployer {
   zkAppAccount: Sender;
   deployer: Sender;
+  zkAppAddress: any;
 
-  constructor(deployer: Sender, zkAppAccount: Sender) {
+  constructor(deployer: Sender) {
     this.deployer = deployer;
-    this.zkAppAccount = zkAppAccount;
+
+    const zkAppPrivateKey = PrivateKey.random();
+    this.zkAppAddress = zkAppPrivateKey.toPublicKey();
+    this.zkAppAccount = {
+      privateKey: zkAppPrivateKey,
+      publicKey: this.zkAppAddress,
+    };
+  }
+
+  async deployProofofRank(): Promise<ProofOfRank> {
+    // create an instance of Square
+    const zkApp = new ProofOfRank(this.zkAppAddress);
+    const txn = await this.deployContract(zkApp);
+    console.log('\nmain: transaction create deployTxn=', txn.isSuccess);
+    return zkApp;
   }
 
   async deployContract(contract: any): Promise<Mina.TransactionId> {
