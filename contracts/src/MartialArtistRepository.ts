@@ -49,7 +49,6 @@ export class InMemoryMaRepository implements MartialArtistRepository {
 
   get(id: bigint): any {
     const ma = this.backingStore.get(id);
-    console.log(ma?.rank.toString());
     if (ma) {
       const witness = this.merkleMap.getWitness(ma?.id ?? Field(0));
       const [currentRoot, _] = witness.computeRootAndKey(
@@ -88,7 +87,7 @@ export class InMemoryMaRepository implements MartialArtistRepository {
   ): Promise<boolean> {
     const student = this.get(studentID);
     const instructor = this.get(instructorID);
-    if (student == null || instructor == null) {
+    if (student != null && instructor != null) {
       const witness = this.merkleMap.getWitness(student?.id ?? Field(0));
       const txn1 = await Mina.transaction(this.sender.publicKey, () => {
         this.contract.promoteStudent(
@@ -105,6 +104,7 @@ export class InMemoryMaRepository implements MartialArtistRepository {
       student.rank = CircuitString.fromString(newRank);
       this.backingStore.set(studentID, student);
       this.merkleMap.set(Field(studentID), student.hash());
+
       return txnSigned.isSuccess;
     } else {
       return false;

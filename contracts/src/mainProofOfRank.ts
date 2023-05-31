@@ -31,16 +31,29 @@ const deployerAccount = ({
   privateKey: Local.testAccounts[0].privateKey,
   publicKey: Local.testAccounts[0].publicKey,
 } = Local.testAccounts[0]);
-const sender = ({
-  privateKey: Local.testAccounts[0].privateKey,
-  publicKey: Local.testAccounts[0].publicKey,
-} = Local.testAccounts[1]);
 
-const instructorAccount = ({
-  privateKey: Local.testAccounts[0].privateKey,
-  publicKey: Local.testAccounts[0].publicKey,
-} = Local.testAccounts[2]);
+let senderPrivate = PrivateKey.fromBase58(
+  'EKEUf9qCfAj4d9tVFQ7RpUHzny3e4xmed5MZRCSnQNJkEYsDVYPU'
+);
+let senderPublic = senderPrivate.toPublicKey();
+const sender = {
+  privateKey: senderPrivate,
+  publicKey: senderPublic,
+};
 
+console.log(sender.privateKey.toBase58());
+
+let instructorPrivate = PrivateKey.fromBase58(
+  'EKEx9KsVNBXumarh3Xs5KmTtFZpCaAVMAEpg974vEkG3xzB962aD'
+);
+let instructorPublic = instructorPrivate.toPublicKey();
+const instructorAccount = {
+  privateKey: instructorPrivate,
+  publicKey: instructorPublic,
+};
+Local.addAccount(sender.publicKey, '10_000_000_000');
+Local.addAccount(instructorAccount.publicKey, '10_000_000_000');
+console.log(instructorAccount.privateKey.toBase58());
 /*******************************************************************************
  * 2) Deploy the zkApp
  ******************************************************************************/
@@ -96,7 +109,6 @@ console.log('\nmain: state after txn 1:', mapRoot1.toString());
 
 // promote student
 let transaction2 = await repo.promoteStudent(1n, 2n, 'Purple Belt');
-console.log('Instructor rank:', repo.get(2n)?.rank.toString());
 
 const mapRoot2 = zkApp.mapRoot.get();
 console.log('\nmain: state after txn 2:', mapRoot2.toString());

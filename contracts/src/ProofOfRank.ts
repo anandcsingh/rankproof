@@ -1,5 +1,6 @@
 import {
   Bool,
+  Circuit,
   CircuitString,
   Field,
   MerkleMap,
@@ -57,7 +58,6 @@ export class ProofOfRank extends SmartContract {
   ) {
     const currentRoot = this.mapRoot.get();
     this.mapRoot.assertEquals(currentRoot);
-
     let [confirmStudentRoot, confirmKey] = studentWitness.computeRootAndKey(
       student.hash()
     );
