@@ -72,3 +72,4 @@ console.log(`\nmain: transaction repo.add=`, JSON.stringify(transaction));
 
 // get the final changed value
 const mapRoot = zkApp.mapRoot.get();
+console.log('\nmain: state after txn:', mapRoot.toString());

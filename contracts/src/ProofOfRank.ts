@@ -42,11 +42,10 @@ export class ProofOfRank extends SmartContract {
     witness: MerkleMapWitness,
     currentRoot: Field
   ) {
-    Field(1).assertEquals(Field(1));
-    // this.mapRoot.getAndAssertEquals();
-    // this.mapRoot.assertEquals(currentRoot);
-    // this.sender.assertEquals(martialArtist.publicKey);
-    // const [newRoot, _] = witness.computeRootAndKey(martialArtist.hash());
-    // this.mapRoot.set(newRoot);
+    this.mapRoot.getAndAssertEquals();
+    this.mapRoot.assertEquals(currentRoot);
+    this.sender.assertEquals(martialArtist.publicKey);
+    const [newRoot, _] = witness.computeRootAndKey(martialArtist.hash());
+    this.mapRoot.set(newRoot);
   }
 }
