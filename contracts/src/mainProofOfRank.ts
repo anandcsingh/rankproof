@@ -36,6 +36,11 @@ const sender = ({
   publicKey: Local.testAccounts[0].publicKey,
 } = Local.testAccounts[1]);
 
+const instructorAccount = ({
+  privateKey: Local.testAccounts[0].privateKey,
+  publicKey: Local.testAccounts[0].publicKey,
+} = Local.testAccounts[2]);
+
 /*******************************************************************************
  * 2) Deploy the zkApp
  ******************************************************************************/
@@ -68,8 +73,31 @@ let studentData = {
 let student = new MartialArtist(studentData);
 
 let transaction = await repo.add(student);
-console.log(`\nmain: transaction repo.add=`, JSON.stringify(transaction));
+console.log('Current rank:', repo.get(1n)?.rank.toString());
 
 // get the final changed value
 const mapRoot = zkApp.mapRoot.get();
 console.log('\nmain: state after txn:', mapRoot.toString());
+
+// change rank
+let instructorData = {
+  id: Field(2),
+  publicKey: sender.publicKey,
+  rank: CircuitString.fromString('Black Belt'),
+  verified: Bool(true),
+};
+let instructor = new MartialArtist(instructorData);
+
+let transaction1 = await repo.add(instructor);
+console.log('Instructor rank:', repo.get(2n)?.rank.toString());
+
+const mapRoot1 = zkApp.mapRoot.get();
+console.log('\nmain: state after txn 1:', mapRoot1.toString());
+
+// promote student
+let transaction2 = await repo.promoteStudent(1n, 2n, 'Purple Belt');
+console.log('Instructor rank:', repo.get(2n)?.rank.toString());
+
+const mapRoot2 = zkApp.mapRoot.get();
+console.log('\nmain: state after txn 2:', mapRoot2.toString());
+console.log('Current rank:', repo.get(1n)?.rank.toString());
