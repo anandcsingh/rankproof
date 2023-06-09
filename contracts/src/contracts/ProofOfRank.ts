@@ -23,7 +23,7 @@ export class ProofOfRank extends SmartContract {
     this.mapRoot.set(Field(new MerkleMap().getRoot()));
   }
 
-  @method addMartialArtist(
+  @method addPractitioner(
     martialArtist: MartialArtist,
     witness: MerkleMapWitness,
     currentRoot: Field

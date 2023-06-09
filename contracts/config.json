@@ -6,6 +6,11 @@
       "keyPath": "keys/berkeley-ranked.json",
       "fee": "0.1",
       "smartContract": "RankProof"
+    },
+    "berkeley-proofofrank": {
+      "url": "https://proxy.berkeley.minaexplorer.com/graphql",
+      "keyPath": "keys/berkeley-proofofrank.json",
+      "fee": "0.1"
     }
   }
 }

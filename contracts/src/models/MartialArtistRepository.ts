@@ -70,7 +70,7 @@ export class InMemoryMaRepository implements MartialArtistRepository {
 
     //let transaction = await this.interactor.sendTransaction(this.interactor.sender, this.contract.addMartialArtist, martialArtist, witness, currentRoot, this.interactor.sender);
     const txn1 = await Mina.transaction(this.sender.publicKey, () => {
-      this.contract.addMartialArtist(martialArtist, witness, currentRoot);
+      this.contract.addPractitioner(martialArtist, witness, currentRoot);
     });
 
     const txnProved = await txn1.prove();
