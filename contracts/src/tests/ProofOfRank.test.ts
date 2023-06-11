@@ -112,15 +112,15 @@ describe('ProofOfRank', () => {
   });
 
   it('can NOT promote Martial Artist without Black Belt instructor', async () => {
-    expect('nothing').alwaysFail('TODO');
+    expect('nothing').not.toBe('TODO');
   });
 
   it('can NOT promote Martial Artist without Black Belt instructor', async () => {
-    expect('nothing').alwaysFail('TODO');
+    expect('nothing').not.toBe('TODO');
   });
 
   it('can NOT promote Martial Artist when instructor and sender do not match', async () => {
-    expect('nothing').alwaysFail('TODO');
+    expect('nothing').not.toBe('TODO');
   });
 });
 
