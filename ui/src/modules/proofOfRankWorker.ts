@@ -7,6 +7,9 @@ import {
   fetchAccount,
   MerkleMapWitness,
   CircuitString,
+  Bool,
+  MerkleWitness,
+  MerkleMap,
 } from 'snarkyjs'
 
 type Transaction = Awaited<ReturnType<typeof Mina.transaction>>;
@@ -53,14 +56,33 @@ const functions = {
     const root = await state.zkapp!.mapRoot.get();
     return JSON.stringify(root.toJSON());
   },
-  addPractitioner: async (args: { martialArtist: MartialArtist, witness: MerkleMapWitness, currentRoot: Field }) => {
+  addPractitionerTransaction: async (args: { martialArtist: MartialArtist, witness: MerkleMapWitness, currentRoot: Field }) => {
     const transaction = await Mina.transaction(() => {
       state.zkapp!.addPractitioner(args.martialArtist, args.witness, args.currentRoot);
     }
     );
     state.transaction = transaction;
   },
-  promoteStudent: async (args: { student: MartialArtist, instructor: MartialArtist, newRank: CircuitString, studentWitness: MerkleMapWitness }) => {
+  addMartialArtistTransaction: async (args: { address: string, martialArt: string, rank: string }) => {
+    let studentData = {
+      id: Field(1),
+      publicKey: PublicKey.fromBase58("B62qpzAWcbZSjzQH9hiTKvHbDx1eCsmRR7dDzK2DuYjRT2sTyW9vSpR"),
+      rank: CircuitString.fromString(args.rank),
+      verified: Bool(false),
+    };
+    console.log(studentData);
+    let ma = new MartialArtist(studentData);
+    let map = new MerkleMap();
+    map.set(Field(1), ma.hash());
+    const witness = map.getWitness(Field(1));
+
+    const transaction = await Mina.transaction(() => {
+      state.zkapp!.addPractitioner(ma, witness, map.getRoot());
+    }
+    );
+    state.transaction = transaction;
+  },
+  promoteStudentTransaction: async (args: { student: MartialArtist, instructor: MartialArtist, newRank: CircuitString, studentWitness: MerkleMapWitness }) => {
     const transaction = await Mina.transaction(() => {
       state.zkapp!.promoteStudent(args.student, args.instructor, args.newRank, args.studentWitness);
     }
