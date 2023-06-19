@@ -1,4 +1,4 @@
-import { ProofOfRank } from '../contracts/ProofOfRank';
+import { ProofOfRank } from '../ProofOfRank';
 import {
   Field,
   Mina,

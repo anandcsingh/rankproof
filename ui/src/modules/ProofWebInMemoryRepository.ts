@@ -11,7 +11,7 @@ import {
     Struct,
 } from 'snarkyjs';
 
-import type { ProofOfRank } from '../../../contracts/src/contracts/ProofOfRank';
+import type { ProofOfRank } from '../../../contracts/src/ProofOfRank';
 import { MartialArtist } from '../../../contracts/src/models/MartialArtist';
 import { Sender } from '../../../contracts/src/models/Sender';
 import { MartialArtistRepository } from '../../../contracts/src/models/MartialArtistRepository';

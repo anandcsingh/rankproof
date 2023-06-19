@@ -10,7 +10,7 @@ import {
   PublicKey,
   Struct,
 } from 'snarkyjs';
-import { ProofOfRank } from '../contracts/ProofOfRank.js';
+import { ProofOfRank } from '../ProofOfRank.js';
 import { Sender } from './Sender.js';
 import { MartialArtist } from '../models/MartialArtist.js';
 

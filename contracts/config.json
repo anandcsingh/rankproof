@@ -10,7 +10,14 @@
     "berkeley-proofofrank": {
       "url": "https://proxy.berkeley.minaexplorer.com/graphql",
       "keyPath": "keys/berkeley-proofofrank.json",
-      "fee": "0.1"
+      "fee": "0.1",
+      "smartContract": "ProofOfRank"
+    },
+    "proofofrank": {
+      "url": "https://proxy.berkeley.minaexplorer.com/graphql",
+      "keyPath": "keys/proofofrank.json",
+      "fee": "0.1",
+      "smartContract": "ProofOfRank"
     }
   }
 }

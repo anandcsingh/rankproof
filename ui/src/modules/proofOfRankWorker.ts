@@ -16,7 +16,7 @@ type Transaction = Awaited<ReturnType<typeof Mina.transaction>>;
 
 // ---------------------------------------------------------------------------------------
 
-import type { ProofOfRank } from '../../../contracts/src/contracts/ProofOfRank';
+import type { ProofOfRank } from '../../../contracts/src/ProofOfRank';
 import { MartialArtist } from '../../../contracts/src/models/MartialArtist';
 
 const state = {
@@ -38,7 +38,7 @@ const functions = {
     Mina.setActiveInstance(Berkeley);
   },
   loadContract: async (args: {}) => {
-    const { ProofOfRank } = await import('../../../contracts/build/src/contracts/ProofOfRank') //await import('../../../contracts/build/src/contracts/ProofOfRank.js');
+    const { ProofOfRank } = await import('../../../contracts/build/src/ProofOfRank') //await import('../../../contracts/build/src/contracts/ProofOfRank.js');
     state.proofOfRank = ProofOfRank;
   },
   compileContract: async (args: {}) => {

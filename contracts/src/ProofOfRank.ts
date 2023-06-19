@@ -13,7 +13,7 @@ import {
   method,
   state,
 } from 'snarkyjs';
-import { MartialArtist } from '../models/MartialArtist.js';
+import { MartialArtist } from './models/MartialArtist.js';
 
 export class ProofOfRank extends SmartContract {
   @state(Field) mapRoot = State<Field>();
