@@ -48,7 +48,7 @@ const Header = () => {
           <div className="flex space-x-4">
           <Link href="/dashboard" className="bg-gray-900 text-white rounded-md px-3 py-2 text-sm font-medium">Dashboard</Link>
           <Link href="/add" className="bg-gray-900 text-white rounded-md px-3 py-2 text-sm font-medium">Add</Link>
-            <a href="#" className="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Students</a>
+          <Link href="/instructorsden" className="bg-gray-900 text-white rounded-md px-3 py-2 text-sm font-medium">Instructors</Link>
             <a href="#" className="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Lineage</a>
           </div>
         </div>
@@ -79,8 +79,8 @@ const Header = () => {
     <div className="space-y-1 px-2 pb-3 pt-2">
     <Link href="/dashboard" className="bg-gray-900 text-white rounded-md px-3 py-2 text-sm font-medium">Dashboard</Link>
     <Link href="/add" className="bg-gray-900 text-white rounded-md px-3 py-2 text-sm font-medium">Add</Link>
+    <Link href="/instructorsden" className="bg-gray-900 text-white rounded-md px-3 py-2 text-sm font-medium">Instructors</Link>
     
-      <a href="#" className="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium">Students</a>
       <a href="#" className="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium">Lineage</a>
     </div>
   </div>
