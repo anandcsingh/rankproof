@@ -13,14 +13,23 @@ import {
   method,
   state,
 } from 'snarkyjs';
-import { MartialArtist } from '../models/MartialArtist.js';
+import { MartialArtist } from './models/MartialArtist.js';
 
 export class ProofOfRank extends SmartContract {
   @state(Field) mapRoot = State<Field>();
 
+  events = {
+    promoted: Field,
+  };
+
   init() {
     super.init();
     this.mapRoot.set(Field(new MerkleMap().getRoot()));
+  }
+
+  @method setMapRoot(newRoot: Field) {
+    this.mapRoot.getAndAssertEquals();
+    this.mapRoot.set(newRoot);
   }
 
   @method addPractitioner(
@@ -54,5 +63,6 @@ export class ProofOfRank extends SmartContract {
     student.rank = newRank;
     const [newRoot, _] = studentWitness.computeRootAndKey(student.hash());
     this.mapRoot.set(newRoot);
+    this.emitEvent('promoted', student.id);
   }
 }

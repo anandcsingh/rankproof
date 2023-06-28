@@ -44,19 +44,45 @@ export default class ProofOfRankWorkerClient {
   }
   
   addPractitioner(martialArtist: MartialArtist, witness: MerkleMapWitness, currentRoot: Field) {
-    return this._call('addPractitioner', {
+    return this._call('addPractitionerTransaction', {
       martialArtist, witness, currentRoot
     });
   }
 
+  addMartialArtist(address: string, martialArt: string, rank: string) {
+    return this._call('addMartialArtistTransaction', {
+      address, martialArt, rank
+    });
+  }
+
   promoteStudent(student: MartialArtist, instructor: MartialArtist, newRank: CircuitString, studentWitness: MerkleMapWitness) {
-    return this._call('promoteStudent', {
+    return this._call('promoteStudentTransaction', {
       student, instructor, newRank, studentWitness
     });
   }
 
   proveUpdateTransaction() {
     return this._call('proveUpdateTransaction', {});
+  }
+
+  async sendTransaction() : Promise<any> {
+    console.log('getting Transaction JSON...');
+    const transactionJSON = await this.getTransactionJSON()
+
+    console.log('requesting send transaction...');
+    let transactionFee = 0.1;
+
+    const { hash } = await (window as any).mina.sendTransaction({
+        transaction: transactionJSON,
+        feePayer: {
+            fee: transactionFee,
+            memo: '',
+        },
+    });
+
+    console.log(
+        'See transaction at https://berkeley.minaexplorer.com/transaction/' + hash
+    );
   }
 
   async getTransactionJSON() {
@@ -73,7 +99,7 @@ export default class ProofOfRankWorkerClient {
   nextId: number;
 
   constructor() {
-    this.worker = new Worker(new URL('./rankedWorker.ts', import.meta.url))
+    this.worker = new Worker(new URL('./proofOfRankWorker.ts', import.meta.url))
     this.promises = {};
     this.nextId = 0;
 
