@@ -35,27 +35,27 @@ const LineageMap = () => {
     // });
     let arr = [
         {
-          "name": "Ian Devling",
+          "name": "Helio Gracie",
           "imageUrl": "https://raw.githubusercontent.com/bumbeishvili/Assets/master/Projects/D3/Organization%20Chart/cto.jpg",
           "area": "Corporate",
           "profileUrl": "http://example.com/employee/profile",
           "office": "CTO office",
           "tags": "Ceo,tag1,manager,cto",
           "isLoggedUser": false,
-          "positionName": "Chief Executive Officer",
+          "positionName": "Grand Master",
           "id": "O-6066",
           "parentId": "",
           "size": ""
         },
         {
-          "name": "Davolio Nancy",
+          "name": "Pedro Sauer",
           "imageUrl": "https://raw.githubusercontent.com/bumbeishvili/Assets/master/Projects/D3/Organization%20Chart/general.jpg",
           "area": "Corporate",
           "profileUrl": "http://example.com/employee/profile",
           "office": "CEO office",
           "tags": "Ceo,tag1, tag2",
           "isLoggedUser": false,
-          "positionName": "CTO",
+          "positionName": "Master",
           "id": "O-6067",
           "parentId": "O-6066",
           "size": ""
