@@ -16,6 +16,9 @@ npm install
 npm run build
 ```
 
+### Run Storage Server
+
+
 ### Run Web UI
 Naviagte to ui folder
 
