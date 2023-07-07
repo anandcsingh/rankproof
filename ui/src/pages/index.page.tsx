@@ -11,6 +11,16 @@ export default function Home() {
   return (
     <>
    <Master>
+   <div className="badge badge-primary badge-lg"> TEST BADGE </div>
+<div className="badge badge-primary badge-md"></div>
+<div className="badge badge-primary badge-sm"></div>
+<div className="badge badge-primary badge-xs"></div>
+
+<div className="radial-progress" style={{"--value":0}}>0%</div>
+<div className="radial-progress" style={{"--value":20}}>20%</div>
+<div className="radial-progress" style={{"--value":60}}>60%</div>
+<div className="radial-progress" style={{"--value":80}}>80%</div>
+<div className="radial-progress" style={{"--value":100}}>100%</div>
           <div className={styles.center}>
             <a
               href="https://minaprotocol.com/"
