@@ -14,37 +14,30 @@ import { ProofOfRank } from '../ProofOfRank.js';
 import { Sender } from './Sender.js';
 import { MartialArtist } from '../models/MartialArtist.js';
 
-export interface MartialArtistRepository {
-  sender: Sender;
-  add(martialArtist: MartialArtist): Promise<boolean>;
-  promoteStudent(
-    studentID: bigint,
-    instructorID: bigint,
-    newRank: string
-  ): Promise<boolean>;
-  verifyRank(martialArtist: MartialArtist, rank: string): boolean;
+export interface BackingStore {
+  getMerkleMapIdFrom(publicKey: PublicKey): bigint | undefined | null;
+  getMerkleMap(): MerkleMap;
+  getAll(): Map<bigint, MartialArtist>;
+  get(id: bigint): MartialArtist | undefined | null;
+  set(id: bigint, martialArtist: MartialArtist): void;
 }
 
-export class InMemoryMaRepository implements MartialArtistRepository {
+export class MartialArtistRepository {
   sender: Sender;
   contract: ProofOfRank;
   merkleMap: MerkleMap;
-  backingStore: Map<bigint, MartialArtist>;
+  backingStore: BackingStore;
   merkleTree: MerkleTree;
 
-  constructor(sender: Sender, contract: ProofOfRank);
   constructor(
     sender: Sender,
     contract: ProofOfRank,
-    merkleMap?: MerkleMap,
-    backingStore?: Map<bigint, MartialArtist>
+    backingStore: BackingStore
   ) {
     this.sender = sender;
     this.contract = contract;
-    this.merkleMap = merkleMap ? merkleMap : new MerkleMap();
-    this.backingStore = backingStore
-      ? backingStore
-      : new Map<bigint, MartialArtist>();
+    this.merkleMap = backingStore.getMerkleMap();
+    this.backingStore = backingStore;
   }
 
   get(id: bigint): any {

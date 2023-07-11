@@ -55,7 +55,7 @@ export class ProofOfRank extends SmartContract {
     let [confirmStudentRoot, confirmKey] = studentWitness.computeRootAndKey(
       student.hash()
     );
-    //this.mapRoot.assertEquals(confirmStudentRoot);
+    this.mapRoot.assertEquals(confirmStudentRoot);
 
     this.sender.assertEquals(instructor.publicKey);
     instructor.rank.assertEquals(CircuitString.fromString('Black Belt'));

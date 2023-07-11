@@ -1,5 +1,9 @@
 import { Field, Bool, CircuitString } from 'snarkyjs';
-import { InMemoryMaRepository } from '../models/MartialArtistRepository.js';
+import {
+  MartialArtistRepository,
+  BackingStore,
+} from '../models/MartialArtistRepository.js';
+import { InMemoryBackingStore } from '../models/InMemoryBackingStore.js';
 import { LocalContractDeployer } from './ContractInteractor.js';
 import { MartialArtist } from '../models/MartialArtist.js';
 import { MinaLocalBlockchain } from './MinaLocalBlockchain.js';
@@ -15,8 +19,8 @@ const zkApp = await new LocalContractDeployer(
 // get the initial state of Contract after deployment
 const mapRoot0 = zkApp.mapRoot.get();
 console.log('\nmain: state after init:', mapRoot0.toString());
-
-let repo = new InMemoryMaRepository(studentAccount, zkApp);
+let backingStore = new InMemoryBackingStore(new Map());
+let repo = new MartialArtistRepository(studentAccount, zkApp, backingStore);
 
 let studentData = {
   id: Field(1),
