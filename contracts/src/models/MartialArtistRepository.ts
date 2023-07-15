@@ -14,18 +14,34 @@ import { ProofOfRank } from '../ProofOfRank.js';
 import { Sender } from './Sender.js';
 import { MartialArtist } from '../models/MartialArtist.js';
 
-export interface BackingStore {
-  getMerkleMapIdFrom(publicKey: PublicKey): bigint | undefined | null;
-  getMerkleMap(): MerkleMap;
-  getAll(): Map<bigint, MartialArtist>;
-  get(id: bigint): MartialArtist | undefined | null;
-  set(id: bigint, martialArtist: MartialArtist): void;
+export class MerkleMapDatabase {
+  map: MerkleMap;
+  nextID: bigint;
+}
+
+export abstract class BackingStore {
+  async getMerkleMap(): Promise<MerkleMapDatabase> {
+    let map = new MerkleMap();
+    let index = 0;
+    const all = await this.getAll();
+    console.log('all: ', all.values.length);
+    for (let [key, value] of all) {
+      map.set(Field(++index), value.hash());
+    }
+    return {
+      map: map,
+      nextID: BigInt(index + 1),
+    };
+  }
+  abstract getAll(): Promise<Map<PublicKey, MartialArtist>>;
+  abstract get(publicKey: PublicKey): Promise<MartialArtist | undefined | null>;
+  abstract add(martialArtist: MartialArtist): Promise<void>;
+  abstract update(martialArtist: MartialArtist): Promise<void>;
 }
 
 export class MartialArtistRepository {
   sender: Sender;
   contract: ProofOfRank;
-  merkleMap: MerkleMap;
   backingStore: BackingStore;
   merkleTree: MerkleTree;
 
@@ -36,14 +52,14 @@ export class MartialArtistRepository {
   ) {
     this.sender = sender;
     this.contract = contract;
-    this.merkleMap = backingStore.getMerkleMap();
     this.backingStore = backingStore;
   }
 
-  get(id: bigint): any {
-    const ma = this.backingStore.get(id);
+  async get(publicKey: PublicKey): Promise<MartialArtist | undefined | null> {
+    const ma = await this.backingStore.get(publicKey);
+    const merkleStore = await this.backingStore.getMerkleMap();
     if (ma) {
-      const witness = this.merkleMap.getWitness(ma?.id ?? Field(0));
+      const witness = merkleStore.map.getWitness(Field(ma.id));
       const [currentRoot, _] = witness.computeRootAndKey(
         ma?.hash() ?? Field(0)
       );
@@ -57,9 +73,16 @@ export class MartialArtistRepository {
   }
 
   async add(martialArtist: MartialArtist): Promise<boolean> {
-    const currentRoot = this.merkleMap.getRoot();
-    this.merkleMap.set(martialArtist.id, martialArtist.hash());
-    const witness = this.merkleMap.getWitness(martialArtist.id);
+    const merkleStore = await this.backingStore.getMerkleMap();
+    const currentRoot = merkleStore.map.getRoot();
+    martialArtist.id = Field(merkleStore.nextID);
+    console.log('martialArtist.id: ', martialArtist.id.toString());
+    console.log(
+      'martialArtist.publicKey: ',
+      martialArtist.publicKey.toBase58()
+    );
+    merkleStore.map.set(martialArtist.id, martialArtist.hash());
+    const witness = merkleStore.map.getWitness(martialArtist.id);
 
     //let transaction = await this.interactor.sendTransaction(this.interactor.sender, this.contract.addMartialArtist, martialArtist, witness, currentRoot, this.interactor.sender);
     const txn1 = await Mina.transaction(this.sender.publicKey, () => {
@@ -69,19 +92,26 @@ export class MartialArtistRepository {
     const txnProved = await txn1.prove();
 
     const txnSigned = await txn1.sign([this.sender.privateKey]).send();
-    this.backingStore.set(martialArtist.id.toBigInt(), martialArtist);
+    this.backingStore.add(martialArtist);
     return txnSigned.isSuccess;
   }
 
   async promoteStudent(
-    studentID: bigint,
-    instructorID: bigint,
+    studentID: PublicKey,
+    instructorID: PublicKey,
     newRank: string
   ): Promise<boolean> {
-    const student = this.get(studentID);
-    const instructor = this.get(instructorID);
+    console.log(
+      `promoteStudent: ${studentID.toBase58()}, ${instructorID.toBase58()}, ${newRank}`
+    );
+    const student = await this.get(studentID);
+    const instructor = await this.get(instructorID);
+    console.log('student from get: ', student?.publicKey.toBase58());
+    console.log('instructor from get: ', instructor?.publicKey.toBase58());
+    const merkleMapDB = await this.backingStore.getMerkleMap();
+
     if (student != null && instructor != null) {
-      const witness = this.merkleMap.getWitness(student?.id ?? Field(0));
+      const witness = merkleMapDB.map.getWitness(student.id);
       const txn1 = await Mina.transaction(this.sender.publicKey, () => {
         this.contract.promoteStudent(
           student,
@@ -95,8 +125,7 @@ export class MartialArtistRepository {
 
       const txnSigned = await txn1.sign([this.sender.privateKey]).send();
       student.rank = CircuitString.fromString(newRank);
-      this.backingStore.set(studentID, student);
-      this.merkleMap.set(Field(studentID), student.hash());
+      this.backingStore.update(student);
 
       return txnSigned.isSuccess;
     } else {

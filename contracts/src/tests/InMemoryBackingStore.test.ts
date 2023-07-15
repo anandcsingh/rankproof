@@ -6,24 +6,19 @@ import {
   PublicKey,
   AccountUpdate,
   MerkleMap,
+  CircuitString,
 } from 'snarkyjs';
-import { InMemoryBackingStore } from '../models/InMemoryBackingStore';
-import { MartialArtist } from '../models/MartialArtist';
-import { ProofOfRankData } from './ProofOfRankData';
-import { MinaLocalBlockchain } from '../local/MinaLocalBlockchain';
-/*
- * This file specifies how to test the `Add` example smart contract. It is safe to delete this file and replace
- * with your own tests.
- *
- * See https://docs.minaprotocol.com/zkapps for more info.
- */
+import { InMemoryBackingStore } from '../models/InMemoryBackingStore.js';
+import { MartialArtist } from '../models/MartialArtist.js';
+import { ProofOfRankData } from './ProofOfRankData.js';
+import { MinaLocalBlockchain } from '../local/MinaLocalBlockchain.js';
 
 describe('InMemoryBackingStore', () => {
   it('can create empty MerkleMap', async () => {
     let backingStore = new InMemoryBackingStore(
-      new Map<bigint, MartialArtist>()
+      new Map<PublicKey, MartialArtist>()
     );
-    let map = backingStore.getMerkleMap();
+    let map = (await backingStore.getMerkleMap()).map;
     expect(map.getRoot()).toEqual(Field(new MerkleMap().getRoot()));
   });
 
@@ -31,12 +26,13 @@ describe('InMemoryBackingStore', () => {
     const [deployerAccount, studentAccount, instructorAccount] =
       new MinaLocalBlockchain(false).accounts;
     let data = new ProofOfRankData();
-    let backingMap = new Map<bigint, MartialArtist>();
-    backingMap.set(1n, data.getStudent(studentAccount));
+    let backingMap = new Map<PublicKey, MartialArtist>();
+    let student = data.getStudent(studentAccount);
+    backingMap.set(student.publicKey, student);
     let backingStore = new InMemoryBackingStore(backingMap);
-    let map = backingStore.getMerkleMap();
+    let map = (await backingStore.getMerkleMap()).map;
     expect(map.getRoot().toString()).toEqual(
-      '12420879771597565761189105023823009907798980995921324458028056095204197401584'
+      '27774440201273603605801685225434590242451666559312031204682405351601519267520'
     );
   });
 
@@ -44,13 +40,15 @@ describe('InMemoryBackingStore', () => {
     const [deployerAccount, studentAccount, instructorAccount] =
       new MinaLocalBlockchain(false).accounts;
     let data = new ProofOfRankData();
-    let backingMap = new Map<bigint, MartialArtist>();
-    backingMap.set(1n, data.getStudent(studentAccount));
-    backingMap.set(2n, data.getInstructor(instructorAccount));
+    let backingMap = new Map<PublicKey, MartialArtist>();
+    let student = data.getStudent(studentAccount);
+    let instructor = data.getInstructor(instructorAccount);
+    backingMap.set(student.publicKey, student);
+    backingMap.set(instructor.publicKey, instructor);
     let backingStore = new InMemoryBackingStore(backingMap);
-    let map = backingStore.getMerkleMap();
+    let map = (await backingStore.getMerkleMap()).map;
     expect(map.getRoot().toString()).toEqual(
-      '11133063107583020209552293931405715226715919965786140883172790515749876692009'
+      '8175502539973333070380368020793805199800622151469851803008556695806100081430'
     );
   });
 
@@ -58,13 +56,22 @@ describe('InMemoryBackingStore', () => {
     const [deployerAccount, studentAccount, instructorAccount] =
       new MinaLocalBlockchain(false).accounts;
     let data = new ProofOfRankData();
-    let backingMap = new Map<bigint, MartialArtist>();
-    backingMap.set(1n, data.getStudent(studentAccount));
-    backingMap.set(2n, data.getInstructor(instructorAccount));
+    let backingMap = new Map<PublicKey, MartialArtist>();
+    let student = data.getStudent(studentAccount);
+    let instructor = data.getInstructor(instructorAccount);
+    backingMap.set(student.publicKey, student);
+    backingMap.set(student.publicKey, instructor);
     let backingStore = new InMemoryBackingStore(backingMap);
-    let map = backingStore.getMerkleMap();
+    let map = (await backingStore.getMerkleMap()).map;
     expect(map.getRoot().toString()).toEqual(
-      '11133063107583020209552293931405715226715919965786140883172790515749876692009'
+      '8175502539973333070380368020793805199800622151469851803008556695806100081430'
+    );
+
+    student.rank = CircuitString.fromString('Purple Belt');
+    backingStore.update(student);
+    map = (await backingStore.getMerkleMap()).map;
+    expect(map.getRoot().toString()).toEqual(
+      '16359713713858811351375160383056711006572681991489302925328156427944453526525'
     );
   });
 });

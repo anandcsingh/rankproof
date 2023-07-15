@@ -1,6 +1,6 @@
 import { Bool, CircuitString, Field } from 'snarkyjs';
-import { MartialArtist } from '../models/MartialArtist';
-import { Sender } from '../models/Sender';
+import { MartialArtist } from '../models/MartialArtist.js';
+import { Sender } from '../models/Sender.js';
 
 export class ProofOfRankData {
   getStudent(studentAccount: Sender): MartialArtist {

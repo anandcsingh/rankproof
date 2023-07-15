@@ -1,33 +1,30 @@
 import { Field, MerkleMap, PublicKey } from 'snarkyjs';
 import { MartialArtist } from '../models/MartialArtist.js';
-import { BackingStore } from './MartialArtistRepository.js';
+import { BackingStore, MerkleMapDatabase } from './MartialArtistRepository.js';
 
-export class InMemoryBackingStore implements BackingStore {
-  backingStore: Map<bigint, MartialArtist>;
-  constructor(backingStore: Map<bigint, MartialArtist>) {
+export class InMemoryBackingStore extends BackingStore {
+  backingStore: Map<PublicKey, MartialArtist>;
+  constructor(backingStore: Map<PublicKey, MartialArtist>) {
+    super();
     this.backingStore = backingStore;
   }
-  getMerkleMap(): MerkleMap {
-    let map = new MerkleMap();
-    for (let [key, value] of this.getAll()) {
-      map.set(Field(key), value.hash());
-    }
-    return map;
-  }
-  getMerkleMapIdFrom(publicKey: PublicKey): bigint | undefined | null {
-    for (let [key, value] of this.getAll()) {
-      if (value.publicKey.toString() == publicKey.toString()) {
-        return key;
-      }
-    }
-  }
-  getAll(): Map<bigint, MartialArtist> {
+
+  async getAll(): Promise<Map<PublicKey, MartialArtist>> {
     return this.backingStore;
   }
-  get(id: bigint): MartialArtist | undefined | null {
-    return this.backingStore.get(id);
+  async get(publicKey: PublicKey): Promise<MartialArtist | undefined | null> {
+    return this.backingStore.get(publicKey);
   }
-  set(id: bigint, martialArtist: MartialArtist): void {
-    this.backingStore.set(id, martialArtist);
+  async add(martialArtist: MartialArtist): Promise<void> {
+    this.backingStore.set(martialArtist.publicKey, martialArtist);
+  }
+  async update(martialArtist: MartialArtist): Promise<void> {
+    let ma = await this.get(martialArtist.publicKey);
+    if (ma) {
+      ma.id = martialArtist.id;
+      ma.rank = martialArtist.rank;
+      ma.publicKey = martialArtist.publicKey;
+      ma.verified = martialArtist.verified;
+    }
   }
 }
