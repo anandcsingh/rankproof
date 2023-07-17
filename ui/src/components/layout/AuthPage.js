@@ -121,9 +121,9 @@ console.log("setting up");
     // }
   }
   return (
-    <div className='keito-page'>
+    <div className='rankproof-page'>
       
-      <div className='keito-content-wrap'>
+      <div className='rankproof-content-wrap'>
         
        
           {!state.hasBeenSetup ?
