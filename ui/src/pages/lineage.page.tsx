@@ -7,11 +7,16 @@ import DynamicLineageMap from '../components/sections/DynamicLineageMap'
 
 
 export default function Lineage() {
-  
+
   return (
-<div>
-        <h1>Lineage</h1>
-        <DynamicLineageMap />
+    <Master>
+      <AuthPage validate={false}>
+        <div>
+          <h1>Lineage</h1>
+          <DynamicLineageMap />
         </div>
+      </AuthPage>
+    </Master>
+
   );
 }
