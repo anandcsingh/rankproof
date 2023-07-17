@@ -13,6 +13,7 @@ import { ProofOfRankData } from './ProofOfRankData.js';
 import { MinaLocalBlockchain } from '../local/MinaLocalBlockchain.js';
 
 let backingStore = new FirebaseBackingStore();
+backingStore.clearStore();
 let map = (await backingStore.getMerkleMap()).map;
 let expectedRoot = Field(new MerkleMap().getRoot()).toString();
 let actualRoot = map.getRoot().toString();
@@ -68,3 +69,5 @@ let sizeAssertion = actualSize == expectedSize;
 console.log(
   `${sizeAssertion}: Can get all Martial Artists from FirebaseBackingStore`
 );
+
+backingStore.clearStore();

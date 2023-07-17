@@ -38,6 +38,7 @@ export abstract class BackingStore {
   abstract get(publicKey: PublicKey): Promise<MartialArtist | undefined | null>;
   abstract add(martialArtist: MartialArtist): Promise<void>;
   abstract update(martialArtist: MartialArtist): Promise<void>;
+  abstract clearStore(): Promise<void>;
 }
 
 export class MartialArtistRepository {

@@ -4,6 +4,7 @@ import { BackingStore, MerkleMapDatabase } from '../MartialArtistRepository.js';
 import { app, database } from './firebaseConfig.js';
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -13,6 +14,13 @@ import {
 } from 'firebase/firestore';
 
 export class FirebaseBackingStore extends BackingStore {
+  async clearStore(): Promise<void> {
+    const maQuery = query(collection(database, 'MartialArtists'));
+    const querySnapshot = await getDocs(maQuery);
+    querySnapshot.forEach(async (doc) => {
+      await deleteDoc(doc.ref);
+    });
+  }
   async getAll(): Promise<Map<PublicKey, MartialArtist>> {
     let all = new Map<PublicKey, MartialArtist>();
     let stringMap = new Map<string, MartialArtist>();

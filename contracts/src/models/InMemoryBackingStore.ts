@@ -3,6 +3,9 @@ import { MartialArtist } from '../models/MartialArtist.js';
 import { BackingStore, MerkleMapDatabase } from './MartialArtistRepository.js';
 
 export class InMemoryBackingStore extends BackingStore {
+  async clearStore(): Promise<void> {
+    this.backingStore.clear();
+  }
   backingStore: Map<PublicKey, MartialArtist>;
   constructor(backingStore: Map<PublicKey, MartialArtist>) {
     super();
