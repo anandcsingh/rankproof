@@ -17,6 +17,7 @@ import { MartialArtist } from '../models/MartialArtist.js';
 export class MerkleMapDatabase {
   map: MerkleMap;
   nextID: bigint;
+  length: number;
 }
 
 export abstract class BackingStore {
@@ -24,13 +25,13 @@ export abstract class BackingStore {
     let map = new MerkleMap();
     let index = 0;
     const all = await this.getAll();
-    console.log('all: ', all.values.length);
     for (let [key, value] of all) {
       map.set(Field(++index), value.hash());
     }
     return {
       map: map,
       nextID: BigInt(index + 1),
+      length: all.size,
     };
   }
   abstract getAll(): Promise<Map<PublicKey, MartialArtist>>;

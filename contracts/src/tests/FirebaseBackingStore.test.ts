@@ -14,8 +14,7 @@ import { MinaLocalBlockchain } from '../local/MinaLocalBlockchain.js';
 
 let backingStore = new FirebaseBackingStore();
 let map = (await backingStore.getMerkleMap()).map;
-let expectedRoot =
-  '22731122946631793544306773678309960639073656601863129978322145324846701682624';
+let expectedRoot = Field(new MerkleMap().getRoot()).toString();
 let actualRoot = map.getRoot().toString();
 let emptyAssertion = actualRoot == expectedRoot;
 console.log(`actualRoot: ${actualRoot}`);
@@ -29,47 +28,43 @@ student.id = Field(1);
 await backingStore.add(student);
 map = (await backingStore.getMerkleMap()).map;
 expectedRoot =
-  '22731122946631793544306773678309960639073656601863129978322145324846701682624';
+  '27774440201273603605801685225434590242451666559312031204682405351601519267520';
 actualRoot = map.getRoot().toString();
 let addedAssertion = actualRoot == expectedRoot;
 console.log(`actualRoot: ${actualRoot}`);
 console.log(`${addedAssertion}: Can create MerkleMap with one Martial Artists`);
 
-// it('can create MerkleMap with multiple Martial Artists', async () => {
-//   const [deployerAccount, studentAccount, instructorAccount] =
-//     new MinaLocalBlockchain(false).accounts;
-//   let data = new ProofOfRankData();
-//   let backingMap = new Map<PublicKey, MartialArtist>();
-//   let student = data.getStudent(studentAccount);
-//   let instructor = data.getInstructor(instructorAccount);
-//   backingMap.set(student.publicKey, student);
-//   backingMap.set(instructor.publicKey, instructor);
-//   let backingStore = new InMemoryBackingStore(backingMap);
-//   let map = (await backingStore.getMerkleMap()).map;
-//   expect(map.getRoot().toString()).toEqual(
-//     '8175502539973333070380368020793805199800622151469851803008556695806100081430'
-//   );
-// });
+let instructor = data.getInstructor(instructorAccount);
+await backingStore.add(instructor);
+map = (await backingStore.getMerkleMap()).map;
+expectedRoot =
+  '8175502539973333070380368020793805199800622151469851803008556695806100081430';
+actualRoot = map.getRoot().toString();
+addedAssertion = actualRoot == expectedRoot;
+console.log(`actualRoot: ${actualRoot}`);
+console.log(
+  `${addedAssertion}: Can create MerkleMap with multiple Martial Artists`
+);
 
-// it('can change Martial Artist and generate valid MerkleMap', async () => {
-//   const [deployerAccount, studentAccount, instructorAccount] =
-//     new MinaLocalBlockchain(false).accounts;
-//   let data = new ProofOfRankData();
-//   let backingMap = new Map<PublicKey, MartialArtist>();
-//   let student = data.getStudent(studentAccount);
-//   let instructor = data.getInstructor(instructorAccount);
-//   backingMap.set(student.publicKey, student);
-//   backingMap.set(student.publicKey, instructor);
-//   let backingStore = new InMemoryBackingStore(backingMap);
-//   let map = (await backingStore.getMerkleMap()).map;
-//   expect(map.getRoot().toString()).toEqual(
-//     '8175502539973333070380368020793805199800622151469851803008556695806100081430'
-//   );
+let studentRetrieved = await backingStore.get(student.publicKey);
+if (studentRetrieved) {
+  studentRetrieved.rank = CircuitString.fromString('Purple Belt');
+  await backingStore.update(studentRetrieved);
+  map = (await backingStore.getMerkleMap()).map;
+  expectedRoot =
+    '16359713713858811351375160383056711006572681991489302925328156427944453526525';
+  actualRoot = map.getRoot().toString();
+  addedAssertion = actualRoot == expectedRoot;
+  console.log(`actualRoot: ${actualRoot}`);
+  console.log(
+    `${addedAssertion}: Can change Martial Artist and generate valid MerkleMap`
+  );
+}
 
-//   student.rank = CircuitString.fromString('Purple Belt');
-//   backingStore.update(student);
-//   map = (await backingStore.getMerkleMap()).map;
-//   expect(map.getRoot().toString()).toEqual(
-//     '16359713713858811351375160383056711006572681991489302925328156427944453526525'
-//   );
-// });
+let all = await backingStore.getAll();
+let expectedSize = 2;
+let actualSize = all.size;
+let sizeAssertion = actualSize == expectedSize;
+console.log(
+  `${sizeAssertion}: Can get all Martial Artists from FirebaseBackingStore`
+);
