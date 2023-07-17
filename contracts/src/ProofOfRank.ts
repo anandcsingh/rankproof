@@ -19,7 +19,7 @@ export class ProofOfRank extends SmartContract {
   @state(Field) mapRoot = State<Field>();
 
   events = {
-    promoted: Field,
+    promoted: PublicKey,
   };
 
   init() {
@@ -63,6 +63,6 @@ export class ProofOfRank extends SmartContract {
     student.rank = newRank;
     const [newRoot, _] = studentWitness.computeRootAndKey(student.hash());
     this.mapRoot.set(newRoot);
-    this.emitEvent('promoted', student.id);
+    this.emitEvent('promoted', student.publicKey);
   }
 }

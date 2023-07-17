@@ -22,9 +22,8 @@ export class MartialArtist extends Struct({
 }) {
   hash(): Field {
     return Poseidon.hash(
-      this.id
+      this.publicKey
         .toFields()
-        .concat(this.publicKey.toFields())
         .concat(this.rank.toFields())
         .concat(this.verified.toFields())
     );

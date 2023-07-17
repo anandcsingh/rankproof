@@ -1,5 +1,9 @@
-import { Field, Bool, CircuitString } from 'snarkyjs';
-import { InMemoryMaRepository } from '../models/MartialArtistRepository.js';
+import { Field, Bool, CircuitString, PublicKey } from 'snarkyjs';
+import {
+  MartialArtistRepository,
+  BackingStore,
+} from '../models/MartialArtistRepository.js';
+import { InMemoryBackingStore } from '../models/InMemoryBackingStore.js';
 import { LocalContractDeployer } from './ContractInteractor.js';
 import { MartialArtist } from '../models/MartialArtist.js';
 import { MinaLocalBlockchain } from './MinaLocalBlockchain.js';
@@ -15,8 +19,10 @@ const zkApp = await new LocalContractDeployer(
 // get the initial state of Contract after deployment
 const mapRoot0 = zkApp.mapRoot.get();
 console.log('\nmain: state after init:', mapRoot0.toString());
-
-let repo = new InMemoryMaRepository(studentAccount, zkApp);
+let backingStore = new InMemoryBackingStore(
+  new Map<PublicKey, MartialArtist>()
+);
+let repo = new MartialArtistRepository(studentAccount, zkApp, backingStore);
 
 let studentData = {
   id: Field(1),
@@ -27,7 +33,10 @@ let studentData = {
 let student = new MartialArtist(studentData);
 
 let transaction = await repo.add(student);
-console.log('Student first rank:', repo.get(1n)?.rank.toString());
+console.log(
+  'Student first rank:',
+  (await repo.get(student.publicKey))?.rank.toString()
+);
 
 // get the final changed value
 const mapRoot = zkApp.mapRoot.get();
@@ -45,14 +54,24 @@ let instructorData = {
 let instructor = new MartialArtist(instructorData);
 
 let transaction1 = await repo.add(instructor);
-console.log('Instructor rank:', repo.get(2n)?.rank.toString());
+console.log(
+  'Instructor rank:',
+  (await repo.get(instructor.publicKey))?.rank.toString()
+);
 
 const mapRoot1 = zkApp.mapRoot.get();
 console.log('\nmain: state after txn 1:', mapRoot1.toString());
 
 // promote student
-let transaction2 = await repo.promoteStudent(1n, 2n, 'Purple Belt');
+let transaction2 = await repo.promoteStudent(
+  student.publicKey,
+  instructor.publicKey,
+  'Purple Belt'
+);
 
 const mapRoot2 = zkApp.mapRoot.get();
 console.log('\nmain: state after txn 2:', mapRoot2.toString());
-console.log('Student rank:', repo.get(1n)?.rank.toString());
+console.log(
+  'Student rank:',
+  (await repo.get(student.publicKey))?.rank.toString()
+);
