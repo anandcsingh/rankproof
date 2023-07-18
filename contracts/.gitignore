@@ -11,3 +11,6 @@ coverage
 
 # Never commit keys to Git!
 keys
+
+# Never commit your personal config to Git!
+src/models/firebase/config.ts
