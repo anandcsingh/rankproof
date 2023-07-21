@@ -1,6 +1,7 @@
 import { AccountUpdate, Mina, PrivateKey } from 'snarkyjs';
 import { ProofOfRank } from '../index.js';
 import { Sender } from '../models/Sender.js';
+import { ProofOfBjjRank } from '../ProofOfBjjRank.js';
 
 export class LocalContractDeployer {
   zkAppAccount: Sender;
@@ -20,7 +21,7 @@ export class LocalContractDeployer {
 
   async deployProofofRank(): Promise<ProofOfRank> {
     // create an instance of Square
-    const zkApp = new ProofOfRank(this.zkAppAddress);
+    const zkApp = new ProofOfBjjRank(this.zkAppAddress);
     const txn = await this.deployContract(zkApp);
     console.log('\nmain: transaction create deployTxn=', txn.isSuccess);
     return zkApp;

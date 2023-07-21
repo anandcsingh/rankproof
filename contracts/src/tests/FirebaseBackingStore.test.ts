@@ -11,8 +11,8 @@ import {
 import { FirebaseBackingStore } from '../models/firebase/FirebaseBackingStore.js';
 import { ProofOfRankData } from './ProofOfRankData.js';
 import { MinaLocalBlockchain } from '../local/MinaLocalBlockchain.js';
-
-let backingStore = new FirebaseBackingStore();
+let collectionName = 'BJJ';
+let backingStore = new FirebaseBackingStore(collectionName);
 backingStore.clearStore();
 let map = (await backingStore.getMerkleMap()).map;
 let expectedRoot = Field(new MerkleMap().getRoot()).toString();
@@ -26,7 +26,7 @@ const [deployerAccount, studentAccount, instructorAccount] =
 let data = new ProofOfRankData();
 let student = data.getStudent(studentAccount);
 student.id = Field(1);
-await backingStore.add(student);
+await backingStore.upsert(student);
 map = (await backingStore.getMerkleMap()).map;
 expectedRoot =
   '27774440201273603605801685225434590242451666559312031204682405351601519267520';
@@ -36,7 +36,7 @@ console.log(`actualRoot: ${actualRoot}`);
 console.log(`${addedAssertion}: Can create MerkleMap with one Martial Artists`);
 
 let instructor = data.getInstructor(instructorAccount);
-await backingStore.add(instructor);
+await backingStore.upsert(instructor);
 map = (await backingStore.getMerkleMap()).map;
 expectedRoot =
   '8175502539973333070380368020793805199800622151469851803008556695806100081430';

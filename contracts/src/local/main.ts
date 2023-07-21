@@ -29,6 +29,10 @@ let studentData = {
   publicKey: studentAccount.publicKey,
   rank: CircuitString.fromString('Blue Belt'),
   verified: Bool(false),
+  instructor: PublicKey.empty(),
+  createdDate: CircuitString.fromString('2020-01-01'),
+  modifiedDate: CircuitString.fromString('2020-01-01'),
+  discipline: CircuitString.fromString('BJJ'),
 };
 let student = new MartialArtist(studentData);
 
@@ -50,6 +54,12 @@ let instructorData = {
   publicKey: instructorAccount.publicKey,
   rank: CircuitString.fromString('Black Belt'),
   verified: Bool(true),
+  instructor: PublicKey.fromBase58(
+    'B62qpzAWcbZSjzQH9hiTKvHbDx1eCsmRR7dDzK2DuYjRT2sTyW9vSpR'
+  ),
+  createdDate: CircuitString.fromString('2020-01-01'),
+  modifiedDate: CircuitString.fromString('2020-01-01'),
+  discipline: CircuitString.fromString('BJJ'),
 };
 let instructor = new MartialArtist(instructorData);
 
