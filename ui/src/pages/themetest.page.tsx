@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <>
       <Master>
-      <div>
+        <div>
           
           {/* Start block */}
           <section className="bg-white dark:bg-gray-900">

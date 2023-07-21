@@ -14,12 +14,12 @@ const Master = ({ children }) => {
         <title>RankProof zkApp</title>
         <link rel="icon" href="/assets/favicon.ico" />
       </Head>
-      <GradientBG>
+      {/* <GradientBG> */}
         <Header />
-        <main className={styles.main}>
+        <main>
             {children}
         </main>
-      </GradientBG>
+      {/* </GradientBG> */}
     </>
   );
 }
