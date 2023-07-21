@@ -14,8 +14,14 @@ import {
 } from 'firebase/firestore';
 
 export class FirebaseBackingStore extends BackingStore {
+  collectionName: string;
+  constructor(collectionName: string) {
+    super();
+    this.collectionName = collectionName;
+  }
+
   async clearStore(): Promise<void> {
-    const maQuery = query(collection(database, 'MartialArtists'));
+    const maQuery = query(collection(database, this.collectionName));
     const querySnapshot = await getDocs(maQuery);
     querySnapshot.forEach(async (doc) => {
       await deleteDoc(doc.ref);
@@ -27,7 +33,7 @@ export class FirebaseBackingStore extends BackingStore {
 
     // DO NOT DELETE THIS COMMENTED OUT CODE
     //const maQuery = query(collection(database, "MartialArtists"), orderBy("created-date"));
-    const maQuery = query(collection(database, 'MartialArtists'));
+    const maQuery = query(collection(database, this.collectionName));
 
     const querySnapshot = await getDocs(maQuery);
     querySnapshot.forEach((doc) => {
@@ -37,7 +43,7 @@ export class FirebaseBackingStore extends BackingStore {
     return all;
   }
   async get(publicKey: PublicKey): Promise<MartialArtist | null | undefined> {
-    const docRef = doc(database, 'MartialArtists', publicKey.toBase58());
+    const docRef = doc(database, this.collectionName, publicKey.toBase58());
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       return this.getMartialArtistFromDocSnap(docSnap.data());
@@ -45,40 +51,50 @@ export class FirebaseBackingStore extends BackingStore {
       return undefined;
     }
   }
-  async add(martialArtist: MartialArtist): Promise<void> {
+  async upsert(martialArtist: MartialArtist): Promise<void> {
     const docRef = doc(
       database,
-      'MartialArtists',
+      this.collectionName,
       martialArtist.publicKey.toBase58()
     );
     const data = this.getObjectFromStruct(martialArtist);
     await setDoc(docRef, data);
   }
-  private getObjectFromStruct(martialArtist: MartialArtist) {
+  getObjectFromStruct(martialArtist: MartialArtist) {
     return {
       id: martialArtist.id.toString(),
       publicKey: martialArtist.publicKey.toBase58(),
       rank: martialArtist.rank.toString(),
       verified: martialArtist.verified.toBoolean(),
+      instructor: martialArtist.getInstructorString(),
+      createdDate: martialArtist.createdDate.toString(),
+      modifiedDate: martialArtist.modifiedDate.toString(),
+      discipline: martialArtist.discipline.toString(),
     };
   }
 
   async update(martialArtist: MartialArtist): Promise<void> {
     const docRef = doc(
       database,
-      'MartialArtists',
+      this.collectionName,
       martialArtist.publicKey.toBase58()
     );
     const data = this.getObjectFromStruct(martialArtist);
     await setDoc(docRef, data);
   }
 
-  private getMartialArtistFromDocSnap(data: any): MartialArtist {
+  getMartialArtistFromDocSnap(data: any): MartialArtist {
     let param = {
       id: Field(data.id),
       publicKey: PublicKey.fromBase58(data.publicKey),
       rank: CircuitString.fromString(data.rank),
       verified: Bool(data.verified),
+      instructor: data.instructor
+        ? PublicKey.fromBase58(data.instructor)
+        : PublicKey.empty(),
+      createdDate: CircuitString.fromString(data.createdDate),
+      modifiedDate: CircuitString.fromString(data.modifiedDate),
+      discipline: CircuitString.fromString(data.discipline),
     };
     return new MartialArtist(param);
   }

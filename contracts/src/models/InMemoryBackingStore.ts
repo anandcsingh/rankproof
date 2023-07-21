@@ -18,7 +18,7 @@ export class InMemoryBackingStore extends BackingStore {
   async get(publicKey: PublicKey): Promise<MartialArtist | undefined | null> {
     return this.backingStore.get(publicKey);
   }
-  async add(martialArtist: MartialArtist): Promise<void> {
+  async upsert(martialArtist: MartialArtist): Promise<void> {
     this.backingStore.set(martialArtist.publicKey, martialArtist);
   }
   async update(martialArtist: MartialArtist): Promise<void> {

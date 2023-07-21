@@ -15,11 +15,12 @@ import {
 } from 'snarkyjs';
 import { MartialArtist } from './models/MartialArtist.js';
 
-export class ProofOfRank extends SmartContract {
+export abstract class ProofOfRank extends SmartContract {
   @state(Field) mapRoot = State<Field>();
 
   events = {
     promoted: PublicKey,
+    added: PublicKey,
   };
 
   init() {
@@ -28,6 +29,7 @@ export class ProofOfRank extends SmartContract {
   }
 
   @method setMapRoot(newRoot: Field) {
+    // TODO: add a check that the sender is the owner
     this.mapRoot.getAndAssertEquals();
     this.mapRoot.set(newRoot);
   }
@@ -42,6 +44,7 @@ export class ProofOfRank extends SmartContract {
     this.sender.assertEquals(martialArtist.publicKey);
     const [newRoot, _] = witness.computeRootAndKey(martialArtist.hash());
     this.mapRoot.set(newRoot);
+    this.emitEvent('added', martialArtist.publicKey);
   }
 
   @method promoteStudent(
@@ -58,11 +61,19 @@ export class ProofOfRank extends SmartContract {
     this.mapRoot.assertEquals(confirmStudentRoot);
 
     this.sender.assertEquals(instructor.publicKey);
-    instructor.rank.assertEquals(CircuitString.fromString('Black Belt'));
+    this.validatePromotion(student, instructor, newRank, studentWitness);
 
     student.rank = newRank;
+    student.instructor = instructor.publicKey;
     const [newRoot, _] = studentWitness.computeRootAndKey(student.hash());
     this.mapRoot.set(newRoot);
     this.emitEvent('promoted', student.publicKey);
   }
+
+  abstract validatePromotion(
+    student: MartialArtist,
+    instructor: MartialArtist,
+    newRank: CircuitString,
+    studentWitness: MerkleMapWitness
+  ): void;
 }

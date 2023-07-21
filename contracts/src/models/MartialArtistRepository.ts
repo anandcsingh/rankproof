@@ -36,10 +36,17 @@ export abstract class BackingStore {
   }
   abstract getAll(): Promise<Map<PublicKey, MartialArtist>>;
   abstract get(publicKey: PublicKey): Promise<MartialArtist | undefined | null>;
-  abstract add(martialArtist: MartialArtist): Promise<void>;
-  abstract update(martialArtist: MartialArtist): Promise<void>;
+  abstract upsert(martialArtist: MartialArtist): Promise<void>;
   abstract clearStore(): Promise<void>;
 }
+
+export type DisciplineAlias = 'BJJ' | 'Judo' | 'Karate';
+
+export const Disciplines = {
+  Karate: 'Karate',
+  BJJ: 'BJJ',
+  Judo: 'Judo',
+};
 
 export class MartialArtistRepository {
   sender: Sender;
@@ -65,7 +72,6 @@ export class MartialArtistRepository {
       const [currentRoot, _] = witness.computeRootAndKey(
         ma?.hash() ?? Field(0)
       );
-      console.log('witness: ', currentRoot.toString());
       if (this.contract.mapRoot.get().toString() == currentRoot.toString()) {
         return ma;
       } else {
@@ -78,11 +84,6 @@ export class MartialArtistRepository {
     const merkleStore = await this.backingStore.getMerkleMap();
     const currentRoot = merkleStore.map.getRoot();
     martialArtist.id = Field(merkleStore.nextID);
-    console.log('martialArtist.id: ', martialArtist.id.toString());
-    console.log(
-      'martialArtist.publicKey: ',
-      martialArtist.publicKey.toBase58()
-    );
     merkleStore.map.set(martialArtist.id, martialArtist.hash());
     const witness = merkleStore.map.getWitness(martialArtist.id);
 
@@ -94,7 +95,7 @@ export class MartialArtistRepository {
     const txnProved = await txn1.prove();
 
     const txnSigned = await txn1.sign([this.sender.privateKey]).send();
-    this.backingStore.add(martialArtist);
+    this.backingStore.upsert(martialArtist);
     return txnSigned.isSuccess;
   }
 
@@ -103,13 +104,8 @@ export class MartialArtistRepository {
     instructorID: PublicKey,
     newRank: string
   ): Promise<boolean> {
-    console.log(
-      `promoteStudent: ${studentID.toBase58()}, ${instructorID.toBase58()}, ${newRank}`
-    );
     const student = await this.get(studentID);
     const instructor = await this.get(instructorID);
-    console.log('student from get: ', student?.publicKey.toBase58());
-    console.log('instructor from get: ', instructor?.publicKey.toBase58());
     const merkleMapDB = await this.backingStore.getMerkleMap();
 
     if (student != null && instructor != null) {
@@ -127,7 +123,8 @@ export class MartialArtistRepository {
 
       const txnSigned = await txn1.sign([this.sender.privateKey]).send();
       student.rank = CircuitString.fromString(newRank);
-      this.backingStore.update(student);
+      student.instructor = instructor.publicKey;
+      await this.backingStore.upsert(student);
 
       return txnSigned.isSuccess;
     } else {
