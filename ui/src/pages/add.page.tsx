@@ -8,6 +8,7 @@ import { AlertRepository } from "../modules/AlertRepository";
 //import { MartialArtist } from '../../../contracts/build/src/models/MartialArtist';
 import { useEffect, useState } from "react";
 import QRCodeCreator from "../components/QRCodeCreator";
+import QRCodeScanner from "../components/QRCodeScanner";
 
 import { Bool, CircuitString, Field, PublicKey, Struct } from "snarkyjs";
 import { MartialArtist } from "../../../contracts/build/src/models/MartialArtist";
@@ -175,7 +176,9 @@ export default function Add() {
         </form>
       </AuthPage>
 
-      <QRCodeCreator address="B62qpzAWcbZSjzQH9hiTKvHbDx1eCsmRR7dDzK2DuYjRT2sTyW9vSpR"></QRCodeCreator>
+      {/* <QRCodeCreator address="B62qpzAWcbZSjzQH9hiTKvHbDx1eCsmRR7dDzK2DuYjRT2sTyW9vSpR"></QRCodeCreator>
+
+      <QRCodeScanner></QRCodeScanner> */}
     </Master>
   );
 }
