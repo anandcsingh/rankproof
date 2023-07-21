@@ -34,7 +34,7 @@ export default function Home() {
           {/* End block */}
 
           {/* Start block */}
-          <section className="bg-gray-50 dark:bg-gray-800">
+          <section className="bg-gray-100 dark:bg-gray-800">
             <div className="max-w-screen-xl px-4 py-8 mx-auto space-y-12 lg:space-y-20 lg:py-24 lg:px-6">
               {/* Row */}
               <div className="items-center gap-8 lg:grid lg:grid-cols-2 xl:gap-16">
@@ -115,7 +115,7 @@ export default function Home() {
             </div>
           </section>
           {/* End block */}
-          <footer className="bg-gray-50 dark:bg-gray-800">
+          <footer className="bg-gray-100 dark:bg-gray-800">
             <div className="max-w-screen-xl p-4 py-6 mx-auto lg:py-16 md:p-8 lg:p-10">
               
             
