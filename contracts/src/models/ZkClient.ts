@@ -28,4 +28,14 @@ export interface IZkClient {
     newRank: CircuitString,
     studentWitness: MerkleMapWitness
   ): Promise<void>;
+
+  loadSnarkyJS(): Promise<void>;
+  setActiveInstanceToBerkeley(): Promise<void>;
+  loadContract(): Promise<void>;
+  compileContract(): Promise<void>;
+  fetchAccount({ publicKey }: { publicKey: PublicKey }): Promise<void>;
+  initZkappInstance(publicKey: PublicKey): Promise<void>;
+  proveUpdateTransaction(): Promise<void>;
+  sendTransaction(): Promise<any>;
+  getTransactionJSON(): Promise<string>;
 }
