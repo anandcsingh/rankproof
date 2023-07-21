@@ -19,6 +19,9 @@ export class MartialArtist extends Struct({
   publicKey: PublicKey,
   rank: CircuitString,
   verified: Bool,
+  instructor: PublicKey,
+  createdDate: CircuitString,
+  modifiedDate: CircuitString,
 }) {
   hash(): Field {
     return Poseidon.hash(
@@ -26,6 +29,9 @@ export class MartialArtist extends Struct({
         .toFields()
         .concat(this.rank.toFields())
         .concat(this.verified.toFields())
+        .concat(this.instructor.toFields())
+        .concat(this.createdDate.toFields())
+        .concat(this.modifiedDate.toFields())
     );
   }
 }

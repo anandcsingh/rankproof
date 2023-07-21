@@ -17,6 +17,9 @@ import { ProofOfRankData } from './ProofOfRankData.js';
 import { InMemoryBackingStore } from '../models/InMemoryBackingStore.js';
 import { MartialArtist } from '../models/MartialArtist.js';
 import { FirebaseBackingStore } from '../models/firebase/FirebaseBackingStore.js';
+import { ProofOfBjjRank } from '../ProofOfBjjRank.js';
+import { ProofOfJudoRank } from '../ProofOfJudoRank.js';
+import { ProofOfKarateRank } from '../ProofOfKarateRank.js';
 
 /*
  * This file specifies how to test the `Add` example smart contract. It is safe to delete this file and replace
@@ -35,6 +38,7 @@ let senderAccount: PublicKey,
   deployerAccount: Sender,
   studentAccount: Sender,
   instructorAccount: Sender,
+  collectionName: string,
   backingStore: BackingStore;
 
 if (proofsEnabled) await ProofOfRank.compile();
@@ -45,10 +49,13 @@ const useProof = false;
 ).accounts;
 zkAppPrivateKey = PrivateKey.random();
 zkAppAddress = zkAppPrivateKey.toPublicKey();
-zkApp = new ProofOfRank(zkAppAddress);
+zkApp = new ProofOfJudoRank(zkAppAddress);
+collectionName = 'Judo';
+zkApp = new ProofOfKarateRank(zkAppAddress);
+collectionName = 'Karate';
+//zkApp = new ProofOfBjjRank(zkAppAddress);collectionName = 'BJJ';
 
-//backingStore = new InMemoryBackingStore(new Map<PublicKey, MartialArtist>());
-backingStore = new FirebaseBackingStore();
+backingStore = new FirebaseBackingStore(collectionName);
 await backingStore.clearStore();
 
 async function localDeploy() {
@@ -104,4 +111,4 @@ console.log('actualRoot: ', actualRoot);
 console.log(
   `${addedAssertion}: Can promote Martial Artists with a Black Belt instructor`
 );
-backingStore.clearStore();
+//backingStore.clearStore();

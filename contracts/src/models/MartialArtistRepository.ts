@@ -36,8 +36,7 @@ export abstract class BackingStore {
   }
   abstract getAll(): Promise<Map<PublicKey, MartialArtist>>;
   abstract get(publicKey: PublicKey): Promise<MartialArtist | undefined | null>;
-  abstract add(martialArtist: MartialArtist): Promise<void>;
-  abstract update(martialArtist: MartialArtist): Promise<void>;
+  abstract upsert(martialArtist: MartialArtist): Promise<void>;
   abstract clearStore(): Promise<void>;
 }
 
@@ -94,7 +93,7 @@ export class MartialArtistRepository {
     const txnProved = await txn1.prove();
 
     const txnSigned = await txn1.sign([this.sender.privateKey]).send();
-    this.backingStore.add(martialArtist);
+    this.backingStore.upsert(martialArtist);
     return txnSigned.isSuccess;
   }
 
@@ -127,7 +126,7 @@ export class MartialArtistRepository {
 
       const txnSigned = await txn1.sign([this.sender.privateKey]).send();
       student.rank = CircuitString.fromString(newRank);
-      this.backingStore.update(student);
+      this.backingStore.upsert(student);
 
       return txnSigned.isSuccess;
     } else {

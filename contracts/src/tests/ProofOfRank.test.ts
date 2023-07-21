@@ -16,6 +16,7 @@ import {
 import { ProofOfRankData } from './ProofOfRankData';
 import { InMemoryBackingStore } from '../models/InMemoryBackingStore';
 import { MartialArtist } from '../models/MartialArtist';
+import { ProofOfBjjRank } from '../ProofOfBjjRank';
 
 /*
  * This file specifies how to test the `Add` example smart contract. It is safe to delete this file and replace
@@ -46,7 +47,7 @@ describe('ProofOfRank', () => {
       new MinaLocalBlockchain(useProof).accounts;
     zkAppPrivateKey = PrivateKey.random();
     zkAppAddress = zkAppPrivateKey.toPublicKey();
-    zkApp = new ProofOfRank(zkAppAddress);
+    zkApp = new ProofOfBjjRank(zkAppAddress);
   });
 
   async function localDeploy() {
