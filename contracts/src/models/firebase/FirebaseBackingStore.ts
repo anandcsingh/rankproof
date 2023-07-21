@@ -60,7 +60,7 @@ export class FirebaseBackingStore extends BackingStore {
     const data = this.getObjectFromStruct(martialArtist);
     await setDoc(docRef, data);
   }
-  private getObjectFromStruct(martialArtist: MartialArtist) {
+  getObjectFromStruct(martialArtist: MartialArtist) {
     return {
       id: martialArtist.id.toString(),
       publicKey: martialArtist.publicKey.toBase58(),
@@ -83,7 +83,7 @@ export class FirebaseBackingStore extends BackingStore {
     await setDoc(docRef, data);
   }
 
-  private getMartialArtistFromDocSnap(data: any): MartialArtist {
+  getMartialArtistFromDocSnap(data: any): MartialArtist {
     let param = {
       id: Field(data.id),
       publicKey: PublicKey.fromBase58(data.publicKey),
