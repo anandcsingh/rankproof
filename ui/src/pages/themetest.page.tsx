@@ -68,7 +68,7 @@ export default function Home() {
                 <img className="hidden w-full mb-4 rounded-lg lg:mb-0 lg:flex" src="/assets/images/jutsu.png" alt="feature image 2" />
                 <div className="text-gray-500 sm:text-lg dark:text-gray-400">
                   <h2 className="mb-4 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">All Martial Artists can view their lineage</h2>
-                  <p className="mb-8 font-light lg:text-xl">All Martial Artists can view their lineage going as far back as we have data for practitioners. All powered by the Mina blockchain and Zero-Knowledge Proofs. </p>
+                  <p className="mb-8 font-light lg:text-xl">As a martial artist discover and navigate your history through a beautiful interactive visualization of your lineage.</p>
                   {/* List */}
                   <ul role="list" className="pt-8 space-y-5 border-t border-gray-200 my-7 dark:border-gray-700">
                     <li className="flex space-x-3">
