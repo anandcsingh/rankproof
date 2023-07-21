@@ -32,6 +32,7 @@ let studentData = {
   instructor: PublicKey.empty(),
   createdDate: CircuitString.fromString('2020-01-01'),
   modifiedDate: CircuitString.fromString('2020-01-01'),
+  discipline: CircuitString.fromString('BJJ'),
 };
 let student = new MartialArtist(studentData);
 
@@ -58,6 +59,7 @@ let instructorData = {
   ),
   createdDate: CircuitString.fromString('2020-01-01'),
   modifiedDate: CircuitString.fromString('2020-01-01'),
+  discipline: CircuitString.fromString('BJJ'),
 };
 let instructor = new MartialArtist(instructorData);
 

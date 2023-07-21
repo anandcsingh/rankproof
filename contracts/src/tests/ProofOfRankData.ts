@@ -10,8 +10,9 @@ export class ProofOfRankData {
       rank: CircuitString.fromString('Blue Belt'),
       verified: Bool(false),
       instructor: PublicKey.empty(),
-      createdDate: CircuitString.fromString('2020-01-01'),
-      modifiedDate: CircuitString.fromString('2020-01-01'),
+      createdDate: CircuitString.fromString(''),
+      modifiedDate: CircuitString.fromString(''),
+      discipline: CircuitString.fromString('BJJ'),
     };
     let student = new MartialArtist(studentData);
     return student;
@@ -28,6 +29,7 @@ export class ProofOfRankData {
       ),
       createdDate: CircuitString.fromString('2020-01-01'),
       modifiedDate: CircuitString.fromString('2020-01-01'),
+      discipline: CircuitString.fromString('BJJ'),
     };
     let instructor = new MartialArtist(instructorData);
     return instructor;

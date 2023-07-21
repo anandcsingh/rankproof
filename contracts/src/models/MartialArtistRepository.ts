@@ -40,6 +40,14 @@ export abstract class BackingStore {
   abstract clearStore(): Promise<void>;
 }
 
+export type DisciplineAlias = 'BJJ' | 'Judo' | 'Karate';
+
+export const Disciplines = {
+  Karate: 'Karate',
+  BJJ: 'BJJ',
+  Judo: 'Judo',
+};
+
 export class MartialArtistRepository {
   sender: Sender;
   contract: ProofOfRank;
@@ -64,7 +72,6 @@ export class MartialArtistRepository {
       const [currentRoot, _] = witness.computeRootAndKey(
         ma?.hash() ?? Field(0)
       );
-      console.log('witness: ', currentRoot.toString());
       if (this.contract.mapRoot.get().toString() == currentRoot.toString()) {
         return ma;
       } else {
@@ -77,11 +84,6 @@ export class MartialArtistRepository {
     const merkleStore = await this.backingStore.getMerkleMap();
     const currentRoot = merkleStore.map.getRoot();
     martialArtist.id = Field(merkleStore.nextID);
-    console.log('martialArtist.id: ', martialArtist.id.toString());
-    console.log(
-      'martialArtist.publicKey: ',
-      martialArtist.publicKey.toBase58()
-    );
     merkleStore.map.set(martialArtist.id, martialArtist.hash());
     const witness = merkleStore.map.getWitness(martialArtist.id);
 
@@ -102,13 +104,8 @@ export class MartialArtistRepository {
     instructorID: PublicKey,
     newRank: string
   ): Promise<boolean> {
-    console.log(
-      `promoteStudent: ${studentID.toBase58()}, ${instructorID.toBase58()}, ${newRank}`
-    );
     const student = await this.get(studentID);
     const instructor = await this.get(instructorID);
-    console.log('student from get: ', student?.publicKey.toBase58());
-    console.log('instructor from get: ', instructor?.publicKey.toBase58());
     const merkleMapDB = await this.backingStore.getMerkleMap();
 
     if (student != null && instructor != null) {
@@ -126,7 +123,8 @@ export class MartialArtistRepository {
 
       const txnSigned = await txn1.sign([this.sender.privateKey]).send();
       student.rank = CircuitString.fromString(newRank);
-      this.backingStore.upsert(student);
+      student.instructor = instructor.publicKey;
+      await this.backingStore.upsert(student);
 
       return txnSigned.isSuccess;
     } else {

@@ -64,6 +64,7 @@ export abstract class ProofOfRank extends SmartContract {
     this.validatePromotion(student, instructor, newRank, studentWitness);
 
     student.rank = newRank;
+    student.instructor = instructor.publicKey;
     const [newRoot, _] = studentWitness.computeRootAndKey(student.hash());
     this.mapRoot.set(newRoot);
     this.emitEvent('promoted', student.publicKey);

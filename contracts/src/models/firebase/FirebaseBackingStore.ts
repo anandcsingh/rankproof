@@ -66,9 +66,10 @@ export class FirebaseBackingStore extends BackingStore {
       publicKey: martialArtist.publicKey.toBase58(),
       rank: martialArtist.rank.toString(),
       verified: martialArtist.verified.toBoolean(),
-      instructor: martialArtist.instructor.toBase58(),
+      instructor: martialArtist.getInstructorString(),
       createdDate: martialArtist.createdDate.toString(),
       modifiedDate: martialArtist.modifiedDate.toString(),
+      discipline: martialArtist.discipline.toString(),
     };
   }
 
@@ -88,9 +89,12 @@ export class FirebaseBackingStore extends BackingStore {
       publicKey: PublicKey.fromBase58(data.publicKey),
       rank: CircuitString.fromString(data.rank),
       verified: Bool(data.verified),
-      instructor: PublicKey.fromBase58(data.instructor),
+      instructor: data.instructor
+        ? PublicKey.fromBase58(data.instructor)
+        : PublicKey.empty(),
       createdDate: CircuitString.fromString(data.createdDate),
       modifiedDate: CircuitString.fromString(data.modifiedDate),
+      discipline: CircuitString.fromString(data.discipline),
     };
     return new MartialArtist(param);
   }
