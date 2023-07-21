@@ -38,7 +38,7 @@ export class MartialArtist extends Struct({
   }
 
   getInstructorString(): string {
-    // PublicKey.empty returns 'B62qiTKpEPjGTSHZrtM8uXiKgn8So916pLmNJKDhKeyBQL9TDb3nvBG'
+    // PublicKey.empty() returns 'B62qiTKpEPjGTSHZrtM8uXiKgn8So916pLmNJKDhKeyBQL9TDb3nvBG'
     // I want an empty string for empty public keys
     if (
       this.instructor.toBase58() ===
