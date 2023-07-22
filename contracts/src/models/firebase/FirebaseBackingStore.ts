@@ -33,7 +33,7 @@ export class FirebaseBackingStore extends BackingStore {
 
     // DO NOT DELETE THIS COMMENTED OUT CODE
     const maQuery = query(
-      collection(database, 'MartialArtists'),
+      collection(database, this.collectionName),
       orderBy('id')
     );
     //const maQuery = query(collection(database, this.collectionName));
