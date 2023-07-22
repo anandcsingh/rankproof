@@ -50,7 +50,7 @@ console.log(
 let studentRetrieved = await backingStore.get(student.publicKey);
 if (studentRetrieved) {
   studentRetrieved.rank = CircuitString.fromString('Purple Belt');
-  await backingStore.update(studentRetrieved);
+  await backingStore.upsert(studentRetrieved);
   map = (await backingStore.getMerkleMap()).map;
   expectedRoot =
     '16359713713858811351375160383056711006572681991489302925328156427944453526525';

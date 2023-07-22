@@ -7,6 +7,8 @@ export class ProofOfRankData {
     let studentData = {
       id: Field(1),
       publicKey: studentAccount.publicKey,
+      firstName: CircuitString.fromString('John'),
+      lastName: CircuitString.fromString('Doe'),
       rank: CircuitString.fromString('Blue Belt'),
       verified: Bool(false),
       instructor: PublicKey.empty(),
@@ -22,6 +24,8 @@ export class ProofOfRankData {
     let instructorData = {
       id: Field(2),
       publicKey: instructorAccount.publicKey,
+      firstName: CircuitString.fromString('Jane'),
+      lastName: CircuitString.fromString('Doe'),
       rank: CircuitString.fromString('Black Belt'),
       verified: Bool(true),
       instructor: PublicKey.fromBase58(
