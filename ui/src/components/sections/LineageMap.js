@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 
 import { OrgChartComponent } from './OrgChart';
 import * as d3 from 'd3';
-import { state } from 'snarkyjs';
+import { PublicKey, state } from 'snarkyjs';
+import { Disciplines } from '../../../../contracts/build/src/models/MartialArtistRepository';
+import { FirebaseBackingStore } from '../../../../contracts/build/src/models/firebase/FirebaseBackingStore';
 
 
 const LineageMap = () => {
@@ -27,12 +29,35 @@ const LineageMap = () => {
   }
 
   useEffect(() => {
-    // d3.csv(
-    //   'https://raw.githubusercontent.com/bumbeishvili/sample-data/main/org.csv'
-    // ).then((data) => {
-    //   setData(data);
-    //   setShow(true);
-    // });
+    (async () => {
+    let discipline = Disciplines.BJJ;
+    let backingStore = new FirebaseBackingStore(discipline);
+    let data = [];
+    let idMap = {};
+    
+    (await backingStore.getAll())
+      .forEach((value, key) => {
+        data.push( {
+          "name": `${value.firstName} ${value.lastName}`,
+          "positionName": value.rank.toString(),
+          "publicKey": value.publicKey.toBase58(),
+          "Instructor": value.instructor.toBase58(),
+          "id": value.id.toString(),
+          "imageUrl": "/_next/image?url=%2Fassets%2Fma-logo.png&w=384&q=75",
+        });
+        idMap[value.publicKey.toBase58()] = value.id.toString();
+      });
+
+      for (let i = 0; i < data.length; i++) {
+        let value = data[i];
+        if (value.Instructor) {
+          value.parentId = idMap[value.Instructor];
+        }
+      }
+    setData(data);
+    setShow(true);
+
+  })();
     let arr = [
         {
           "name": "Helio Gracie",
@@ -126,8 +151,8 @@ const LineageMap = () => {
           "size": ""
         }
       ];
-    setData(arr);
-    setShow(true);
+    //setData(arr);
+    //setShow(true);
     
   }, [true]);
 

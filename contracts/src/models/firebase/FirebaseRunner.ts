@@ -5,7 +5,7 @@ import { Disciplines } from '../MartialArtistRepository.js';
 
 let disciple = Disciplines.BJJ;
 let backingStore = new FirebaseBackingStore(disciple);
-backingStore.clearStore();
+await backingStore.clearStore();
 let dataGen = new FirebaseDataGenerator(backingStore);
 dataGen.generateData(disciple, 10, 5);
 
