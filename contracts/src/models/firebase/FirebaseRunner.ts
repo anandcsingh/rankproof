@@ -7,18 +7,18 @@ let disciple = Disciplines.BJJ;
 let backingStore = new FirebaseBackingStore(disciple);
 backingStore.clearStore();
 let dataGen = new FirebaseDataGenerator(backingStore);
-dataGen.generateData(disciple, 10, 5);
+dataGen.generateData(disciple, 1, 1);
 
-disciple = Disciplines.Judo;
-backingStore = new FirebaseBackingStore(disciple);
-backingStore.clearStore();
-dataGen = new FirebaseDataGenerator(backingStore);
-dataGen.generateData(disciple, 10, 5);
+// disciple = Disciplines.Judo;
+// backingStore = new FirebaseBackingStore(disciple);
+// backingStore.clearStore();
+// dataGen = new FirebaseDataGenerator(backingStore);
+// dataGen.generateData(disciple, 10, 5);
 
-disciple = Disciplines.Karate;
-backingStore = new FirebaseBackingStore(disciple);
-backingStore.clearStore();
-dataGen = new FirebaseDataGenerator(backingStore);
-dataGen.generateData(disciple, 10, 5);
+// disciple = Disciplines.Karate;
+// backingStore = new FirebaseBackingStore(disciple);
+// backingStore.clearStore();
+// dataGen = new FirebaseDataGenerator(backingStore);
+// dataGen.generateData(disciple, 10, 5);
 
 console.log('done');

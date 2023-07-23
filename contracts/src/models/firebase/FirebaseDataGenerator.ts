@@ -24,18 +24,21 @@ export class FirebaseDataGenerator {
     console.log(
       `Generating ${numStudents} students and ${numInstructors} instructors for ${disciple}`
     );
-    let root = await this.backingStore.getMartialArtistFromDocSnap({
+    let rootNode = {
       id: 1,
       publicKey: PublicKey.fromPrivateKey(PrivateKey.random()).toBase58(),
       firstName: faker.person.firstName(),
       lastName: faker.person.lastName(),
       rank: 'Red Belt',
       verified: false,
-      instructor: PublicKey.empty().toBase58(),
+      instructor: '',
       createdDate: '',
       modifiedDate: '',
       discipline: disciple,
-    });
+    };
+    let root = await this.backingStore.getMartialArtistFromDocSnap(rootNode);
+    await this.backingStore.upsert(root);
+    console.log('root key', root.publicKey.toBase58());
     let index = 2;
     let instructors: any[] = [];
 
@@ -56,6 +59,7 @@ export class FirebaseDataGenerator {
       staticInstructor
     );
     await this.backingStore.upsert(ma);
+    console.log('static key', ma.publicKey.toBase58());
 
     for (let i = 0; i < numInstructors - 1; i++) {
       let instructor = {
@@ -73,6 +77,7 @@ export class FirebaseDataGenerator {
       instructors.push(instructor);
       let ma = await this.backingStore.getMartialArtistFromDocSnap(instructor);
       await this.backingStore.upsert(ma);
+      console.log(ma.firstName.toString(), ' key', ma.publicKey.toBase58());
     }
 
     let lowerRanks = ranks.filter((rank) => rank != 'Black Belt');
