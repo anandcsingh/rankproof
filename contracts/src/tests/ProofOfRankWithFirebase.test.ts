@@ -70,35 +70,35 @@ async function localDeploy() {
 }
 await localDeploy();
 let root = zkApp.mapRoot.get();
-let expectedRoot = new MerkleMap().getRoot().toString();
-let actualRoot = root.toString();
-let emptyAssertion = actualRoot == expectedRoot;
-console.log('actualRoot: ', actualRoot);
+let backingStoreRoot = new MerkleMap().getRoot().toString();
+let contractRoot = root.toString();
+let emptyAssertion = contractRoot == backingStoreRoot;
+console.log('contract root: ', contractRoot);
 console.log(`${emptyAssertion}: Can create deploy contract`);
 
 let repo = new MartialArtistRepository(studentAccount, zkApp, backingStore);
 let student = new ProofOfRankData().getStudent(studentAccount);
 student.discipline = CircuitString.fromString(collectionName);
 let transaction = await repo.add(student);
-expectedRoot = (await repo.backingStore.getMerkleMap()).map
+backingStoreRoot = (await repo.backingStore.getMerkleMap()).map
   .getRoot()
   .toString();
-actualRoot = zkApp.mapRoot.get().toString();
-let addedAssertion = actualRoot == expectedRoot;
-console.log('actualRoot: ', actualRoot);
-console.log('expectedRoot: ', expectedRoot);
+contractRoot = zkApp.mapRoot.get().toString();
+let addedAssertion = contractRoot == backingStoreRoot;
+console.log('contract root: ', contractRoot);
+console.log('backing store root: ', backingStoreRoot);
 console.log(`${addedAssertion}: Can add a new Martial Artist to a merkle tree`);
 
 let instructor = new ProofOfRankData().getInstructor(instructorAccount);
 repo.sender = instructorAccount;
 instructor.discipline = CircuitString.fromString(collectionName);
 let transaction1 = await repo.add(instructor);
-expectedRoot = (await repo.backingStore.getMerkleMap()).map
+backingStoreRoot = (await repo.backingStore.getMerkleMap()).map
   .getRoot()
   .toString();
-actualRoot = zkApp.mapRoot.get().toString();
-addedAssertion = actualRoot == expectedRoot;
-console.log('actualRoot: ', actualRoot);
+contractRoot = zkApp.mapRoot.get().toString();
+addedAssertion = contractRoot == backingStoreRoot;
+console.log('contract root: ', contractRoot);
 console.log(
   `${addedAssertion}: Can add a multiple Martial Artist to a merkle tree`
 );
@@ -108,12 +108,12 @@ let transaction2 = await repo.promoteStudent(
   instructor.publicKey,
   'Purple Belt'
 );
-expectedRoot = (await repo.backingStore.getMerkleMap()).map
+backingStoreRoot = (await repo.backingStore.getMerkleMap()).map
   .getRoot()
   .toString();
-actualRoot = zkApp.mapRoot.get().toString();
-addedAssertion = actualRoot == expectedRoot;
-console.log('actualRoot: ', actualRoot);
+contractRoot = zkApp.mapRoot.get().toString();
+addedAssertion = contractRoot == backingStoreRoot;
+console.log('contract root: ', contractRoot);
 console.log(
   `${addedAssertion}: Can promote Martial Artists with a Black Belt instructor`
 );
@@ -123,7 +123,7 @@ console.log(
 let backingStore1 = new FirebaseBackingStore(collectionName);
 let repo1 = new MartialArtistRepository(studentAccount, zkApp, backingStore1);
 let zkAppRoot = zkApp.mapRoot.get().toString();
-let backingStoreRoot = (await repo1.backingStore.getMerkleMap()).map
+backingStoreRoot = (await repo1.backingStore.getMerkleMap()).map
   .getRoot()
   .toString();
 let rootAssertion = zkAppRoot == backingStoreRoot;

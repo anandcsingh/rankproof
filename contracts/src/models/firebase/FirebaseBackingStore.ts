@@ -32,8 +32,11 @@ export class FirebaseBackingStore extends BackingStore {
     let stringMap = new Map<string, MartialArtist>();
 
     // DO NOT DELETE THIS COMMENTED OUT CODE
-    //const maQuery = query(collection(database, "MartialArtists"), orderBy("created-date"));
-    const maQuery = query(collection(database, this.collectionName));
+    const maQuery = query(
+      collection(database, this.collectionName),
+      orderBy('id')
+    );
+    //const maQuery = query(collection(database, this.collectionName));
 
     const querySnapshot = await getDocs(maQuery);
     querySnapshot.forEach((doc) => {
@@ -62,8 +65,10 @@ export class FirebaseBackingStore extends BackingStore {
   }
   getObjectFromStruct(martialArtist: MartialArtist) {
     return {
-      id: martialArtist.id.toString(),
+      id: Number(martialArtist.id.toBigInt()),
       publicKey: martialArtist.publicKey.toBase58(),
+      firstName: martialArtist.firstName.toString(),
+      lastName: martialArtist.lastName.toString(),
       rank: martialArtist.rank.toString(),
       verified: martialArtist.verified.toBoolean(),
       instructor: martialArtist.getInstructorString(),
@@ -73,20 +78,12 @@ export class FirebaseBackingStore extends BackingStore {
     };
   }
 
-  async update(martialArtist: MartialArtist): Promise<void> {
-    const docRef = doc(
-      database,
-      this.collectionName,
-      martialArtist.publicKey.toBase58()
-    );
-    const data = this.getObjectFromStruct(martialArtist);
-    await setDoc(docRef, data);
-  }
-
   getMartialArtistFromDocSnap(data: any): MartialArtist {
     let param = {
       id: Field(data.id),
       publicKey: PublicKey.fromBase58(data.publicKey),
+      firstName: CircuitString.fromString(data.firstName),
+      lastName: CircuitString.fromString(data.lastName),
       rank: CircuitString.fromString(data.rank),
       verified: Bool(data.verified),
       instructor: data.instructor

@@ -1,5 +1,6 @@
 import { PrivateKey, PublicKey } from 'snarkyjs';
 import { FirebaseBackingStore } from './FirebaseBackingStore.js';
+import { faker } from '@faker-js/faker';
 
 export class FirebaseDataGenerator {
   backingStore: FirebaseBackingStore;
@@ -26,6 +27,8 @@ export class FirebaseDataGenerator {
     let root = await this.backingStore.getMartialArtistFromDocSnap({
       id: 1,
       publicKey: PublicKey.fromPrivateKey(PrivateKey.random()).toBase58(),
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
       rank: 'Red Belt',
       verified: false,
       instructor: PublicKey.empty().toBase58(),
@@ -41,6 +44,8 @@ export class FirebaseDataGenerator {
       let instructor = {
         id: index++,
         publicKey: PublicKey.fromPrivateKey(PrivateKey.random()).toBase58(),
+        firstName: faker.person.firstName(),
+        lastName: faker.person.lastName(),
         rank: ranks[Math.floor(Math.random() * ranks.length)],
         verified: true,
         instructor: root.publicKey.toBase58(),
@@ -53,12 +58,15 @@ export class FirebaseDataGenerator {
       await this.backingStore.upsert(ma);
     }
 
+    let lowerRanks = ranks.filter((rank) => rank != 'Black Belt');
     let students: any[] = [];
     for (let i = 0; i < numStudents; i++) {
       let student = {
         id: index++,
         publicKey: PublicKey.fromPrivateKey(PrivateKey.random()).toBase58(),
-        rank: ranks[Math.floor(Math.random() * ranks.length)],
+        firstName: faker.person.firstName(),
+        lastName: faker.person.lastName(),
+        rank: lowerRanks[Math.floor(Math.random() * lowerRanks.length)],
         verified: Math.random() < 0.5,
         instructor:
           instructors[Math.floor(Math.random() * instructors.length)].publicKey,
@@ -84,6 +92,8 @@ export class FirebaseDataGenerator {
       let student = {
         id: index++,
         publicKey: PublicKey.fromPrivateKey(PrivateKey.random()).toBase58(),
+        firstName: faker.person.firstName(),
+        lastName: faker.person.lastName(),
         rank: 'Black Belt',
         verified: true,
         instructor:
