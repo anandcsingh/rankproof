@@ -59,7 +59,12 @@ export class FirebaseDataGenerator {
       staticInstructor
     );
     await this.backingStore.upsert(ma);
-    console.log('static key', ma.publicKey.toBase58());
+    console.log(
+      'static instructor',
+      ma.firstName.toString(),
+      ' ',
+      ma.lastName.toString()
+    );
 
     for (let i = 0; i < numInstructors - 1; i++) {
       let instructor = {
@@ -77,7 +82,6 @@ export class FirebaseDataGenerator {
       instructors.push(instructor);
       let ma = await this.backingStore.getMartialArtistFromDocSnap(instructor);
       await this.backingStore.upsert(ma);
-      console.log(ma.firstName.toString(), ' key', ma.publicKey.toBase58());
     }
 
     let lowerRanks = ranks.filter((rank) => rank != 'Black Belt');
@@ -89,8 +93,7 @@ export class FirebaseDataGenerator {
       lastName: faker.person.lastName(),
       rank: Math.random() < 0.5 ? 'Purple Belt' : 'Brown Belt',
       verified: Math.random() < 0.5,
-      instructor:
-        instructors[Math.floor(Math.random() * instructors.length)].publicKey,
+      instructor: staticInstructor.publicKey,
       createdDate: '',
       modifiedDate: '',
       discipline: disciple,
@@ -98,7 +101,14 @@ export class FirebaseDataGenerator {
     students.push(staticStudent);
     ma = await this.backingStore.getMartialArtistFromDocSnap(staticStudent);
     await this.backingStore.upsert(ma);
-
+    console.log(
+      'static student',
+      ma.firstName.toString(),
+      ' ',
+      ma.lastName.toString()
+    );
+    let staticInstructorStudents = Math.floor(numStudents / 2);
+    let countOfStatic = 0;
     for (let i = 0; i < numStudents - 1; i++) {
       let student = {
         id: index++,
@@ -108,11 +118,15 @@ export class FirebaseDataGenerator {
         rank: lowerRanks[Math.floor(Math.random() * lowerRanks.length)],
         verified: Math.random() < 0.5,
         instructor:
-          instructors[Math.floor(Math.random() * instructors.length)].publicKey,
+          countOfStatic < staticInstructorStudents
+            ? staticInstructor.publicKey
+            : instructors[Math.floor(Math.random() * instructors.length)]
+                .publicKey,
         createdDate: '',
         modifiedDate: '',
         discipline: disciple,
       };
+      countOfStatic++;
       students.push(student);
       let ma = await this.backingStore.getMartialArtistFromDocSnap(student);
       await this.backingStore.upsert(ma);
@@ -133,7 +147,7 @@ export class FirebaseDataGenerator {
         publicKey: PublicKey.fromPrivateKey(PrivateKey.random()).toBase58(),
         firstName: faker.person.firstName(),
         lastName: faker.person.lastName(),
-        rank: 'Black Belt',
+        rank: lowerRanks[Math.floor(Math.random() * lowerRanks.length)],
         verified: true,
         instructor:
           onlyVerifiedStudents[
