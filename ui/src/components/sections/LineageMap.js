@@ -43,6 +43,7 @@ const LineageMap = () => {
           "publicKey": value.publicKey.toBase58(),
           "Instructor": value.instructor.toBase58(),
           "id": value.id.toString(),
+          "imageUrl": "/_next/image?url=%2Fassets%2Fma-logo.png&w=384&q=75",
         });
         idMap[value.publicKey.toBase58()] = value.id.toString();
       });
