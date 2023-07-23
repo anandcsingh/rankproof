@@ -36,11 +36,28 @@ export class FirebaseDataGenerator {
       modifiedDate: '',
       discipline: disciple,
     });
-    console.log('added root');
     let index = 2;
     let instructors: any[] = [];
 
-    for (let i = 0; i < numInstructors; i++) {
+    let staticInstructor = {
+      id: index++,
+      publicKey: 'B62qmdQVgKWmWWxtNpfjdx9wUp6fm1eUsBrK4V3PXjm4bFBvDTK5U3U',
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
+      rank: 'Black Belt',
+      verified: true,
+      instructor: root.publicKey.toBase58(),
+      createdDate: '',
+      modifiedDate: '',
+      discipline: disciple,
+    };
+    instructors.push(staticInstructor);
+    let ma = await this.backingStore.getMartialArtistFromDocSnap(
+      staticInstructor
+    );
+    await this.backingStore.upsert(ma);
+
+    for (let i = 0; i < numInstructors - 1; i++) {
       let instructor = {
         id: index++,
         publicKey: PublicKey.fromPrivateKey(PrivateKey.random()).toBase58(),
@@ -60,7 +77,24 @@ export class FirebaseDataGenerator {
 
     let lowerRanks = ranks.filter((rank) => rank != 'Black Belt');
     let students: any[] = [];
-    for (let i = 0; i < numStudents; i++) {
+    let staticStudent = {
+      id: index++,
+      publicKey: 'B62qpzAWcbZSjzQH9hiTKvHbDx1eCsmRR7dDzK2DuYjRT2sTyW9vSpR',
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
+      rank: Math.random() < 0.5 ? 'Purple Belt' : 'Brown Belt',
+      verified: Math.random() < 0.5,
+      instructor:
+        instructors[Math.floor(Math.random() * instructors.length)].publicKey,
+      createdDate: '',
+      modifiedDate: '',
+      discipline: disciple,
+    };
+    students.push(staticStudent);
+    ma = await this.backingStore.getMartialArtistFromDocSnap(staticStudent);
+    await this.backingStore.upsert(ma);
+
+    for (let i = 0; i < numStudents - 1; i++) {
       let student = {
         id: index++,
         publicKey: PublicKey.fromPrivateKey(PrivateKey.random()).toBase58(),
