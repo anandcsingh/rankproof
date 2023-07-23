@@ -26,11 +26,11 @@ export class FirebaseDataGenerator {
     );
     let rootNode = {
       id: 1,
-      publicKey: PublicKey.fromPrivateKey(PrivateKey.random()).toBase58(),
+      publicKey: 'B62qikdZJTeh7toNWtckkRtDBnnCNT4EPjhy6stYuND2uGjLgueRvT3',
       firstName: faker.person.firstName(),
       lastName: faker.person.lastName(),
       rank: 'Red Belt',
-      verified: false,
+      verified: true,
       instructor: '',
       createdDate: '',
       modifiedDate: '',
