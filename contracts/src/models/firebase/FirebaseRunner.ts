@@ -3,8 +3,22 @@ import { FirebaseBackingStore } from './FirebaseBackingStore.js';
 import { FirebaseDataGenerator } from './FirebaseDataGenerator.js';
 import { Disciplines } from '../MartialArtistRepository.js';
 
-let disciple = Disciplines.Karate;
+let disciple = Disciplines.BJJ;
 let backingStore = new FirebaseBackingStore(disciple);
 backingStore.clearStore();
 let dataGen = new FirebaseDataGenerator(backingStore);
 dataGen.generateData(disciple, 10, 5);
+
+disciple = Disciplines.Judo;
+backingStore = new FirebaseBackingStore(disciple);
+backingStore.clearStore();
+dataGen = new FirebaseDataGenerator(backingStore);
+dataGen.generateData(disciple, 10, 5);
+
+disciple = Disciplines.Karate;
+backingStore = new FirebaseBackingStore(disciple);
+backingStore.clearStore();
+dataGen = new FirebaseDataGenerator(backingStore);
+dataGen.generateData(disciple, 10, 5);
+
+console.log('done');
