@@ -11,8 +11,8 @@ import {
   Struct,
 } from 'snarkyjs';
 import { ProofOfRank } from '../ProofOfRank.js';
-import { Sender } from './Sender.js';
 import { MartialArtist } from '../models/MartialArtist.js';
+import { ZkClient } from './ZkClient.js';
 
 export class MerkleMapDatabase {
   map: MerkleMap;
@@ -49,17 +49,11 @@ export const Disciplines = {
 };
 
 export class MartialArtistRepository {
-  sender: Sender;
-  contract: ProofOfRank;
+  contract: ZkClient;
   backingStore: BackingStore;
   merkleTree: MerkleTree;
 
-  constructor(
-    sender: Sender,
-    contract: ProofOfRank,
-    backingStore: BackingStore
-  ) {
-    this.sender = sender;
+  constructor(contract: ZkClient, backingStore: BackingStore) {
     this.contract = contract;
     this.backingStore = backingStore;
   }
@@ -72,7 +66,10 @@ export class MartialArtistRepository {
       const [currentRoot, _] = witness.computeRootAndKey(
         ma?.hash() ?? Field(0)
       );
-      if (this.contract.mapRoot.get().toString() == currentRoot.toString()) {
+      if (
+        (await this.contract.getStorageRoot().toString()) ==
+        currentRoot.toString()
+      ) {
         return ma;
       } else {
         return undefined;
@@ -87,16 +84,13 @@ export class MartialArtistRepository {
     merkleStore.map.set(martialArtist.id, martialArtist.hash());
     const witness = merkleStore.map.getWitness(martialArtist.id);
 
-    //let transaction = await this.interactor.sendTransaction(this.interactor.sender, this.contract.addMartialArtist, martialArtist, witness, currentRoot, this.interactor.sender);
-    const txn1 = await Mina.transaction(this.sender.publicKey, () => {
-      this.contract.addPractitioner(martialArtist, witness, currentRoot);
-    });
-
-    const txnProved = await txn1.prove();
-
-    const txnSigned = await txn1.sign([this.sender.privateKey]).send();
-    this.backingStore.upsert(martialArtist);
-    return txnSigned.isSuccess;
+    await this.contract.addPractitioner(martialArtist, witness, currentRoot);
+    await this.contract.proveUpdateTransaction();
+    let response = await this.contract.sendTransaction();
+    if (response.isSuccessful) {
+      await this.backingStore.upsert(martialArtist);
+    }
+    return response.isSuccessful;
   }
 
   async promoteStudent(
@@ -110,23 +104,16 @@ export class MartialArtistRepository {
 
     if (student != null && instructor != null) {
       const witness = merkleMapDB.map.getWitness(student.id);
-      const txn1 = await Mina.transaction(this.sender.publicKey, () => {
-        this.contract.promoteStudent(
-          student,
-          instructor,
-          CircuitString.fromString(newRank),
-          witness
-        );
-      });
 
-      const txnProved = await txn1.prove();
-
-      const txnSigned = await txn1.sign([this.sender.privateKey]).send();
-      student.rank = CircuitString.fromString(newRank);
-      student.instructor = instructor.publicKey;
-      await this.backingStore.upsert(student);
-
-      return txnSigned.isSuccess;
+      await this.contract.promoteStudent(student, instructor, newRank, witness);
+      await this.contract.proveUpdateTransaction();
+      let response = await this.contract.sendTransaction();
+      if (response.isSuccessful) {
+        student.rank = CircuitString.fromString(newRank);
+        student.instructor = instructor.publicKey;
+        await this.backingStore.upsert(student);
+      }
+      return response.isSuccessful;
     } else {
       return false;
     }

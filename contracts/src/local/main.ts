@@ -7,6 +7,7 @@ import { InMemoryBackingStore } from '../models/InMemoryBackingStore.js';
 import { LocalContractDeployer } from './ContractInteractor.js';
 import { MartialArtist } from '../models/MartialArtist.js';
 import { MinaLocalBlockchain } from './MinaLocalBlockchain.js';
+import { SingleContractZkClient } from '../models/ZkClient.js';
 
 // deploy localy bruv
 const useProof = false;
@@ -22,7 +23,8 @@ console.log('\nmain: state after init:', mapRoot0.toString());
 let backingStore = new InMemoryBackingStore(
   new Map<PublicKey, MartialArtist>()
 );
-let repo = new MartialArtistRepository(studentAccount, zkApp, backingStore);
+let zkClient = new SingleContractZkClient(zkApp, studentAccount);
+let repo = new MartialArtistRepository(zkClient, backingStore);
 
 let studentData = {
   id: Field(1),
@@ -49,7 +51,7 @@ const mapRoot = zkApp.mapRoot.get();
 console.log('\nmain: state after txn:', mapRoot.toString());
 
 // change rank
-repo.sender = instructorAccount;
+zkClient.sender = instructorAccount;
 
 let instructorData = {
   id: Field(2),
