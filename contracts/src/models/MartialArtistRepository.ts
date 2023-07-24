@@ -14,12 +14,6 @@ import { ProofOfRank } from '../ProofOfRank.js';
 import { MartialArtist } from '../models/MartialArtist.js';
 import { ZkClient } from './ZkClient.js';
 
-export class MerkleMapDatabase {
-  map: MerkleMap;
-  nextID: bigint;
-  length: number;
-}
-
 export abstract class BackingStore {
   async getMerkleMap(): Promise<MerkleMapDatabase> {
     let map = new MerkleMap();
@@ -121,4 +115,10 @@ export class MartialArtistRepository {
   verifyRank(martialArtist: MartialArtist, rank: string): boolean {
     throw new Error('Method not implemented.');
   }
+}
+
+export class MerkleMapDatabase {
+  map: MerkleMap;
+  nextID: bigint;
+  length: number;
 }

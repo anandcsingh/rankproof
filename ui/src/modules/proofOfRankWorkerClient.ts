@@ -9,8 +9,9 @@ import {
 
 import type { ZkappWorkerRequest, ZkappWorkerReponse, WorkerFunctions } from '../modules/proofOfRankWorker';
 import { MartialArtist } from '../../../contracts/src/models/MartialArtist';
+import { ZkClient, ZkClientResponse } from '../../../contracts/build/src/models/ZkClient';
 
-export default class ProofOfRankWorkerClient {
+export default class ProofOfRankWorkerClient extends ZkClient {
 
   // ---------------------------------------------------------------------------------------
 
@@ -31,7 +32,10 @@ export default class ProofOfRankWorkerClient {
   }
 
   fetchAccount({ publicKey }: { publicKey: PublicKey }): ReturnType<typeof fetchAccount> {
+    console.log('fetchAccount from proof of rank client: ', publicKey.toBase58());
+    
     const result = this._call('fetchAccount', { publicKey58: publicKey.toBase58() });
+    console.log('result from fetch account: ', result);
     return (result as ReturnType<typeof fetchAccount>);
   }
 
@@ -43,36 +47,31 @@ export default class ProofOfRankWorkerClient {
     return Field.fromJSON(JSON.parse(result as string));
   }
   
-  addPractitioner(martialArtist: MartialArtist, witness: MerkleMapWitness, currentRoot: Field) {
+  addPractitioner(martialArtist: MartialArtist, witness: MerkleMapWitness, currentRoot: Field): Promise<any>  {
     return this._call('addPractitionerTransaction', {
       martialArtist, witness, currentRoot
     });
   }
 
-  addMartialArtist(address: string, martialArt: string, rank: string) {
-    return this._call('addMartialArtistTransaction', {
-      address, martialArt, rank
-    });
-  }
 
-  promoteStudent(student: MartialArtist, instructor: MartialArtist, newRank: CircuitString, studentWitness: MerkleMapWitness) {
+  promoteStudent(student: MartialArtist, instructor: MartialArtist, newRank: string, studentWitness: MerkleMapWitness): Promise<any> {
     return this._call('promoteStudentTransaction', {
       student, instructor, newRank, studentWitness
     });
   }
 
-  proveUpdateTransaction() {
+  proveUpdateTransaction(): Promise<any> {
     return this._call('proveUpdateTransaction', {});
   }
 
-  async sendTransaction() : Promise<any> {
+  async sendTransaction() : Promise<ZkClientResponse> {
     console.log('getting Transaction JSON...');
     const transactionJSON = await this.getTransactionJSON()
 
     console.log('requesting send transaction...');
     let transactionFee = 0.1;
 
-    const { hash } = await (window as any).mina.sendTransaction({
+    const { hash, isSuccess } = await (window as any).mina.sendTransaction({
         transaction: transactionJSON,
         feePayer: {
             fee: transactionFee,
@@ -83,6 +82,7 @@ export default class ProofOfRankWorkerClient {
     console.log(
         'See transaction at https://berkeley.minaexplorer.com/transaction/' + hash
     );
+    return { hash: hash, isSuccessful: isSuccess };
   }
 
   async getTransactionJSON() {
@@ -99,6 +99,7 @@ export default class ProofOfRankWorkerClient {
   nextId: number;
 
   constructor() {
+    super();
     this.worker = new Worker(new URL('./proofOfRankWorker.ts', import.meta.url))
     this.promises = {};
     this.nextId = 0;

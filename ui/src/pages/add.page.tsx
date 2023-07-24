@@ -10,6 +10,8 @@ import { useEffect, useState } from "react";
 
 import { Bool, CircuitString, Field, PublicKey, Struct } from 'snarkyjs';
 import { MartialArtist } from '../../../contracts/build/src/models/MartialArtist';
+import { FirebaseBackingStore } from '../../../contracts/build/src/models/firebase/FirebaseBackingStore';
+import Authentication from '@/modules/Authentication';
 export default function Add() {
 
   let [state, setState] = useState({  
@@ -23,18 +25,27 @@ export default function Add() {
   const addMartialArt = async (event: any) => {
     event.preventDefault();
     const { martialArt, rank, notfiy, instructorAddress } = event.target.elements;
-    let repo = new FirebaseProofRepository();
+    //let studentID = PublicKey.fromBase58("B62qiaZAHzmpwg2CxK9MFhvJLh2A8TJPqYMAmKmy2D8puRWZJHf5Dq4");
+    let studentID = Authentication.address;
+    let backingStore = new FirebaseBackingStore(martialArt.value);
 
     let studentData = {
-      id: Field(1),
-      publicKey: PublicKey.fromBase58("B62qpXhnspHhPEknMdr8Sr2wUBgDzUozW4eMPAfPdNAdPN6TW7erN37"),
-      rank: CircuitString.fromString('Blue Belt'),
-      verified: Bool(false),
+      id: Field(3),
+      publicKey: studentID,
+      firstName: '',
+      lastName: '',
+      rank: rank.value,
+      verified: false,
+      instructor: '',
+      createdDate: '',
+      modifiedDate: '',
+      discipline: martialArt.value,
+
     };
-    let student = new MartialArtist(studentData);
-    repo.add(student);
-    let alertRepo = new AlertRepository();
-    alertRepo.alertInstructor(student.id.toBigInt().toString(), student.publicKey.toBase58(), instructorAddress.value, student.rank.toString());
+    let root = await backingStore.getMartialArtistFromDocSnap(studentData);
+    await backingStore.upsert(root);
+    //let alertRepo = new AlertRepository();
+    //alertRepo.alertInstructor(student.id.toBigInt().toString(), student.publicKey.toBase58(), instructorAddress.value, student.rank.toString());
   }
 
   return (
@@ -58,7 +69,7 @@ export default function Add() {
                   <div className="mt-2">
                     <select id="martialArtt" name="martialArt" autoComplete="Martial Art" className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
                       <option>Select a Martial Art</option>
-                      <option>Brazilian jiu-jitsu</option>
+                      <option>BJJ</option>
                       <option>Judo</option>
                       <option>Karate</option>
                     </select>

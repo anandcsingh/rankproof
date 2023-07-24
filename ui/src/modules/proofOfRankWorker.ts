@@ -22,7 +22,6 @@ import type { ProofOfJudoRank } from '../../../contracts/src/ProofOfJudoRank';
 import type { ProofOfKarateRank } from '../../../contracts/src/ProofOfKarateRank';
 import { MartialArtist } from '../../../contracts/src/models/MartialArtist';
 import { stat } from 'fs';
-import { DisciplineAlias, Disciplines } from '../../../contracts/src/models/MartialArtistRepository';
 
 const state = {
   proofOfRank: null as null | typeof ProofOfRank,
@@ -31,6 +30,12 @@ const state = {
   zkapps: null as null | Map<string, ProofOfRank>,
   proofOfRanks: null as null | Map<string, typeof ProofOfRank>,
 }
+
+const Disciplines = {
+  Karate: 'Karate',
+  BJJ: 'BJJ',
+  Judo: 'Judo',
+};
 
 const zkAppAddresses = new Map<string, PublicKey>([
   [Disciplines.BJJ, PublicKey.fromBase58("B62qpzAWcbZSjzQH9hiTKvHbDx1eCsmRR7dDzK2DuYjRT2sTyW9vSpR")],
@@ -65,13 +70,17 @@ const functions = {
     state.proofOfRanks.set(Disciplines.Karate, ProofOfKarateRank);
   },
   compileContract: async (args: {}) => {
-    await state.proofOfRank!.compile();
+    
     state.proofOfRanks!.forEach(async (contract) => {
       await contract.compile();
     });
   },
-  fetchAccount: async (args: { discipline: string }) => {
+  fetchZkAppAccount: async (args: { discipline: string }) => {
     const publicKey = zkAppAddresses.get(args.discipline)!;
+    return await fetchAccount({ publicKey });
+  },
+  fetchAccount: async (args: { publicKey58: string }) => {
+    const publicKey = PublicKey.fromBase58(args.publicKey58);
     return await fetchAccount({ publicKey });
   },
   initZkappInstance: async (args: { }) => {
