@@ -21,6 +21,7 @@ import { FirebaseBackingStore } from '../models/firebase/FirebaseBackingStore.js
 import { ProofOfBjjRank } from '../ProofOfBjjRank.js';
 import { ProofOfJudoRank } from '../ProofOfJudoRank.js';
 import { ProofOfKarateRank } from '../ProofOfKarateRank.js';
+import { SingleContractZkClient } from '../models/ZkClient.js';
 
 /*
  * This file specifies how to test the `Add` example smart contract. It is safe to delete this file and replace
@@ -76,10 +77,11 @@ let emptyAssertion = contractRoot == backingStoreRoot;
 console.log('contract root: ', contractRoot);
 console.log(`${emptyAssertion}: Can create deploy contract`);
 
-let repo = new MartialArtistRepository(studentAccount, zkApp, backingStore);
+let zkClient = new SingleContractZkClient(zkApp, studentAccount);
+let repo = new MartialArtistRepository(zkClient, backingStore);
 let student = new ProofOfRankData().getStudent(studentAccount);
 student.discipline = CircuitString.fromString(collectionName);
-let transaction = await repo.add(student);
+await repo.add(student);
 backingStoreRoot = (await repo.backingStore.getMerkleMap()).map
   .getRoot()
   .toString();
@@ -90,7 +92,7 @@ console.log('backing store root: ', backingStoreRoot);
 console.log(`${addedAssertion}: Can add a new Martial Artist to a merkle tree`);
 
 let instructor = new ProofOfRankData().getInstructor(instructorAccount);
-repo.sender = instructorAccount;
+zkClient.sender = instructorAccount;
 instructor.discipline = CircuitString.fromString(collectionName);
 let transaction1 = await repo.add(instructor);
 backingStoreRoot = (await repo.backingStore.getMerkleMap()).map
@@ -121,7 +123,9 @@ console.log(
 
 // tests with existing data
 let backingStore1 = new FirebaseBackingStore(collectionName);
-let repo1 = new MartialArtistRepository(studentAccount, zkApp, backingStore1);
+
+let zkClient2 = new SingleContractZkClient(zkApp, studentAccount);
+let repo1 = new MartialArtistRepository(zkClient, backingStore1);
 let zkAppRoot = zkApp.mapRoot.get().toString();
 backingStoreRoot = (await repo1.backingStore.getMerkleMap()).map
   .getRoot()

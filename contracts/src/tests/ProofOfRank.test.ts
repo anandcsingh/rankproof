@@ -17,6 +17,7 @@ import { ProofOfRankData } from './ProofOfRankData';
 import { InMemoryBackingStore } from '../models/InMemoryBackingStore';
 import { MartialArtist } from '../models/MartialArtist';
 import { ProofOfBjjRank } from '../ProofOfBjjRank';
+import { SingleContractZkClient } from '../models/ZkClient';
 
 /*
  * This file specifies how to test the `Add` example smart contract. It is safe to delete this file and replace
@@ -72,7 +73,8 @@ describe('ProofOfRank', () => {
     let backingStore = new InMemoryBackingStore(
       new Map<PublicKey, MartialArtist>()
     );
-    let repo = new MartialArtistRepository(studentAccount, zkApp, backingStore);
+    let zkClient = new SingleContractZkClient(zkApp, studentAccount);
+    let repo = new MartialArtistRepository(zkClient, backingStore);
     let student = new ProofOfRankData().getStudent(studentAccount);
     let transaction = await repo.add(student);
 
@@ -89,11 +91,13 @@ describe('ProofOfRank', () => {
     let backingStore = new InMemoryBackingStore(
       new Map<PublicKey, MartialArtist>()
     );
-    let repo = new MartialArtistRepository(studentAccount, zkApp, backingStore);
+
+    let zkClient = new SingleContractZkClient(zkApp, studentAccount);
+    let repo = new MartialArtistRepository(zkClient, backingStore);
     let student = new ProofOfRankData().getStudent(studentAccount);
     let transaction = await repo.add(student);
     let instructor = new ProofOfRankData().getInstructor(instructorAccount);
-    repo.sender = instructorAccount;
+    zkClient.sender = instructorAccount;
 
     let transaction1 = await repo.add(instructor);
 
@@ -110,12 +114,13 @@ describe('ProofOfRank', () => {
     let backingStore = new InMemoryBackingStore(
       new Map<PublicKey, MartialArtist>()
     );
-    let repo = new MartialArtistRepository(studentAccount, zkApp, backingStore);
+    let zkClient = new SingleContractZkClient(zkApp, studentAccount);
+    let repo = new MartialArtistRepository(zkClient, backingStore);
     let student = new ProofOfRankData().getStudent(studentAccount);
     let transaction = await repo.add(student);
 
     let instructor = new ProofOfRankData().getInstructor(instructorAccount);
-    repo.sender = instructorAccount;
+    zkClient.sender = instructorAccount;
     let transaction1 = await repo.add(instructor);
     let transaction2 = await repo.promoteStudent(
       student.publicKey,
