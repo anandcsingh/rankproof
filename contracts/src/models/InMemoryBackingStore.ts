@@ -3,6 +3,14 @@ import { MartialArtist } from '../models/MartialArtist.js';
 import { BackingStore, MerkleMapDatabase } from './MartialArtistRepository.js';
 
 export class InMemoryBackingStore extends BackingStore {
+  async getAllHashes(): Promise<Map<PublicKey, Field>> {
+    let all = await this.getAll();
+    let allHashes = new Map<PublicKey, Field>();
+    all.forEach((value, key) => {
+      allHashes.set(key, value.hash());
+    });
+    return allHashes;
+  }
   async clearStore(): Promise<void> {
     this.backingStore.clear();
   }

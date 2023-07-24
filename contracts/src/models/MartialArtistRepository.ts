@@ -14,19 +14,14 @@ import { ProofOfRank } from '../ProofOfRank.js';
 import { MartialArtist } from '../models/MartialArtist.js';
 import { ZkClient } from './ZkClient.js';
 
-export class MerkleMapDatabase {
-  map: MerkleMap;
-  nextID: bigint;
-  length: number;
-}
-
 export abstract class BackingStore {
   async getMerkleMap(): Promise<MerkleMapDatabase> {
     let map = new MerkleMap();
     let index = 0;
-    const all = await this.getAll();
+
+    const all = await this.getAllHashes();
     for (let [key, value] of all) {
-      map.set(Field(++index), value.hash());
+      map.set(Field(++index), value);
     }
     return {
       map: map,
@@ -35,6 +30,7 @@ export abstract class BackingStore {
     };
   }
   abstract getAll(): Promise<Map<PublicKey, MartialArtist>>;
+  abstract getAllHashes(): Promise<Map<PublicKey, Field>>;
   abstract get(publicKey: PublicKey): Promise<MartialArtist | undefined | null>;
   abstract upsert(martialArtist: MartialArtist): Promise<void>;
   abstract clearStore(): Promise<void>;
@@ -121,4 +117,10 @@ export class MartialArtistRepository {
   verifyRank(martialArtist: MartialArtist, rank: string): boolean {
     throw new Error('Method not implemented.');
   }
+}
+
+export class MerkleMapDatabase {
+  map: MerkleMap;
+  nextID: bigint;
+  length: number;
 }

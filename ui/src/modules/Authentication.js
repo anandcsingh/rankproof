@@ -40,6 +40,7 @@ const Authentication = {
             const mina = window.mina;
             this.address = (await mina.requestAccounts())[0];
             this.loggedIn = true;
+            console.log("logged in: ", this.address);
             return {
                 success: true
             };
@@ -63,15 +64,19 @@ const Authentication = {
     doesAccountExist: async function () {
         const publicKey = PublicKey.fromBase58(this.address);
         const res = await this.zkClient.fetchAccount({ publicKey: publicKey });
+        console.log("does account exist", res);
         this.fundAccount = res.error != null;
         return !this.fundAccount;
     },
     setupContracts: async function () {
         await this.zkClient.loadContract();
+        console.log("loaded contract");
         await this.zkClient.compileContract();
+        console.log("compiled contract");
         //const contractAddress = 'B62qqEme9EYMj3KC4vSXij2vAwt8qxLiKLsrHPprQeYXXmjTFUH16wF';
         const zkappPublicKey = PublicKey.fromBase58(this.contractAddress);
         await this.zkClient.initZkappInstance(zkappPublicKey);
+        console.log("initialized zkapp instance");
         this.hasBeenSetup = true;
         return true;
     },
