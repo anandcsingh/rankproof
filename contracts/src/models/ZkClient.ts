@@ -28,11 +28,15 @@ export class ZkClientResponse {
 
 export abstract class ZkClient {
   abstract getStorageRoot(): Promise<Field>;
+
+  abstract setStorageRoot(root: Field, discipline: string): Promise<void>;
+
   abstract addPractitioner(
     martialArtist: MartialArtist,
     witness: MerkleMapWitness,
     currentRoot: Field
   ): Promise<void>;
+
   abstract promoteStudent(
     student: MartialArtist,
     instructor: MartialArtist,
@@ -56,6 +60,12 @@ export class SingleContractZkClient extends ZkClient {
   }
   async getStorageRoot(): Promise<Field> {
     return await this.contract.mapRoot.get();
+  }
+  async setStorageRoot(root: Field, discipline: string): Promise<void> {
+    const transaction = await Mina.transaction(this.sender.publicKey, () => {
+      this.contract.setMapRoot(root);
+    });
+    this.currentTransaction = transaction;
   }
   async addPractitioner(
     martialArtist: MartialArtist,

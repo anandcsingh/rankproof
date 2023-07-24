@@ -27,8 +27,8 @@ export class FirebaseDataGenerator {
     let rootNode = {
       id: 1,
       publicKey: 'B62qikdZJTeh7toNWtckkRtDBnnCNT4EPjhy6stYuND2uGjLgueRvT3',
-      firstName: faker.person.firstName(),
-      lastName: faker.person.lastName(),
+      firstName: 'Helio',
+      lastName: 'Gracie',
       rank: 'Red Belt',
       verified: true,
       instructor: '',
@@ -45,8 +45,8 @@ export class FirebaseDataGenerator {
     let staticInstructor = {
       id: index++,
       publicKey: 'B62qmdQVgKWmWWxtNpfjdx9wUp6fm1eUsBrK4V3PXjm4bFBvDTK5U3U',
-      firstName: faker.person.firstName(),
-      lastName: faker.person.lastName(),
+      firstName: 'John',
+      lastName: 'Danaher',
       rank: 'Black Belt',
       verified: true,
       instructor: root.publicKey.toBase58(),
@@ -89,8 +89,8 @@ export class FirebaseDataGenerator {
     let staticStudent = {
       id: index++,
       publicKey: 'B62qpzAWcbZSjzQH9hiTKvHbDx1eCsmRR7dDzK2DuYjRT2sTyW9vSpR',
-      firstName: faker.person.firstName(),
-      lastName: faker.person.lastName(),
+      firstName: 'Gordon',
+      lastName: 'Ryan',
       rank: Math.random() < 0.5 ? 'Purple Belt' : 'Brown Belt',
       verified: Math.random() < 0.5,
       instructor: staticInstructor.publicKey,

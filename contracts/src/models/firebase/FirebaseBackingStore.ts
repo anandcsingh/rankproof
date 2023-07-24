@@ -45,6 +45,21 @@ export class FirebaseBackingStore extends BackingStore {
     });
     return all;
   }
+  async getAllHashes(): Promise<Map<PublicKey, Field>> {
+    let all = new Map<PublicKey, Field>();
+    const maQuery = query(
+      collection(database, this.collectionName),
+      orderBy('id')
+    );
+    const querySnapshot = await getDocs(maQuery);
+    querySnapshot.forEach((doc) => {
+      all.set(
+        PublicKey.fromBase58(doc.data().publicKey),
+        Field(doc.data().hash)
+      );
+    });
+    return all;
+  }
   async get(publicKey: PublicKey): Promise<MartialArtist | null | undefined> {
     const docRef = doc(database, this.collectionName, publicKey.toBase58());
     const docSnap = await getDoc(docRef);
@@ -75,6 +90,7 @@ export class FirebaseBackingStore extends BackingStore {
       createdDate: martialArtist.createdDate.toString(),
       modifiedDate: martialArtist.modifiedDate.toString(),
       discipline: martialArtist.discipline.toString(),
+      hash: martialArtist.hash().toString(),
     };
   }
 

@@ -94,6 +94,13 @@ const functions = {
     const root = await getZkApp(args.discipline)!.mapRoot.get();
     return JSON.stringify(root.toJSON());
   },
+  setStorageRoot: async (args: { root: Field, discipline: string }) => {
+    const transaction = await Mina.transaction(() => {
+      getZkApp(args.discipline)!.setMapRoot(args.root);
+    }
+    );
+    state.transaction = transaction;
+  },
   addPractitionerTransaction: async (args: { martialArtist: MartialArtist, witness: MerkleMapWitness, currentRoot: Field }) => {
     const transaction = await Mina.transaction(() => {
       getZkApp(args.martialArtist.discipline)!.addPractitioner(args.martialArtist, args.witness, args.currentRoot);

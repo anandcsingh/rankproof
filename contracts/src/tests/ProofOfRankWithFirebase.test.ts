@@ -22,6 +22,7 @@ import { ProofOfBjjRank } from '../ProofOfBjjRank.js';
 import { ProofOfJudoRank } from '../ProofOfJudoRank.js';
 import { ProofOfKarateRank } from '../ProofOfKarateRank.js';
 import { SingleContractZkClient } from '../models/ZkClient.js';
+import { FirebaseDataGenerator } from '../models/firebase/FirebaseDataGenerator.js';
 
 /*
  * This file specifies how to test the `Add` example smart contract. It is safe to delete this file and replace
@@ -51,14 +52,12 @@ const useProof = false;
 ).accounts;
 zkAppPrivateKey = PrivateKey.random();
 zkAppAddress = zkAppPrivateKey.toPublicKey();
+
 zkApp = new ProofOfJudoRank(zkAppAddress);
 collectionName = 'Judo';
 zkApp = new ProofOfKarateRank(zkAppAddress);
 collectionName = 'Karate';
 //zkApp = new ProofOfBjjRank(zkAppAddress);collectionName = 'BJJ';
-
-backingStore = new FirebaseBackingStore(collectionName);
-await backingStore.clearStore();
 
 async function localDeploy() {
   const txn = await Mina.transaction(deployerAccount.publicKey, () => {
@@ -69,6 +68,9 @@ async function localDeploy() {
   // this tx needs .sign(), because `deploy()` adds an account update that requires signature authorization
   await txn.sign([deployerAccount.privateKey, zkAppPrivateKey]).send();
 }
+
+backingStore = new FirebaseBackingStore(collectionName);
+await backingStore.clearStore();
 await localDeploy();
 let root = zkApp.mapRoot.get();
 let backingStoreRoot = new MerkleMap().getRoot().toString();
@@ -135,4 +137,39 @@ console.log('zkAppRoot: ', zkAppRoot);
 console.log('backingStoreRoot: ', backingStoreRoot);
 console.log(
   `${rootAssertion} : Can get the same root from zkApp and backingStore`
+);
+
+// test setStorageRoot
+
+let backingStore2 = new FirebaseBackingStore(collectionName);
+await backingStore2.clearStore();
+let dataGen = new FirebaseDataGenerator(backingStore2);
+await dataGen.generateData(collectionName, 2, 2);
+
+let zkClient3 = new SingleContractZkClient(zkApp, studentAccount);
+let repo2 = new MartialArtistRepository(zkClient3, backingStore2);
+
+let exisingBackingStoreRootField = (
+  await repo2.backingStore.getMerkleMap()
+).map.getRoot();
+let existingBackingStoreRoot = exisingBackingStoreRootField.toString();
+console.log('existingBackingStoreRoot: ', existingBackingStoreRoot);
+
+let newContractRoot = zkApp.mapRoot.get().toString();
+console.log('newContractRoot: ', newContractRoot);
+let rootAssertion2 = newContractRoot != existingBackingStoreRoot;
+console.log(
+  `${rootAssertion2}: New contract root is different from existing backing store root `
+);
+console.log('newContractRoot: ', newContractRoot);
+console.log('existingBackingStoreRoot: ', existingBackingStoreRoot);
+
+await zkClient3.setStorageRoot(exisingBackingStoreRootField, collectionName);
+await zkClient3.proveUpdateTransaction();
+let response = await zkClient3.sendTransaction();
+let changedContractRoot = zkApp.mapRoot.get().toString();
+let rootAssertion3 = changedContractRoot == existingBackingStoreRoot;
+console.log(`${rootAssertion3} : Can set the storage root of a contract`);
+console.log(
+  `${rootAssertion3} : Can get the same root from zkApp and backingStore after deploying a new contract`
 );

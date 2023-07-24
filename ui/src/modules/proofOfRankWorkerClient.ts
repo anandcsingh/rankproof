@@ -46,7 +46,9 @@ export default class ProofOfRankWorkerClient extends ZkClient {
     const result = await this._call('getStorageRoot', {});
     return Field.fromJSON(JSON.parse(result as string));
   }
-  
+  setStorageRoot(root: Field, discipline: string): Promise<any> {
+    return this._call('setStorageRoot', { root, discipline });
+  }
   addPractitioner(martialArtist: MartialArtist, witness: MerkleMapWitness, currentRoot: Field): Promise<any>  {
     return this._call('addPractitionerTransaction', {
       martialArtist, witness, currentRoot

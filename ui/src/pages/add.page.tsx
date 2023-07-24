@@ -28,7 +28,7 @@ export default function Add() {
     //let studentID = PublicKey.fromBase58("B62qiaZAHzmpwg2CxK9MFhvJLh2A8TJPqYMAmKmy2D8puRWZJHf5Dq4");
     let studentID = Authentication.address;
     let backingStore = new FirebaseBackingStore(martialArt.value);
-
+    
     let studentData = {
       id: Field(3),
       publicKey: studentID,
