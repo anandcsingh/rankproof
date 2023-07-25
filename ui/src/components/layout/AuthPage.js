@@ -5,6 +5,7 @@ import Header from '../layout/Header'
 import Footer from '../layout/Footer'
 import Authentication from '../../modules/Authentication';
 import ProofOfRankWorkerClient from '../../modules/proofOfRankWorkerClient';
+import RankedBjjWorkerClient from '../../modules/workers/rankedBjjWorkerClient';
 import ZkappWorkerClient from '../../pages/rankedWorkerClient';
 import Router from 'next/router';
 import { useEffect, useState } from "react";
@@ -52,8 +53,9 @@ const AuthPage = ({ validate, children }) => {
       if (!Authentication.loggedIn) {
         if (!state.hasBeenSetup) {
 console.log("setting up");
-          //const zkappWorkerClient = new ZkappWorkerClient();
-          const zkappWorkerClient = new ProofOfRankWorkerClient();
+          //const zkappWorkerClient = new RankedBjjWorkerClient();
+          const zkappWorkerClient = new ZkappWorkerClient();
+          //const zkappWorkerClient = new ProofOfRankWorkerClient();
           
           Authentication.setZkClient(zkappWorkerClient);
           await timeout(15);

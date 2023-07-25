@@ -74,15 +74,25 @@ export class MartialArtistRepository {
   }
 
   async add(martialArtist: MartialArtist): Promise<boolean> {
+    console.log('Adding martial artist', martialArtist);
     const merkleStore = await this.backingStore.getMerkleMap();
     const currentRoot = merkleStore.map.getRoot();
+    console.log('Current root', currentRoot.toString());
     martialArtist.id = Field(merkleStore.nextID);
     merkleStore.map.set(martialArtist.id, martialArtist.hash());
+    console.log('setting new martial artist');
     const witness = merkleStore.map.getWitness(martialArtist.id);
-
+    console.log('got witness');
+    console.log('calling add contract');
     await this.contract.addPractitioner(martialArtist, witness, currentRoot);
+    console.log('called add contract');
+    console.log('calling prove update transaction');
     await this.contract.proveUpdateTransaction();
+    console.log('called prove update transaction');
+    console.log('calling send transaction');
     let response = await this.contract.sendTransaction();
+    console.log('called send transaction');
+    console.log('response', response.isSuccessful);
     if (response.isSuccessful) {
       await this.backingStore.upsert(martialArtist);
     }

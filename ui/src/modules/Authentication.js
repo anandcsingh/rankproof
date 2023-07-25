@@ -5,7 +5,7 @@ import {
 } from 'snarkyjs'
 
 const Authentication = {
-    contractAddress: 'B62qnR6TwcenxCngC8sToWkPfsBEE1NguQDyoEeb64X1GzqAXLkKuxq',
+    contractAddress: 'B62qqdeMFTd2WrS2WF75eBjFJsboTGJ4GmQZu7gPRHjwLqdKHiUDH7Q',
     loggedIn: false,
     zkClient: null,
     authentication: null,

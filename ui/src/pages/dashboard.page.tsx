@@ -24,7 +24,7 @@ export default function Dashboard() {
   const getMartialArt = async (discipline: string) => {
     let instructorAddress = PublicKey.fromBase58("B62qmdQVgKWmWWxtNpfjdx9wUp6fm1eUsBrK4V3PXjm4bFBvDTK5U3U");
     let studentAddress = PublicKey.fromBase58("B62qpzAWcbZSjzQH9hiTKvHbDx1eCsmRR7dDzK2DuYjRT2sTyW9vSpR");
-
+    
     let backingStore = new FirebaseBackingStore(discipline);
 
     //let martialArt = await backingStore.get(instructorAddress);

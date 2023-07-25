@@ -18,6 +18,38 @@
       "keyPath": "keys/proofofrank.json",
       "fee": "0.1",
       "smartContract": "ProofOfRank"
+    },
+    "berkeley-proofofrank-multiple": {
+      "url": "https://proxy.berkeley.minaexplorer.com/graphql",
+      "keyPath": "keys/berkeley-proofofrank-multiple.json",
+      "feepayerKeyPath": "/home/node/.cache/zkapp-cli/keys/berkeley-proofofrank-multiple.json",
+      "feepayerAlias": "berkeley-proofofrank-multiple",
+      "fee": "0.1",
+      "smartContract": "ProofOfBjjRankNoParent"
+    },
+    "berkeley-proofofbjjrank": {
+      "url": "https://proxy.berkeley.minaexplorer.com/graphql",
+      "keyPath": "keys/berkeley-proofofbjjrank.json",
+      "feepayerKeyPath": "/home/node/.cache/zkapp-cli/keys/berkeley-proofofbjjrank.json",
+      "feepayerAlias": "berkeley-proofofbjjrank",
+      "fee": "0.1",
+      "smartContract": "ProofOfBjjRankNoParent"
+    },
+    "berkeley-proofofjudorank": {
+      "url": "https://proxy.berkeley.minaexplorer.com/graphql",
+      "keyPath": "keys/berkeley-proofofjudorank.json",
+      "feepayerKeyPath": "/home/node/.cache/zkapp-cli/keys/berkeley-proofofjudorank.json",
+      "feepayerAlias": "berkeley-proofofjudorank",
+      "fee": "0.1",
+      "smartContract": "ProofOfJudoRankNoParent"
+    },
+    "berkeley-proofofkaraterank": {
+      "url": "https://proxy.berkeley.minaexplorer.com/graphql",
+      "keyPath": "keys/berkeley-proofofkaraterank.json",
+      "feepayerKeyPath": "/home/node/.cache/zkapp-cli/keys/berkeley-proofofkaraterank.json",
+      "feepayerAlias": "berkeley-proofofkaraterank",
+      "fee": "0.1",
+      "smartContract": "ProofOfKarateRankNoParent"
     }
   }
 }

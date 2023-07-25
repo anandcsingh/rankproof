@@ -13,9 +13,11 @@ type Transaction = Awaited<ReturnType<typeof Mina.transaction>>;
 
 //import type { RankProof } from '../../contracts/src/RankProof';
 import type { RankProof } from '../../../contracts/src/contracts/RankProof';
+import type { ProofOfBjjRankNoParent } from '../../../contracts/src/ProofOfBjjRankNoParent';
 
 const state = {
   Ranked: null as null | typeof RankProof,
+  ProofOfRannk: null as null | typeof ProofOfBjjRankNoParent,
   zkapp: null as null | RankProof,
   transaction: null as null | Transaction,
 }
@@ -35,9 +37,13 @@ const functions = {
   loadContract: async (args: {}) => {
     const { RankProof } = await import('../../../contracts/build/src/contracts/RankProof.js');
     state.Ranked = RankProof;
+    const { ProofOfBjjRankNoParent } = await import('../../../contracts/build/src/ProofOfBjjRankNoParent.js');  
+    state.ProofOfRannk = ProofOfBjjRankNoParent;
   },
   compileContract: async (args: {}) => {
-    await state.Ranked!.compile();
+    console.log("compiling proof contract");
+    await state.ProofOfRannk!.compile();
+    console.log("contract proof compiled");
   },
   fetchAccount: async (args: { publicKey58: string }) => {
     const publicKey = PublicKey.fromBase58(args.publicKey58);

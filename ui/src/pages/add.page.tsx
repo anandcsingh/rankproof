@@ -12,6 +12,8 @@ import { Bool, CircuitString, Field, PublicKey, Struct } from 'snarkyjs';
 import { MartialArtist } from '../../../contracts/build/src/models/MartialArtist';
 import { FirebaseBackingStore } from '../../../contracts/build/src/models/firebase/FirebaseBackingStore';
 import Authentication from '@/modules/Authentication';
+import { ZkClient } from '../../../contracts/build/src/models/ZkClient';
+import { MartialArtistRepository } from '../../../contracts/build/src/models/MartialArtistRepository';
 export default function Add() {
 
   let [state, setState] = useState({  
@@ -27,8 +29,14 @@ export default function Add() {
     const { martialArt, rank, notfiy, instructorAddress } = event.target.elements;
     //let studentID = PublicKey.fromBase58("B62qiaZAHzmpwg2CxK9MFhvJLh2A8TJPqYMAmKmy2D8puRWZJHf5Dq4");
     let studentID = Authentication.address;
+    console.log(studentID);
     let backingStore = new FirebaseBackingStore(martialArt.value);
-    
+    console.log("backing store created");
+    let zkClient = Authentication!.zkClient! as ZkClient;
+    console.log("zk client created: ");
+
+    let repo = new MartialArtistRepository(zkClient, backingStore);
+    console.log("repo created");
     let studentData = {
       id: Field(3),
       publicKey: studentID,
@@ -42,15 +50,18 @@ export default function Add() {
       discipline: martialArt.value,
 
     };
-    let root = await backingStore.getMartialArtistFromDocSnap(studentData);
-    await backingStore.upsert(root);
+    console.log("student data created");
+    let ma = await backingStore.getMartialArtistFromDocSnap(studentData);
+    console.log("ma created");
+    await repo.add(ma);
+    console.log("added martial artist");
     //let alertRepo = new AlertRepository();
     //alertRepo.alertInstructor(student.id.toBigInt().toString(), student.publicKey.toBase58(), instructorAddress.value, student.rank.toString());
   }
 
   return (
     <Master>
-      <AuthPage validate={false}>
+      <AuthPage validate={true}>
         <p className={styles.tagline}>
           Add your Martial Art
         </p>
