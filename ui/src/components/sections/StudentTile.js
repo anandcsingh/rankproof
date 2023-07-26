@@ -23,12 +23,16 @@ const StudentTile = ({
     ...props
 }) => {
 
-  
+  let shortName = (address) => {
+
+    return address.substring(0, 5) + "..." + address.substring(address.length - 5, address.length);
+  }
+
     return (
         <Card className="max-w-sm" href="#">
         <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
           <p>
-          {student.name}
+          {shortName(student.publicKey)}
           </p>
         </h5>
         <p className="font-normal text-gray-700 dark:text-gray-400">

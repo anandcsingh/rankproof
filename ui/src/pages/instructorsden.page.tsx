@@ -10,7 +10,9 @@ export default function InstructorsDen() {
   return (
     <Master>
       <AuthPage validate={false}>
+      <div className="mr-auto pt-24 place-self-center lg:col-span-7 space-y-4">
         <InstructorMartialArts />
+      </div>
       </AuthPage>
     </Master>
   );

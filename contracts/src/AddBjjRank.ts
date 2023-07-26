@@ -7,6 +7,8 @@ import {
   State,
   method,
   state,
+  Permissions,
+  VerificationKey,
 } from 'snarkyjs';
 import { MartialArtist } from './models/MartialArtist.js';
 
@@ -15,11 +17,20 @@ export class AddBjjRank extends SmartContract {
 
   events = {
     added: PublicKey,
+    addedHash: Field,
   };
 
   init() {
     super.init();
+    this.account.permissions.set({
+      ...Permissions.default(),
+      setVerificationKey: Permissions.proof(),
+    });
     this.mapRoot.set(Field(new MerkleMap().getRoot()));
+  }
+
+  @method replaceVerificationKey(verificationKey: VerificationKey) {
+    this.account.verificationKey.set(verificationKey);
   }
 
   @method setMapRoot(newRoot: Field) {
@@ -36,7 +47,7 @@ export class AddBjjRank extends SmartContract {
   ) {
     this.mapRoot.getAndAssertEquals();
     this.mapRoot.assertEquals(currentRoot);
-    this.sender.assertEquals(studentPublicKey);
+    //this.sender.assertEquals(studentPublicKey);
 
     // TODO: contracts were taking too long to compile while passing in MartialArtist struct
     // review at later date
@@ -44,5 +55,6 @@ export class AddBjjRank extends SmartContract {
     const [newRoot, _] = witness.computeRootAndKey(studentHash);
     this.mapRoot.set(newRoot);
     this.emitEvent('added', studentPublicKey);
+    this.emitEvent('addedHash', studentHash);
   }
 }

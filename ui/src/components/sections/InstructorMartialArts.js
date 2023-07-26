@@ -4,52 +4,87 @@ import { useEffect, useState } from "react";
 import { InstructorArtViewModel } from '../../view-models/InstructorArtViewModel';
 import { Tabs } from 'flowbite-react';
 import StudentList from './StudentList';
+import { Disciplines } from '../../../../contracts/build/src/models/MartialArtistRepository';
+import { curveBasisClosed } from 'd3';
+import { Field, MerkleMap, PublicKey } from 'snarkyjs';
+import { FirebaseBackingStore } from '../../../../contracts/build/src/models/firebase/FirebaseBackingStore';
 
 const InstructorMartialArts = () => {
-    let [state, setState] = useState({
-        show: false,
-        items: [],
-      });
+  let [state, setState] = useState({
+    show: false,
+    items: [],
+  });
+  const getMartialArt = async (discipline) => {
+    let instructorAddress = PublicKey.fromBase58("B62qqzMHkbogU9gnQ3LjrKomimsXYt4qHcXc8Cw4aX7tok8DjuDsAzx");
+    //let studentAddress = PublicKey.fromBase58("B62qpzAWcbZSjzQH9hiTKvHbDx1eCsmRR7dDzK2DuYjRT2sTyW9vSpR");
 
-      useEffect(() => {
-        let arts = [
-        { martialArt: "BJJ", rank: "Black Belt", promotedDate: "2021-01-01", 
-        students: [
-          { name: "Singh", rank: "Blue",promotedDate: "2022-01-02"}, 
-          { name: "Singh", rank: "Blue",promotedDate: "2022-01-02"}, 
-          { name: "Singh", rank: "Blue",promotedDate: "2022-01-02"}, 
-          { name: "Singh", rank: "Blue",promotedDate: "2022-01-02"}, 
-          { name: "Singh", rank: "Blue",promotedDate: "2022-01-02"}, 
-          { name: "Singh", rank: "Blue",promotedDate: "2022-01-02"}, 
-          { name: "Singh", rank: "Blue",promotedDate: "2022-01-02"}, 
-          { name: "Singh", rank: "Blue",promotedDate: "2022-01-02"}, 
-          { name: "Singh", rank: "Blue",promotedDate: "2022-01-02"}, 
-          { name: "Singh", rank: "Blue",promotedDate: "2022-01-02"}, 
-          { name: "Singh", rank: "Blue",promotedDate: "2022-01-02"}, 
-          { name: "Singh", rank: "Blue",promotedDate: "2022-01-02"}, 
-          {name: "Anand", rank:"White",promotedDate: "2022-01-02"}] 
-        },
-        { martialArt: "Judo", rank: "Black Belt", promotedDate: "2022-04-03", students: [] }];
-        setState({ ...state, items: arts, show: true });
-      }, []);
+    let backingStore = new FirebaseBackingStore(discipline);
 
-    return (
-      
+    //let martialArt = await backingStore.get(instructorAddress);
+    let martialArt = await backingStore.get(instructorAddress);
+    return backingStore.getObjectFromStruct(martialArt);
+  }
+
+  useEffect(() => {
+
+    (async () => {
+      let arts = [];
+      let disciplines = Disciplines;
+      for (let discipline in disciplines) {
+        let ma = await getMartialArt(discipline);
+        if (ma) {
+          arts.push(ma);
+          let backingStore = new FirebaseBackingStore(discipline);
+          let students = await backingStore.getAllStudents(ma.publicKey);
+          ma.students = students;
+        }
+      }
+
+      // let arts = [
+      // { martialArt: "BJJ", rank: "Black Belt", promotedDate: "2021-01-01", 
+      // students: [
+      //   { name: "Singh", rank: "Blue",promotedDate: "2022-01-02"}, 
+      //   { name: "Singh", rank: "Blue",promotedDate: "2022-01-02"}, 
+      //   { name: "Singh", rank: "Blue",promotedDate: "2022-01-02"}, 
+      //   { name: "Singh", rank: "Blue",promotedDate: "2022-01-02"}, 
+      //   { name: "Singh", rank: "Blue",promotedDate: "2022-01-02"}, 
+      //   { name: "Singh", rank: "Blue",promotedDate: "2022-01-02"}, 
+      //   { name: "Singh", rank: "Blue",promotedDate: "2022-01-02"}, 
+      //   { name: "Singh", rank: "Blue",promotedDate: "2022-01-02"}, 
+      //   { name: "Singh", rank: "Blue",promotedDate: "2022-01-02"}, 
+      //   { name: "Singh", rank: "Blue",promotedDate: "2022-01-02"}, 
+      //   { name: "Singh", rank: "Blue",promotedDate: "2022-01-02"}, 
+      //   { name: "Singh", rank: "Blue",promotedDate: "2022-01-02"}, 
+      //   {name: "Anand", rank:"White",promotedDate: "2022-01-02"}] 
+      // },
+      // { martialArt: "Judo", rank: "Black Belt", promotedDate: "2022-04-03", students: [] }];
+      setState({ ...state, items: arts, show: true });
+    })();
+
+  }, []);
+
+  return (
+
+    <div>
+      {state.show &&
         <div>
-        {state.show &&
-            <div>
-              <Tabs.Group aria-label="Default tabs" style="default">
-                {state.items.map((i, index) => (
-                  <Tabs.Item active={index == 0} title={i.martialArt} key={index}>
-                    <StudentList studentList={i.students} />
-                  </Tabs.Item>
-                ))}
-              </Tabs.Group>
-  
-            </div>
-          }
+          <div>
+
+            {state.items.map((i, index) => (
+              <div>
+                <h1>{i.discipline}</h1>
+                <StudentList studentList={i.students} />
+                <div className="divider"></div>
+
+              </div>
+
+            ))}
+
           </div>
-    );
+        </div>
+      }
+    </div>
+  );
 }
 
 export default InstructorMartialArts;
