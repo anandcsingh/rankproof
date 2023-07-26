@@ -88,7 +88,7 @@ console.log('Berkeley Instance Created');
 Mina.setActiveInstance(Berkeley);
 
 let addbjjKey = PublicKey.fromBase58(
-  'B62qnQpnwWNr7b9sbEtdQVdf8Ckprm9WGmHfk7Cum2ZLL69HaiM9R5B'
+  'B62qkSQ9Jy9x5FqDJpDhTjLry2UKpV7Q8Jz81AZh9Cb5oJ5a1FZe9Et'
 );
 let zk = new AddBjjRank(addbjjKey);
 console.log('zkApp created');
@@ -99,24 +99,37 @@ console.log('contract root: ', contractRoot);
 
 const transactionFee = 100_000_000;
 
-let map = new MerkleMap();
-let studentPublicKey = studentAccount.publicKey;
-let studentHash = Field(
-  '18085327542818512083285490966340387291776421371867606274687363710255283755364'
-);
-map.set(Field(1), studentHash);
+// let map = new MerkleMap();
+// let studentPublicKey = studentAccount.publicKey;
+// let studentHash = Field(
+//   '18085327542818512083285490966340387291776421371867606274687363710255283755364'
+// );
+// map.set(Field(1), studentHash);
 
-let witness = map.getWitness(Field(1));
-console.log('witness: ', witness.toString());
+// let witness = map.getWitness(Field(1));
+// console.log('witness: ', witness.toString());
+// const txn = await Mina.transaction(
+//   { sender: studentAccount.publicKey, fee: transactionFee },
+//   () => {
+//     zk!.addPractitioner(
+//       studentHash,
+//       studentPublicKey,
+//       witness,
+//       Field(contractRoot)
+//     );
+//   }
+// );
+// await txn.prove();
+// let result = await txn.sign([studentAccount.privateKey]).send();
+// console.log('transaction sent');
+// console.log(result.hash());
+// console.log(result.isSuccess);
+
+// update transaction
 const txn = await Mina.transaction(
   { sender: studentAccount.publicKey, fee: transactionFee },
   () => {
-    zk!.addPractitioner(
-      studentHash,
-      studentPublicKey,
-      witness,
-      Field(contractRoot)
-    );
+    zk.setMapRoot(Field(12));
   }
 );
 await txn.prove();
@@ -125,22 +138,9 @@ console.log('transaction sent');
 console.log(result.hash());
 console.log(result.isSuccess);
 
-// update transaction
-// const txn = await Mina.transaction(
-//   { sender: studentAccount.publicKey, fee: transactionFee },
-//   () => {
-//   zk.setMapRoot(Field(12));
-
-// });
-// await txn.prove();
-// let result = await txn.sign([studentAccount.privateKey]).send();
-// console.log('transaction sent');
-// console.log(result.hash());
-// console.log(result.isSuccess);
-
-// await fetchAccount({ publicKey: addbjjKey });
-// contractRoot = zk.mapRoot.get().toString();
-// console.log('new contract root: ', contractRoot);
+await fetchAccount({ publicKey: addbjjKey });
+contractRoot = zk.mapRoot.get().toString();
+console.log('new contract root: ', contractRoot);
 
 // collectionName = Disciplines.Karate;
 // console.log('creating proofOfRank');
