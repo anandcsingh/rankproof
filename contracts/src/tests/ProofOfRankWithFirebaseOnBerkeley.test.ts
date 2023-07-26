@@ -7,6 +7,7 @@ import {
   AccountUpdate,
   MerkleMap,
   CircuitString,
+  fetchAccount,
 } from 'snarkyjs';
 import { MinaLocalBlockchain } from '../local/MinaLocalBlockchain.js';
 import { Sender } from '../models/Sender.js';
@@ -24,6 +25,9 @@ import { ProofOfJudoRank } from '../ProofOfJudoRank.js';
 import { ProofOfKarateRankNoParent } from '../ProofOfKarateRankNoParent.js';
 import { SingleContractZkClient } from '../models/ZkClient.js';
 import { FirebaseDataGenerator } from '../models/firebase/FirebaseDataGenerator.js';
+import { Add } from '../contracts/Add.js';
+import { AddBjjRank } from '../AddBjjRank.js';
+import { PromoteBjjStudent } from '../PromoteBjjStudent.js';
 
 /*
  * This file specifies how to test the `Add` example smart contract. It is safe to delete this file and replace
@@ -44,30 +48,30 @@ let senderAccount: PublicKey,
   instructorAccount: Sender,
   collectionName: string,
   backingStore: BackingStore;
-console.log('compiling zkApp');
-if (proofsEnabled) await ProofOfKarateRankNoParent.compile();
-console.log('zkApp compiled');
+console.log('compiling AddBjjRank', new Date().toLocaleTimeString());
+if (proofsEnabled) await AddBjjRank.compile();
+console.log('AddBjjRank compiled', new Date().toLocaleTimeString());
 
-const zkAppAddresses = new Map<string, PublicKey>([
-  [
-    Disciplines.BJJ,
-    PublicKey.fromBase58(
-      'B62qqdeMFTd2WrS2WF75eBjFJsboTGJ4GmQZu7gPRHjwLqdKHiUDH7Q'
-    ),
-  ],
-  [
-    Disciplines.Judo,
-    PublicKey.fromBase58(
-      'B62qqr4u86qAkX3fqozshTf5FyCnYVQcRDNU9BfRc9oxMvoUME62CEv'
-    ),
-  ],
-  [
-    Disciplines.Karate,
-    PublicKey.fromBase58(
-      'B62qrXFZvymSuAMLfUiv31SV5Whj4FaGG6ozykhBg8zZbVp3dVWgCQf'
-    ),
-  ],
-]);
+// const zkAppAddresses = new Map<string, PublicKey>([
+//   [
+//     Disciplines.BJJ,
+//     PublicKey.fromBase58(
+//       'B62qqdeMFTd2WrS2WF75eBjFJsboTGJ4GmQZu7gPRHjwLqdKHiUDH7Q'
+//     ),
+//   ],
+//   [
+//     Disciplines.Judo,
+//     PublicKey.fromBase58(
+//       'B62qqr4u86qAkX3fqozshTf5FyCnYVQcRDNU9BfRc9oxMvoUME62CEv'
+//     ),
+//   ],
+//   [
+//     Disciplines.Karate,
+//     PublicKey.fromBase58(
+//       'B62qrXFZvymSuAMLfUiv31SV5Whj4FaGG6ozykhBg8zZbVp3dVWgCQf'
+//     ),
+//   ],
+// ]);
 
 studentAccount = {
   publicKey: PublicKey.fromBase58(
@@ -77,26 +81,86 @@ studentAccount = {
     'EKFZWMtRmcQELaJvqcEyEEJqh874B3PndA8kpxSst6AiHtErn7Xw'
   ),
 };
-
-collectionName = Disciplines.Karate;
-console.log('creating proofOfRank');
-zkApp = new ProofOfKarateRankNoParent(zkAppAddresses.get(collectionName)!);
-console.log('zkApp created');
-console.log('creating backingStore');
-backingStore = new FirebaseBackingStore(collectionName);
-console.log('backingStore created');
-console.log('clearing store');
-await backingStore.clearStore();
-console.log('store cleared');
-let zkClient = new SingleContractZkClient(zkApp, studentAccount);
-zkClient.setStorageRoot(Field(new MerkleMap().getRoot()), collectionName);
-zkClient.proveUpdateTransaction();
-let response = await zkClient.sendTransaction();
-console.log('setStprageRoot: ', response.isSuccessful);
-console.log(
-  'See transaction at https://berkeley.minaexplorer.com/transaction/' +
-    response.hash
+const Berkeley = Mina.Network(
+  'https://proxy.berkeley.minaexplorer.com/graphql'
 );
+console.log('Berkeley Instance Created');
+Mina.setActiveInstance(Berkeley);
+
+let addbjjKey = PublicKey.fromBase58(
+  'B62qnQpnwWNr7b9sbEtdQVdf8Ckprm9WGmHfk7Cum2ZLL69HaiM9R5B'
+);
+let zk = new AddBjjRank(addbjjKey);
+console.log('zkApp created');
+console.log('getting root');
+await fetchAccount({ publicKey: addbjjKey });
+let contractRoot = zk.mapRoot.get().toString();
+console.log('contract root: ', contractRoot);
+
+const transactionFee = 100_000_000;
+
+let map = new MerkleMap();
+let studentPublicKey = studentAccount.publicKey;
+let studentHash = Field(
+  '18085327542818512083285490966340387291776421371867606274687363710255283755364'
+);
+map.set(Field(1), studentHash);
+
+let witness = map.getWitness(Field(1));
+console.log('witness: ', witness.toString());
+const txn = await Mina.transaction(
+  { sender: studentAccount.publicKey, fee: transactionFee },
+  () => {
+    zk!.addPractitioner(
+      studentHash,
+      studentPublicKey,
+      witness,
+      Field(contractRoot)
+    );
+  }
+);
+await txn.prove();
+let result = await txn.sign([studentAccount.privateKey]).send();
+console.log('transaction sent');
+console.log(result.hash());
+console.log(result.isSuccess);
+
+// update transaction
+// const txn = await Mina.transaction(
+//   { sender: studentAccount.publicKey, fee: transactionFee },
+//   () => {
+//   zk.setMapRoot(Field(12));
+
+// });
+// await txn.prove();
+// let result = await txn.sign([studentAccount.privateKey]).send();
+// console.log('transaction sent');
+// console.log(result.hash());
+// console.log(result.isSuccess);
+
+// await fetchAccount({ publicKey: addbjjKey });
+// contractRoot = zk.mapRoot.get().toString();
+// console.log('new contract root: ', contractRoot);
+
+// collectionName = Disciplines.Karate;
+// console.log('creating proofOfRank');
+// zkApp = new ProofOfKarateRankNoParent(zkAppAddresses.get(collectionName)!);
+// console.log('zkApp created');
+// console.log('creating backingStore');
+// backingStore = new FirebaseBackingStore(collectionName);
+// console.log('backingStore created');
+// console.log('clearing store');
+// await backingStore.clearStore();
+// console.log('store cleared');
+// let zkClient = new SingleContractZkClient(zkApp, studentAccount);
+// zkClient.setStorageRoot(Field(new MerkleMap().getRoot()), collectionName);
+// zkClient.proveUpdateTransaction();
+// let response = await zkClient.sendTransaction();
+// console.log('setStorageRoot: ', response.isSuccessful);
+// console.log(
+//   'See transaction at https://berkeley.minaexplorer.com/transaction/' +
+//     response.hash
+// );
 
 // let repo = new MartialArtistRepository(zkClient, backingStore);
 // let student = new ProofOfRankData().getStudent(studentAccount);

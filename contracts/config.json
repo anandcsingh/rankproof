@@ -50,6 +50,33 @@
       "feepayerAlias": "berkeley-proofofkaraterank",
       "fee": "0.1",
       "smartContract": "ProofOfKarateRankNoParent"
+    },
+    "berekely-addbjjrank": {
+      "url": "https://proxy.berkeley.minaexplorer.com/graphql",
+      "keyPath": "keys/berekely-addbjjrank.json",
+      "fee": "0.1",
+      "smartContract": "AddBjjRank"
+    },
+    "berkeley-promotebjjstudent": {
+      "url": "https://proxy.berkeley.minaexplorer.com/graphql",
+      "keyPath": "keys/berkeley-promotebjjstudent.json",
+      "fee": "0.1"
+    },
+    "addbjj": {
+      "url": "https://proxy.berkeley.minaexplorer.com/graphql",
+      "keyPath": "keys/addbjj.json",
+      "feepayerKeyPath": "C:\\Users\\asingh/.cache/zkapp-cli/keys/addbjj.json",
+      "feepayerAlias": "addbjj",
+      "fee": "0.1",
+      "smartContract": "AddBjjRank"
+    },
+    "promotebjj": {
+      "url": "https://proxy.berkeley.minaexplorer.com/graphql",
+      "keyPath": "keys/promotebjj.json",
+      "feepayerKeyPath": "C:\\Users\\asingh/.cache/zkapp-cli/keys/promotebjj.json",
+      "feepayerAlias": "promotebjj",
+      "fee": "0.1",
+      "smartContract": "PromoteBjjStudent"
     }
   }
 }

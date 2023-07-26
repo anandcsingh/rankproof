@@ -14,13 +14,14 @@ type Transaction = Awaited<ReturnType<typeof Mina.transaction>>;
 //import type { RankProof } from '../../contracts/src/RankProof';
 import type { RankProof } from '../../../../contracts/src/contracts/RankProof';
 import type { ProofOfBjjRankNoParent } from '../../../../contracts/src/ProofOfBjjRankNoParent';
+import type { AddBjjRank } from '../../../../contracts/src/AddBjjRank';
 import { MartialArtistRepository } from '../../../../contracts/src/models/MartialArtistRepository';
 
 const state = {
   Ranked: null as null | typeof RankProof,
-  ProofOfBjjRank: null as null | typeof ProofOfBjjRankNoParent,
-  zkapp: null as null | ProofOfBjjRankNoParent,
+  zkapp: null as null | AddBjjRank,
   transaction: null as null | Transaction,
+  AddBjjRank: null as null | typeof AddBjjRank
 }
 
 // ---------------------------------------------------------------------------------------
@@ -37,13 +38,14 @@ const functions = {
   },
   loadContract: async (args: {}) => {
    
-    const { ProofOfBjjRankNoParent } = await import('../../../../contracts/build/src/ProofOfBjjRankNoParent.js');  
-    state.ProofOfBjjRank = ProofOfBjjRankNoParent;
+    const { AddBjjRank } = await import('../../../../contracts/build/src/AddBjjRank.js');  
+    state.AddBjjRank = AddBjjRank;
+    console.log("contract AddBjjRank loaded");
   },
   compileContract: async (args: {}) => {
-    console.log("compiling ranked bjj contract");
-    await state.ProofOfBjjRank!.compile();
-    console.log("contract ranked bjj compiled");
+    console.log("compiling AddBjjRank contract");
+    state.AddBjjRank!.compile();
+    console.log("contract AddBjjRank compiled");
   },
   fetchAccount: async (args: { publicKey58: string }) => {
     const publicKey = PublicKey.fromBase58(args.publicKey58);
@@ -51,18 +53,21 @@ const functions = {
   },
   initZkappInstance: async (args: { publicKey58: string }) => {
     const publicKey = PublicKey.fromBase58(args.publicKey58);
-    state.zkapp = new state.ProofOfBjjRank!(publicKey);
+    state.zkapp = new state.AddBjjRank!(publicKey);
   },
   getStorageRoot: async (args: {}) => {
-    const mapRoot = await state.zkapp!.mapRoot.get();
-    return mapRoot.toString();
+    const currentNum = await state.zkapp!.mapRoot.get();
+    return JSON.stringify(currentNum.toJSON());
   },
-  setStorageRoot: async (args: { root: Field }) => {
+  setStorageRoot: async (args: { root: string }) => {
+    console.log("setting storage root from worker");
+    let storage = Field(args.root);
     const transaction = await Mina.transaction(() => {
-      state.zkapp!.setMapRoot(args.root);
+      state.zkapp!.setMapRoot(storage);
     }
     );
   state.transaction = transaction;
+  console.log("storage root set from worker");
   },
   proveUpdateTransaction: async (args: {}) => {
     await state.transaction!.prove();

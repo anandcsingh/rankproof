@@ -11,3 +11,5 @@ export { ProofOfRank };
 export { ProofOfBjjRankNoParent };
 export { ProofOfJudoRankNoParent };
 export { ProofOfKarateRankNoParent };
+export { AddBjjRank } from './AddBjjRank.js';
+export { PromoteBjjStudent } from './PromoteBjjStudent.js';

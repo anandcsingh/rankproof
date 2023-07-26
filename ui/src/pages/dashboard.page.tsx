@@ -7,8 +7,11 @@ import { useEffect, useState } from 'react';
 import { Disciplines } from '../../../contracts/build/src/models/MartialArtistRepository';
 import { FirebaseBackingStore } from '../../../contracts/build/src/models/firebase/FirebaseBackingStore';
 import { get } from 'http';
-import { PublicKey } from 'snarkyjs';
+import { Field, MerkleMap, PublicKey } from 'snarkyjs';
 import { MartialArtist } from '../../../contracts/build/src/models/MartialArtist';
+import { Button } from 'flowbite-react';
+import Authentication from '@/modules/Authentication';
+import AddBjjRankWorkerClient from '@/modules/workers/bjj/AddBjjRankWorkerClient';
 
 type DashboardState = {
   martialArtsLoaded: boolean,
@@ -32,6 +35,44 @@ export default function Dashboard() {
     return martialArt;
   }
 
+  const getRoot = async () => {
+    console.log('getting root...');
+    let client = Authentication.zkClient! as AddBjjRankWorkerClient;
+    await client.fetchAccount({ publicKey: PublicKey.fromBase58(Authentication.contractAddress) });
+    console.log('fetching account done');
+    const currentNum = await client.getStorageRoot();
+    console.log(`Current number in zkApp root: ${currentNum.toString()}`);
+        
+  }
+  const setRoot = async () => {
+    console.log('setting root...');
+    let client = Authentication.zkClient! as AddBjjRankWorkerClient;
+    await client.setStorageRoot(Field(new MerkleMap().getRoot()).toString());
+    console.log('root set');
+    console.log('creating proof...');
+    await client.proveUpdateTransaction();
+    console.log('proof created');
+    
+    console.log('getting Transaction JSON...');
+    const transactionJSON = await client!.getTransactionJSON()
+
+    console.log('requesting send transaction...');
+    let transactionFee = 0.1;
+
+    const { hash } = await (window as any).mina.sendTransaction({
+        transaction: transactionJSON,
+        feePayer: {
+            fee: transactionFee,
+            memo: '',
+        },
+    });
+
+    console.log(
+        'See transaction at https://berkeley.minaexplorer.com/transaction/' + hash
+    );
+    
+  }
+
   useEffect(() => {
     (async () => {
     let martialArts: Array<any> = new Array<any>();
@@ -51,9 +92,16 @@ export default function Dashboard() {
     return (
         <Master>
             <AuthPage validate={true}>
-            <p className={styles.tagline}>
-                Dashboard    
-            </p>
+              <div className="mr-auto place-self-center lg:col-span-7">
+              <div className="grid grid-cols-4 gap-4">
+                <div>
+                <button className='btn btn-primary' onClick={setRoot}>Set Root</button>
+                </div>
+                <div>
+                <button className='btn btn-secondary' onClick={getRoot}>Get Root</button> 
+                </div>       
+            </div>
+            
                 <div className={styles.grid}>
            {state.martialArtsLoaded && state.martialArts.length > 0 && state.martialArts.map((martialArt, index) => (
             <div className={styles.card} key={index}>
@@ -76,6 +124,7 @@ export default function Dashboard() {
             </div>
             ))}
             
+          </div>
           </div>
             </AuthPage>
         </Master>

@@ -28,7 +28,7 @@ export default class RankedWorkerClient {
   }
 
   fetchAccount({ publicKey }: { publicKey: PublicKey }): ReturnType<typeof fetchAccount> {
-    console.log('fetchAccount from ranked worker client: ', publicKey.toBase58());
+    //console.log('fetchAccount from ranked worker client: ', publicKey.toBase58());
     const result = this._call('fetchAccount', { publicKey58: publicKey.toBase58() });
     return (result as ReturnType<typeof fetchAccount>);
   }

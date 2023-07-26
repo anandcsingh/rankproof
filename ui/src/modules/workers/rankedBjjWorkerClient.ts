@@ -28,7 +28,6 @@ export default class RankedBjjWorkerClient {
   }
 
   fetchAccount({ publicKey }: { publicKey: PublicKey }): ReturnType<typeof fetchAccount> {
-    console.log('fetchAccount from ranked worker client: ', publicKey.toBase58());
     const result = this._call('fetchAccount', { publicKey58: publicKey.toBase58() });
     return (result as ReturnType<typeof fetchAccount>);
   }
@@ -36,11 +35,11 @@ export default class RankedBjjWorkerClient {
   initZkappInstance(publicKey: PublicKey) {
     return this._call('initZkappInstance', { publicKey58: publicKey.toBase58() });
   }
-  async getStorageRoot() {
-    const result = this._call('getStorageRoot', {});
-    return result;
-  }
-  setStorageRoot(root: Field) {
+  async getStorageRoot(): Promise<Field> {
+    const result = await this._call('getStorageRoot', {});
+    return Field.fromJSON(JSON.parse(result as string));
+  } 
+  setStorageRoot(root: string) {
     return this._call('setStorageRoot', { root });
   }
   proveUpdateTransaction() {
