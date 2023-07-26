@@ -17,9 +17,9 @@ type Transaction = Awaited<ReturnType<typeof Mina.transaction>>;
 // ---------------------------------------------------------------------------------------
 
 import type { ProofOfRank } from '../../../contracts/src/ProofOfRank';
-import type { ProofOfBjjRank } from '../../../contracts/src/ProofOfBjjRank';
-import type { ProofOfJudoRank } from '../../../contracts/src/ProofOfJudoRank';
-import type { ProofOfKarateRank } from '../../../contracts/src/ProofOfKarateRank';
+import type { ProofOfBjjRankNoParent } from '../../../contracts/src/ProofOfBjjRankNoParent';
+import type { ProofOfJudoRankNoParent } from '../../../contracts/src/ProofOfJudoRankNoParent';
+import type { ProofOfKarateRankNoParent } from '../../../contracts/src/ProofOfKarateRankNoParent';
 import { MartialArtist } from '../../../contracts/src/models/MartialArtist';
 import { stat } from 'fs';
 
@@ -38,9 +38,9 @@ const Disciplines = {
 };
 
 const zkAppAddresses = new Map<string, PublicKey>([
-  [Disciplines.BJJ, PublicKey.fromBase58("B62qpzAWcbZSjzQH9hiTKvHbDx1eCsmRR7dDzK2DuYjRT2sTyW9vSpR")],
-  [Disciplines.Judo, PublicKey.fromBase58("B62qpzAWcbZSjzQH9hiTKvHbDx1eCsmRR7dDzK2DuYjRT2sTyW9vSpR")],
-  [Disciplines.Karate, PublicKey.fromBase58("B62qpzAWcbZSjzQH9hiTKvHbDx1eCsmRR7dDzK2DuYjRT2sTyW9vSpR")]
+  [Disciplines.BJJ, PublicKey.fromBase58("B62qqdeMFTd2WrS2WF75eBjFJsboTGJ4GmQZu7gPRHjwLqdKHiUDH7Q")],
+  [Disciplines.Judo, PublicKey.fromBase58("B62qqr4u86qAkX3fqozshTf5FyCnYVQcRDNU9BfRc9oxMvoUME62CEv")],
+  [Disciplines.Karate, PublicKey.fromBase58("B62qrXFZvymSuAMLfUiv31SV5Whj4FaGG6ozykhBg8zZbVp3dVWgCQf")]
 ]);
 
 const getZkApp = (disciple: string) => {
@@ -60,24 +60,38 @@ const functions = {
   },
   loadContract: async (args: {}) => {
     const { ProofOfRank } = await import('../../../contracts/build/src/ProofOfRank') //await import('../../../contracts/build/src/contracts/ProofOfRank.js');
-    const { ProofOfBjjRank } = await import('../../../contracts/build/src/ProofOfBjjRank');
-    const { ProofOfJudoRank } = await import('../../../contracts/build/src/ProofOfJudoRank');
-    const { ProofOfKarateRank } = await import('../../../contracts/build/src/ProofOfKarateRank'); 
+    const { ProofOfBjjRankNoParent } = await import('../../../contracts/build/src/ProofOfBjjRankNoParent');
+    const { ProofOfJudoRankNoParent } = await import('../../../contracts/build/src/ProofOfJudoRankNoParent');
+    const { ProofOfKarateRankNoParent } = await import('../../../contracts/build/src/ProofOfKarateRankNoParent'); 
     state.proofOfRank = ProofOfRank;
     state.proofOfRanks = new Map<string, typeof ProofOfRank>();
-    state.proofOfRanks.set(Disciplines.BJJ, ProofOfBjjRank);
-    state.proofOfRanks.set(Disciplines.Judo, ProofOfJudoRank);
-    state.proofOfRanks.set(Disciplines.Karate, ProofOfKarateRank);
+    state.proofOfRanks.set(Disciplines.BJJ, ProofOfBjjRankNoParent);
+    state.proofOfRanks.set(Disciplines.Judo, ProofOfJudoRankNoParent);
+    state.proofOfRanks.set(Disciplines.Karate, ProofOfKarateRankNoParent);
   },
   compileContract: async (args: {}) => {
-    
-    state.proofOfRanks!.forEach(async (contract) => {
-      await contract.compile();
-    });
+    console.log('compiling contract');
+    console.log('contracts count: ', state.proofOfRanks!.size);
+    // iterate over state.proofofranks
+    for (let [key, value] of state.proofOfRanks!) {
+      console.log('compiling contract: ', key, value);
+      await value.compile();
+      console.log('contract compiled: ', key, value);
+    }
+
+    // state.proofOfRanks!.forEach(async (contract) => {
+    //   await contract.compile();
+    //     console.log('next contract compiled');
+    // });
   },
   fetchZkAppAccount: async (args: { discipline: string }) => {
     const publicKey = zkAppAddresses.get(args.discipline)!;
     return await fetchAccount({ publicKey });
+  },
+  reFetchZkApps: async (args: { }) => {
+    zkAppAddresses.forEach(async (publicKey, discipline) => {
+    await fetchAccount({ publicKey });
+    });
   },
   fetchAccount: async (args: { publicKey58: string }) => {
     const publicKey = PublicKey.fromBase58(args.publicKey58);
@@ -86,9 +100,9 @@ const functions = {
   initZkappInstance: async (args: { }) => {
 
     state.zkapps = new Map<string, ProofOfRank>();
-    state.zkapps.set(Disciplines.BJJ, new (state.proofOfRanks!.get(Disciplines.BJJ)! as typeof ProofOfBjjRank)(zkAppAddresses.get(Disciplines.BJJ)!));
-    state.zkapps.set(Disciplines.Judo, new (state.proofOfRanks!.get(Disciplines.Judo)! as typeof ProofOfJudoRank)(zkAppAddresses.get(Disciplines.Judo)!));
-    state.zkapps.set(Disciplines.Karate, new (state.proofOfRanks!.get(Disciplines.Karate)! as typeof ProofOfKarateRank)(zkAppAddresses.get(Disciplines.Karate)!));
+    state.zkapps.set(Disciplines.BJJ, new (state.proofOfRanks!.get(Disciplines.BJJ)! as typeof ProofOfBjjRankNoParent)(zkAppAddresses.get(Disciplines.BJJ)!));
+    state.zkapps.set(Disciplines.Judo, new (state.proofOfRanks!.get(Disciplines.Judo)! as typeof ProofOfJudoRankNoParent)(zkAppAddresses.get(Disciplines.Judo)!));
+    state.zkapps.set(Disciplines.Karate, new (state.proofOfRanks!.get(Disciplines.Karate)! as typeof ProofOfKarateRankNoParent)(zkAppAddresses.get(Disciplines.Karate)!));
   },
   getStorageRoot: async (args: {discipline: string}) => {
     const root = await getZkApp(args.discipline)!.mapRoot.get();
@@ -100,6 +114,9 @@ const functions = {
     }
     );
     state.transaction = transaction;
+  },
+  add: async(args: {ma: any}) => {
+    
   },
   addPractitionerTransaction: async (args: { martialArtist: MartialArtist, witness: MerkleMapWitness, currentRoot: Field }) => {
     const transaction = await Mina.transaction(() => {

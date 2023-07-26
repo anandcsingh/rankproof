@@ -5,9 +5,9 @@ import {
   Field,
 } from 'snarkyjs'
 
-import type { ZkappWorkerRequest, ZkappWorkerReponse, WorkerFunctions } from './rankedWorker';
+import type { ZkappWorkerRequest, ZkappWorkerReponse, WorkerFunctions } from './rankedBjjWorker';
 
-export default class RankedWorkerClient {
+export default class RankedBjjWorkerClient {
 
   // ---------------------------------------------------------------------------------------
 
@@ -28,7 +28,6 @@ export default class RankedWorkerClient {
   }
 
   fetchAccount({ publicKey }: { publicKey: PublicKey }): ReturnType<typeof fetchAccount> {
-    //console.log('fetchAccount from ranked worker client: ', publicKey.toBase58());
     const result = this._call('fetchAccount', { publicKey58: publicKey.toBase58() });
     return (result as ReturnType<typeof fetchAccount>);
   }
@@ -36,39 +35,13 @@ export default class RankedWorkerClient {
   initZkappInstance(publicKey: PublicKey) {
     return this._call('initZkappInstance', { publicKey58: publicKey.toBase58() });
   }
-  async getInstructor(): Promise<PublicKey> {
-    const result = await this._call('getInstructor', {});
-    return PublicKey.fromJSON(JSON.parse(result as string));
-  }
-  async getIbjjf(): Promise<Field> {
-    const result = await this._call('getIbjjf', {});
+  async getStorageRoot(): Promise<Field> {
+    const result = await this._call('getStorageRoot', {});
     return Field.fromJSON(JSON.parse(result as string));
+  } 
+  setStorageRoot(root: string) {
+    return this._call('setStorageRoot', { root });
   }
-  async getItf(): Promise<Field> {
-    const result = await this._call('getIbjjf', {});
-    return Field.fromJSON(JSON.parse(result as string));
-  }
-  async getWkf(): Promise<Field> {
-    const result = await this._call('getIbjjf', {});
-    return Field.fromJSON(JSON.parse(result as string));
-  }
-  async getRank(martialArt: string): Promise<Field> {
-    const result = await this._call('getRank', {
-      martialArt
-    });
-    return Field.fromJSON(JSON.parse(result as string));
-  }
-  createUpdateBlackBeltTransaction(newBlackBelt: PublicKey) {
-    return this._call('createUpdateBlackBeltTransaction', {
-      newBlackBelt
-    });
-  }
-  createCertifyTransaction(martialArt: string, certifier: PublicKey, userOldData: Field, userNewData: Field) {
-    return this._call('createCertifyTransaction', {
-      martialArt, certifier, userOldData, userNewData
-    });
-  }
-
   proveUpdateTransaction() {
     return this._call('proveUpdateTransaction', {});
   }
@@ -87,7 +60,7 @@ export default class RankedWorkerClient {
   nextId: number;
 
   constructor() {
-    this.worker = new Worker(new URL('./rankedWorker.ts', import.meta.url))
+    this.worker = new Worker(new URL('./rankedBjjWorker.ts', import.meta.url))
     this.promises = {};
     this.nextId = 0;
 

@@ -5,6 +5,8 @@ import Header from '../layout/Header'
 import Footer from '../layout/Footer'
 import Authentication from '../../modules/Authentication';
 import ProofOfRankWorkerClient from '../../modules/proofOfRankWorkerClient';
+import RankedBjjWorkerClient from '../../modules/workers/rankedBjjWorkerClient';
+import AddBjjRankWorkerClient from '../../modules/workers/bjj/AddBjjRankWorkerClient';
 import ZkappWorkerClient from '../../pages/rankedWorkerClient';
 import Router from 'next/router';
 import { useEffect, useState } from "react";
@@ -40,26 +42,28 @@ const AuthPage = ({ validate, children }) => {
   useEffect(() => {
 
     function timeout(seconds) {
-      return new Promise(function(resolve) {
-        setTimeout(function() {
+      return new Promise(function (resolve) {
+        setTimeout(function () {
           resolve();
         }, seconds * 1000);
       });
     }
-    
+
 
     (async () => {
       if (!Authentication.loggedIn) {
         if (!state.hasBeenSetup) {
-console.log("setting up");
+          console.log("setting up");
+          //const zkappWorkerClient = new RankedBjjWorkerClient();
+          const zkappWorkerClient = new AddBjjRankWorkerClient();
           //const zkappWorkerClient = new ZkappWorkerClient();
-          const zkappWorkerClient = new ProofOfRankWorkerClient();
-          
+          //const zkappWorkerClient = new ProofOfRankWorkerClient();
+
           Authentication.setZkClient(zkappWorkerClient);
           await timeout(15);
           console.log("loading snarky");
           try {
-          const loadedSnarky = await Authentication.loadSnarky();
+            const loadedSnarky = await Authentication.loadSnarky();
           } catch (e) {
             console.log("error loading snarky", e);
           }
@@ -92,10 +96,15 @@ console.log("setting up");
           }
           else {
             setState({ ...state, showLoadingContracts: true, showFundAccount: false, showCreateWallet: false, hasWallet: true, snarkyLoaded: true, showRequestingAccount: false });
-            const hasBeenSetup = await Authentication.setupContracts();
-            console.log("contracts has been setup", hasBeenSetup);
-
+            const hasBeenSetup = Authentication.setupContracts();
             setState({ ...state, hasBeenSetup: hasBeenSetup, showLoadingContracts: false, showFundAccount: false, showCreateWallet: false, hasWallet: true, snarkyLoaded: true, showRequestingAccount: false });
+
+            // console.log('fetching account');
+            // await Authentication.zkClient.fetchAccount({ publicKey: PublicKey.fromBase58(Authentication.contractAddress) });
+            // console.log('fetching account done');
+            // console.log('fetching storage root');
+            // let root = await Authentication.zkClient.getNum();
+            // console.log("storage root", root.toString());
           }
 
         }
@@ -125,67 +134,67 @@ console.log("setting up");
   }
   return (
     <div className='rankproof-page'>
-      
+
       <div className='rankproof-content-wrap'>
-        
-       
-          {!state.hasBeenSetup ?
-            <section className="hero section center-content has-top-divider">
-              <div className="container-sm">
-                <div className="hero-inner section-inner">
-                  <div className="hero-content">
-                    <h1 className="mt-0 mb-16 reveal-from-bottom" data-reveal-delay="200">
-                      Getting things ready...
 
-                    </h1>
-                    <div className="container-xs">
-                      <div className={`${!state.snarkyLoaded || state.showRequestingAccount || state.showLoadingContracts ? 'loading-snarky' : ''} m-0 mb-32 reveal-from-bottom login-subtext p-16`} data-reveal-delay="400">
-                        <div style={{ display: state.snarkyLoaded ? "none" : "block" }}>
-                          Loading <span className="text-color-primary">SnarkyJS</span>...
+
+        {!state.hasBeenSetup ?
+          <section className="hero section center-content has-top-divider">
+            <div className="container-sm">
+              <div className="hero-inner section-inner">
+                <div className="hero-content">
+                  <h1 className="mt-0 mb-16 reveal-from-bottom" data-reveal-delay="200">
+                    Getting things ready...
+
+                  </h1>
+                  <div className="container-xs">
+                    <div className={`${!state.snarkyLoaded || state.showRequestingAccount || state.showLoadingContracts ? 'loading-snarky' : ''} m-0 mb-32 reveal-from-bottom login-subtext p-16`} data-reveal-delay="400">
+                      <div style={{ display: state.snarkyLoaded ? "none" : "block" }}>
+                        Loading <span className="text-color-primary">SnarkyJS</span>...
+                      </div>
+                      {state.hasWallet != null && !state.hasWallet &&
+                        <div className='text-color-warning'>
+                          Could not find a wallet. Install Auro wallet here <a href='https://www.aurowallet.com/' target="_blank" rel="noreferrer">Auro wallet</a>
                         </div>
-                        {state.hasWallet != null && !state.hasWallet &&
-                          <div className='text-color-warning'>
-                            Could not find a wallet. Install Auro wallet here <a href='https://www.aurowallet.com/' target="_blank" rel="noreferrer">Auro wallet</a>
-                          </div>
-                        }
+                      }
 
-                        {state.showRequestingAccount &&
-                          <div>Requesting account</div>
-                        }
+                      {state.showRequestingAccount &&
+                        <div>Requesting account</div>
+                      }
 
-                        {state.showCreateWallet &&
-                          <div className='text-color-warning'>Please create or restore a wallet first!</div>
-                        }
-                        {state.showFundAccount &&
-                          <div className='text-color-warning'>Your account does not exist, visit the <a href="https://faucet.minaprotocol.com/" target="_blank" rel="noreferrer">faucet</a> to fund it</div>
-                        }
+                      {state.showCreateWallet &&
+                        <div className='text-color-warning'>Please create or restore a wallet first!</div>
+                      }
+                      {state.showFundAccount &&
+                        <div className='text-color-warning'>Your account does not exist, visit the <a href="https://faucet.minaprotocol.com/" target="_blank" rel="noreferrer">faucet</a> to fund it</div>
+                      }
 
-                        {state.showLoadingContracts &&
-                          <div>Loading contracts...</div>
-                        }
+                      {state.showLoadingContracts &&
+                        <div>Loading contracts...</div>
+                      }
 
 
-
-                      </div>
-                      <div className="reveal-from-bottom login-btn-container" data-reveal-delay="600">
-                        {/* Button area */}
-                      </div>
 
                     </div>
+                    <div className="reveal-from-bottom login-btn-container" data-reveal-delay="600">
+                      {/* Button area */}
+                    </div>
+
                   </div>
-
-
                 </div>
+
+
               </div>
-            </section>
-            :
-            <div>
-              {children}
             </div>
-          }
-       
+          </section>
+          :
+          <div className='grid max-w-screen-xl px-4 pt-20 pb-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12 lg:pt-28'>
+            {children}
+          </div>
+        }
+
       </div>
-      
+
     </div>
 
   );

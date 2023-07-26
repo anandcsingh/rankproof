@@ -14,6 +14,7 @@ import { ZkClient, ZkClientResponse } from '../../../contracts/build/src/models/
 export default class ProofOfRankWorkerClient extends ZkClient {
 
   // ---------------------------------------------------------------------------------------
+  className = 'ProofOfRankWorkerClient';
 
   loadSnarkyJS() {
     return this._call('loadSnarkyJS', {});
@@ -31,11 +32,17 @@ export default class ProofOfRankWorkerClient extends ZkClient {
     return this._call('compileContract', {});
   }
 
-  fetchAccount({ publicKey }: { publicKey: PublicKey }): ReturnType<typeof fetchAccount> {
-    console.log('fetchAccount from proof of rank client: ', publicKey.toBase58());
-    
+  fetchZkAppAccount(discipline: string): ReturnType<typeof fetchAccount> {    
+    const result = this._call('fetchZkAppAccount', { discipline: discipline });
+    return (result as ReturnType<typeof fetchAccount>);
+  }
+
+  reFetchZkApps() {    
+    return this._call('reFetchZkApps', {  });
+  }
+
+  fetchAccount({ publicKey }: { publicKey: PublicKey }): ReturnType<typeof fetchAccount> {    
     const result = this._call('fetchAccount', { publicKey58: publicKey.toBase58() });
-    console.log('result from fetch account: ', result);
     return (result as ReturnType<typeof fetchAccount>);
   }
 
@@ -48,6 +55,9 @@ export default class ProofOfRankWorkerClient extends ZkClient {
   }
   setStorageRoot(root: Field, discipline: string): Promise<any> {
     return this._call('setStorageRoot', { root, discipline });
+  }
+  add(ma: any) {
+    return this._call('add', { ma });
   }
   addPractitioner(martialArtist: MartialArtist, witness: MerkleMapWitness, currentRoot: Field): Promise<any>  {
     return this._call('addPractitionerTransaction', {

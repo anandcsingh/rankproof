@@ -12,6 +12,8 @@ import { Bool, CircuitString, Field, PublicKey, Struct } from 'snarkyjs';
 import { MartialArtist } from '../../../contracts/build/src/models/MartialArtist';
 import { FirebaseBackingStore } from '../../../contracts/build/src/models/firebase/FirebaseBackingStore';
 import Authentication from '@/modules/Authentication';
+import { AddZkClient } from '../../../contracts/build/src/models/RankProofClients';
+import { RankProofRepository } from '../../../contracts/build/src/models/RankProofRepository';
 export default function Add() {
 
   let [state, setState] = useState({  
@@ -27,30 +29,23 @@ export default function Add() {
     const { martialArt, rank, notfiy, instructorAddress } = event.target.elements;
     //let studentID = PublicKey.fromBase58("B62qiaZAHzmpwg2CxK9MFhvJLh2A8TJPqYMAmKmy2D8puRWZJHf5Dq4");
     let studentID = Authentication.address;
-    let backingStore = new FirebaseBackingStore(martialArt.value);
-    
-    let studentData = {
-      id: Field(3),
-      publicKey: studentID,
-      firstName: '',
-      lastName: '',
-      rank: rank.value,
-      verified: false,
-      instructor: '',
-      createdDate: '',
-      modifiedDate: '',
-      discipline: martialArt.value,
+    let zkClient = Authentication!.zkClient! as AddZkClient;
+    console.log('adding martial art...');
+    await zkClient.add(studentID, rank.value);
+    console.log("proving update transaction...");
+    await zkClient.proveUpdateTransaction();
+    console.log("sending transaction...");
+    await zkClient.sendTransaction();
+    console.log("transaction sent");
+    await zkClient.updateBackingStore(studentID, rank.value)
 
-    };
-    let root = await backingStore.getMartialArtistFromDocSnap(studentData);
-    await backingStore.upsert(root);
     //let alertRepo = new AlertRepository();
     //alertRepo.alertInstructor(student.id.toBigInt().toString(), student.publicKey.toBase58(), instructorAddress.value, student.rank.toString());
   }
 
   return (
     <Master>
-      <AuthPage validate={false}>
+      <AuthPage validate={true}>
         <p className={styles.tagline}>
           Add your Martial Art
         </p>

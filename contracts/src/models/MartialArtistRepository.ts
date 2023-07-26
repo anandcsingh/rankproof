@@ -79,7 +79,6 @@ export class MartialArtistRepository {
     martialArtist.id = Field(merkleStore.nextID);
     merkleStore.map.set(martialArtist.id, martialArtist.hash());
     const witness = merkleStore.map.getWitness(martialArtist.id);
-
     await this.contract.addPractitioner(martialArtist, witness, currentRoot);
     await this.contract.proveUpdateTransaction();
     let response = await this.contract.sendTransaction();

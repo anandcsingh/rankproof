@@ -5,7 +5,7 @@ import {
 } from 'snarkyjs'
 
 const Authentication = {
-    contractAddress: 'B62qnR6TwcenxCngC8sToWkPfsBEE1NguQDyoEeb64X1GzqAXLkKuxq',
+    contractAddress: 'B62qnQpnwWNr7b9sbEtdQVdf8Ckprm9WGmHfk7Cum2ZLL69HaiM9R5B',
     loggedIn: false,
     zkClient: null,
     authentication: null,
@@ -21,6 +21,7 @@ const Authentication = {
     showCreateWallet: false,
     fundAccount: false,
     showLoadingContracts: false,
+    contractsLoaded: false,
     setZkClient: function (client) {
         this.zkClient = client;
     },
@@ -69,6 +70,17 @@ const Authentication = {
         return !this.fundAccount;
     },
     setupContracts: async function () {
+        // this.zkClient.loadContract()
+        // .then(this.zkClient.compileContract())
+        // .then(() => {
+        //     const zkappPublicKey = PublicKey.fromBase58('B62qnQpnwWNr7b9sbEtdQVdf8Ckprm9WGmHfk7Cum2ZLL69HaiM9R5B');
+        //     this.zkClient.initZkappInstance(zkappPublicKey);
+        //     console.log("initialized zkapp instance");
+        //     this.contractsLoaded = true;
+        // })
+        // this.hasBeenSetup = true;
+        // return true;
+
         await this.zkClient.loadContract();
         console.log("loaded contract");
         await this.zkClient.compileContract();
@@ -79,7 +91,9 @@ const Authentication = {
         console.log("initialized zkapp instance");
         this.hasBeenSetup = true;
         return true;
+
     },
+
     fetchZkappAccount: async function() {
         await this.zkClient.fetchAccount({ publicKey: this.contractAddress });
     },
