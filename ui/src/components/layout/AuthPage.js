@@ -7,12 +7,13 @@ import Authentication from '../../modules/Authentication';
 import ProofOfRankWorkerClient from '../../modules/proofOfRankWorkerClient';
 import RankedBjjWorkerClient from '../../modules/workers/rankedBjjWorkerClient';
 import AddBjjRankWorkerClient from '../../modules/workers/bjj/AddBjjRankWorkerClient';
+import PromoteBjjStudentWorkerClient from '../../modules/workers/bjj/PromoteBjjStudentWorkerClient';
 import ZkappWorkerClient from '../../pages/rankedWorkerClient';
 import Router from 'next/router';
 import { useEffect, useState } from "react";
 import Snackbar from '../../modules/Snackbar'
 import Script from 'next/script'
-
+import { ContractsLoader } from '../../modules/ContractsLoader';
 
 import {
   PublicKey,
@@ -56,10 +57,14 @@ const AuthPage = ({ validate, children }) => {
           console.log("setting up");
           //const zkappWorkerClient = new RankedBjjWorkerClient();
           const zkappWorkerClient = new AddBjjRankWorkerClient();
+          const zkappWorkerClient2 = new PromoteBjjStudentWorkerClient();
           //const zkappWorkerClient = new ZkappWorkerClient();
           //const zkappWorkerClient = new ProofOfRankWorkerClient();
-
+          const contractsLoader = new ContractsLoader();
+          Authentication.setContractsLoader(contractsLoader);
           Authentication.setZkClient(zkappWorkerClient);
+          Authentication.setBjjAddClient(zkappWorkerClient);
+          Authentication.setBjjPromoteClient(zkappWorkerClient2);
           await timeout(15);
           console.log("loading snarky");
           try {

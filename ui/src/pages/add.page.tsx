@@ -14,6 +14,7 @@ import { FirebaseBackingStore } from '../../../contracts/build/src/models/fireba
 import Authentication from '@/modules/Authentication';
 import { AddZkClient } from '../../../contracts/build/src/models/RankProofClients';
 import { RankProofRepository } from '../../../contracts/build/src/models/RankProofRepository';
+import AddBjjRankWorkerClient from '@/modules/workers/bjj/AddBjjRankWorkerClient';
 export default function Add() {
 
   let [state, setState] = useState({  
@@ -29,15 +30,17 @@ export default function Add() {
     const { martialArt, rank, notfiy, instructorAddress } = event.target.elements;
     //let studentID = PublicKey.fromBase58("B62qiaZAHzmpwg2CxK9MFhvJLh2A8TJPqYMAmKmy2D8puRWZJHf5Dq4");
     let studentID = Authentication.address;
-    let zkClient = Authentication!.zkClient! as AddZkClient;
+    let client = Authentication.bjjAddClient! as AddBjjRankWorkerClient;
+    await client.fetchAccount({ publicKey: PublicKey.fromBase58(Authentication.bjjAddAddress) });
+    console.log('add bjj: fetching account done');
     console.log('adding martial art...');
-    await zkClient.add(studentID, rank.value);
+    await client.add(studentID, rank.value);
     console.log("proving update transaction...");
-    await zkClient.proveUpdateTransaction();
+    await client.proveUpdateTransaction();
     console.log("sending transaction...");
-    await zkClient.sendTransaction();
+    await client.sendTransaction();
     console.log("transaction sent");
-    await zkClient.updateBackingStore(studentID, rank.value)
+    await client.updateBackingStore(studentID, rank.value)
 
     //let alertRepo = new AlertRepository();
     //alertRepo.alertInstructor(student.id.toBigInt().toString(), student.publicKey.toBase58(), instructorAddress.value, student.rank.toString());
