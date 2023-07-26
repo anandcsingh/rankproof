@@ -175,10 +175,6 @@ export default function Add() {
           )}
         </form>
       </AuthPage>
-
-      {/* <QRCodeCreator address="B62qpzAWcbZSjzQH9hiTKvHbDx1eCsmRR7dDzK2DuYjRT2sTyW9vSpR"></QRCodeCreator>
-
-      <QRCodeScanner></QRCodeScanner> */}
     </Master>
   );
 }

@@ -1,0 +1,25 @@
+/* Style the modal container to center it on the screen */
+.modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.5
+  ); /* Semi-transparent background overlay */
+}
+
+/* Style the modal box with rounded borders */
+.modalbox {
+  max-width: 400px; /* You can adjust the width as per your requirement */
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px; /* Adding rounded borders */
+}
