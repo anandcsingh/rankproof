@@ -44,7 +44,7 @@ export class FirebaseDataGenerator {
 
     let staticInstructor = {
       id: index++,
-      publicKey: 'B62qmdQVgKWmWWxtNpfjdx9wUp6fm1eUsBrK4V3PXjm4bFBvDTK5U3U',
+      publicKey: 'B62qqzMHkbogU9gnQ3LjrKomimsXYt4qHcXc8Cw4aX7tok8DjuDsAzx',
       firstName: 'John',
       lastName: 'Danaher',
       rank: 'Black Belt',

@@ -6,7 +6,7 @@ import * as d3 from 'd3';
 import { PublicKey, state } from 'snarkyjs';
 import { Disciplines } from '../../../../contracts/build/src/models/MartialArtistRepository';
 import { FirebaseBackingStore } from '../../../../contracts/build/src/models/firebase/FirebaseBackingStore';
-
+import {Authentication } from '../../modules/Authentication'
 
 const LineageMap = () => {
 
@@ -35,10 +35,18 @@ const LineageMap = () => {
     let data = [];
     let idMap = {};
     
-    (await backingStore.getAll())
+    let myAddress = "B62qqzMHkbogU9gnQ3LjrKomimsXYt4qHcXc8Cw4aX7tok8DjuDsAzx";//Authentication.address;
+    let shortName = (address) => {
+      if (address === myAddress) {
+        return "Me";
+      } else 
+      return address.substring(0, 5) + "..." + address.substring(address.length - 5, address.length);
+    }
+    
+    (await backingStore.getAllVerified())
       .forEach((value, key) => {
         data.push( {
-          "name": `${value.firstName} ${value.lastName}`,
+          "name": shortName(value.publicKey.toBase58()),//`${value.firstName} ${value.lastName}`,
           "positionName": value.rank.toString(),
           "publicKey": value.publicKey.toBase58(),
           "Instructor": value.instructor.toBase58(),
@@ -54,6 +62,7 @@ const LineageMap = () => {
           value.parentId = idMap[value.Instructor];
         }
       }
+      console.log(data.length);
     setData(data);
     setShow(true);
 

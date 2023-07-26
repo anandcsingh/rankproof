@@ -8,8 +8,6 @@ import { Disciplines } from '../../../contracts/build/src/models/MartialArtistRe
 import { FirebaseBackingStore } from '../../../contracts/build/src/models/firebase/FirebaseBackingStore';
 import { get } from 'http';
 import { Field, MerkleMap, PublicKey } from 'snarkyjs';
-import { MartialArtist } from '../../../contracts/build/src/models/MartialArtist';
-import { Button } from 'flowbite-react';
 import Authentication from '@/modules/Authentication';
 import AddBjjRankWorkerClient from '@/modules/workers/bjj/AddBjjRankWorkerClient';
 import PromoteBjjStudentWorkerClient from '@/modules/workers/bjj/PromoteBjjStudentWorkerClient';

@@ -4,7 +4,6 @@ import Link from 'next/link'
 import Header from '../layout/Header'
 import Footer from '../layout/Footer'
 import Authentication from '../../modules/Authentication';
-import ProofOfRankWorkerClient from '../../modules/proofOfRankWorkerClient';
 import RankedBjjWorkerClient from '../../modules/workers/rankedBjjWorkerClient';
 import AddBjjRankWorkerClient from '../../modules/workers/bjj/AddBjjRankWorkerClient';
 import PromoteBjjStudentWorkerClient from '../../modules/workers/bjj/PromoteBjjStudentWorkerClient';
@@ -193,7 +192,7 @@ const AuthPage = ({ validate, children }) => {
             </div>
           </section>
           :
-          <div className='grid max-w-screen-xl px-4 pt-20 pb-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12 lg:pt-28'>
+          <div>
             {children}
           </div>
         }

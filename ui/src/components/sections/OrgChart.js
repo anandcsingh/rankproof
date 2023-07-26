@@ -15,6 +15,8 @@ export const OrgChartComponent = (props, ref) => {
 
   // We need to manipulate DOM
   useLayoutEffect(() => {
+    let myAddress = "B62qqzMHkbogU9gnQ3LjrKomimsXYt4qHcXc8Cw4aX7tok8DjuDsAzx";//Authentication.address;
+
     if (props.data && d3Container.current) {
       if (!chart) {
         chart = new OrgChart();
@@ -39,7 +41,8 @@ export const OrgChartComponent = (props, ref) => {
             }</span> ${node.data._directSubordinates}  </div>`;
           })
          .nodeContent(function (d, i, arr, state) {
-            const color = '#FFFFFF';
+            const color = d.data.publicKey === myAddress ? '#FFD700' :'#FFFFFF';
+
             return `
             <div style="font-family: 'Inter', sans-serif;background-color:${color}; position:absolute;margin-top:-1px; margin-left:-1px;width:${d.width}px;height:${d.height}px;border-radius:10px;border: 1px solid #E4E2E9">
                <div style="background-color:${color};position:absolute;margin-top:-25px;margin-left:${15}px;border-radius:100px;width:50px;height:50px;" ></div>

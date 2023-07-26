@@ -11,6 +11,7 @@ import {
   orderBy,
   query,
   setDoc,
+  where,
 } from 'firebase/firestore';
 
 export class FirebaseBackingStore extends BackingStore {
@@ -45,6 +46,42 @@ export class FirebaseBackingStore extends BackingStore {
     });
     return all;
   }
+
+  async getAllVerified(): Promise<Map<PublicKey, MartialArtist>> {
+    let all = new Map<PublicKey, MartialArtist>();
+    let stringMap = new Map<string, MartialArtist>();
+    const maQuery = query(
+      collection(database, this.collectionName),
+      where('verified', '==', true),
+      orderBy('id')
+    );
+    //const maQuery = query(collection(database, this.collectionName));
+
+    const querySnapshot = await getDocs(maQuery);
+    querySnapshot.forEach((doc) => {
+      let ma = this.getMartialArtistFromDocSnap(doc.data());
+      all.set(ma.publicKey, ma);
+    });
+    return all;
+  }
+  async getAllStudents(publicKey: string): Promise<Array<any>> {
+    let all = new Array<any>();
+    let stringMap = new Map<string, any>();
+    const maQuery = query(
+      collection(database, this.collectionName),
+      where('instructor', '==', publicKey),
+      orderBy('id')
+    );
+    //const maQuery = query(collection(database, this.collectionName));
+
+    const querySnapshot = await getDocs(maQuery);
+    querySnapshot.forEach((doc) => {
+      let ma = doc.data();
+      all.push(ma);
+    });
+    return all;
+  }
+
   async getAllHashes(): Promise<Map<PublicKey, Field>> {
     let all = new Map<PublicKey, Field>();
     const maQuery = query(

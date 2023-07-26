@@ -77,6 +77,22 @@
       "feepayerAlias": "promotebjj",
       "fee": "0.1",
       "smartContract": "PromoteBjjStudent"
+    },
+    "upgradeadd": {
+      "url": "https://proxy.berkeley.minaexplorer.com/graphql",
+      "keyPath": "keys/upgradeadd.json",
+      "feepayerKeyPath": "C:\\Users\\asingh/.cache/zkapp-cli/keys/addbjj.json",
+      "feepayerAlias": "addbjj",
+      "fee": "0.1",
+      "smartContract": "AddBjjRank"
+    },
+    "nextupgrade": {
+      "url": "https://proxy.berkeley.minaexplorer.com/graphql",
+      "keyPath": "keys/nextupgrade.json",
+      "feepayerKeyPath": "C:\\Users\\asingh/.cache/zkapp-cli/keys/nextupgrade.json",
+      "feepayerAlias": "nextupgrade",
+      "fee": "0.1",
+      "smartContract": "AddBjjRank"
     }
   }
 }
