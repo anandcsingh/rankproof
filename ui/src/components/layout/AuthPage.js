@@ -5,7 +5,7 @@ import Header from '../layout/Header'
 import Footer from '../layout/Footer'
 import Authentication from '../../modules/Authentication';
 import Router from 'next/router';
-import { useEffect, useState } from "react";
+import { useEffect, useState, createContext } from "react";
 import Snackbar from '../../modules/Snackbar'
 import  AllMaWorkerClient from '../../modules/workers/AllMaWorkerClient'
 import RankedBjjWorkerClient from '../../modules/workers/rankedBjjWorkerClient';
@@ -16,6 +16,7 @@ import {
   Field,
 } from 'snarkyjs'
 
+const AuthContext = createContext();
 const AuthPage = ({ validate, children }) => {
   // load from Authentication values
   //Authentication.getNum();
@@ -32,7 +33,9 @@ const AuthPage = ({ validate, children }) => {
     showRequestingAccount: false,
     showCreateWallet: false,
     showFundAccount: false,
-    showLoadingContracts: false
+    showLoadingContracts: false,
+    userAddress: null,
+    authentication: null,
   });
 
   useEffect(() => {
@@ -89,10 +92,10 @@ const AuthPage = ({ validate, children }) => {
             setState({ ...state, showFundAccount: true, showCreateWallet: false, hasWallet: true, snarkyLoaded: true, showRequestingAccount: false });
           }
           else {
-            setState({ ...state, showLoadingContracts: true, showFundAccount: false, showCreateWallet: false, hasWallet: true, snarkyLoaded: true, showRequestingAccount: false });
+            setState({ ...state, showLoadingContracts: true, showFundAccount: false, showCreateWallet: false, hasWallet: true, snarkyLoaded: true, showRequestingAccount: false, userAddress: true });
             const hasBeenSetup = Authentication.setupContracts();
             //const hasBeenSetup = Authentication.setupBjjPromoteContracts();
-            setState({ ...state, hasBeenSetup: hasBeenSetup, showLoadingContracts: false, showFundAccount: false, showCreateWallet: false, hasWallet: true, snarkyLoaded: true, showRequestingAccount: false });
+            setState({ ...state, hasBeenSetup: hasBeenSetup, showLoadingContracts: false, showFundAccount: false, showCreateWallet: false, hasWallet: true, snarkyLoaded: true, showRequestingAccount: false, userAddress: Authentication.address, authentication: Authentication });
 
             // console.log('fetching account');
             // await Authentication.zkClient.fetchAccount({ publicKey: PublicKey.fromBase58(Authentication.contractAddress) });
@@ -184,7 +187,9 @@ const AuthPage = ({ validate, children }) => {
           </section>
           :
           <div>
-            {children}
+             <AuthContext.Provider value={{ state, setState }}>
+              {children}
+            </AuthContext.Provider>
           </div>
         }
 
@@ -196,4 +201,4 @@ const AuthPage = ({ validate, children }) => {
 
 }
 
-export default AuthPage;
+export {AuthContext, AuthPage };

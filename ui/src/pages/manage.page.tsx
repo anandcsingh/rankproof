@@ -1,5 +1,5 @@
 import Master from '../components/layout/Master'
-import AuthPage from '../components/layout/AuthPage'
+import {AuthPage} from '../components/layout/AuthPage'
 import Link from 'next/link'
 import Image from 'next/image';
 import styles from '../styles/Home.module.css';
@@ -14,6 +14,7 @@ import PromoteBjjStudentWorkerClient from '@/modules/workers/bjj/PromoteBjjStude
 import AllMaWorkerClient from '@/modules/workers/AllMaWorkerClient';
 import QRCodeScanner from "../components/QRCodeScanner";
 
+import ManagePage from '@/components/sections/ManagePage'
 import QRCodeCreator from '@/components/QRCodeCreator';
 import { rank } from 'd3';
 type DashboardState = {
@@ -240,6 +241,12 @@ export default function Dashboard() {
     <Master>
       <AuthPage validate={true}>
       <div className="bg-white lg:py-10 min-h-screen">
+      <section className='bg-white place-self-center lg:col-span-7 space-y-8"'>
+          <div className="m-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
+            <ManagePage></ManagePage>
+          </div>
+        </section>
+        <div className='divider'></div>
         <section className="bg-white place-self-center lg:col-span-7 space-y-8">
           <div className="m-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
             <div className=" grid gap-y-24">
