@@ -249,8 +249,8 @@ const functions = {
     let backingStore = new FirebaseBackingStore(discipline);
     let studentKey = PublicKey.fromBase58(args.studentPublicKey);
     let instructorKey = PublicKey.fromBase58(args.instructorPublicKey);
-    const student = await functions.get(studentKey, discipline, backingStore);
-    const instructor = await functions.get(instructorKey, discipline, backingStore);
+    const student = await functions.get( {publicKey: studentKey, backingStore: backingStore });
+    const instructor = await functions.get({publicKey: instructorKey, backingStore: backingStore });
     const merkleMapDB = await backingStore.getMerkleMap();
     const currentRoot = merkleMapDB.map.getRoot();
 
@@ -275,8 +275,8 @@ const functions = {
     let backingStore = new FirebaseBackingStore(discipline);
     let studentKey = PublicKey.fromBase58(args.studentPublicKey);
     let instructorKey = PublicKey.fromBase58(args.instructorPublicKey);
-    const student = await functions.get(studentKey, discipline, backingStore);
-    const instructor = await functions.get(instructorKey, discipline, backingStore);
+    const student = await functions.get( {publicKey: studentKey, backingStore: backingStore });
+    const instructor = await functions.get({publicKey: instructorKey, backingStore: backingStore });
     const merkleMapDB = await backingStore.getMerkleMap();
     const currentRoot = merkleMapDB.map.getRoot();
 
@@ -301,8 +301,8 @@ const functions = {
     let backingStore = new FirebaseBackingStore(discipline);
     let studentKey = PublicKey.fromBase58(args.studentPublicKey);
     let instructorKey = PublicKey.fromBase58(args.instructorPublicKey);
-    const student = await functions.get(studentKey, discipline, backingStore);
-    const instructor = await functions.get(instructorKey, discipline, backingStore);
+    const student = await functions.get( {publicKey: studentKey, backingStore: backingStore });
+    const instructor = await functions.get({publicKey: instructorKey, backingStore: backingStore });
     const merkleMapDB = await backingStore.getMerkleMap();
     const currentRoot = merkleMapDB.map.getRoot();
 
@@ -322,8 +322,8 @@ const functions = {
       state.transaction = transaction;
     }
   },
-  get: async (publicKey: PublicKey, discipline: string, backingStore: FirebaseBackingStore) => {
-    const ma = await backingStore.get(publicKey);
+  get: async (args: {publicKey: PublicKey, backingStore: FirebaseBackingStore }) => {
+    const ma = await args.backingStore.get(args.publicKey);
     if (ma) {
         return ma;
       } else {
