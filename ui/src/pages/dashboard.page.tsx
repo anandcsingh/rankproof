@@ -11,7 +11,7 @@ import { Field, MerkleMap, PublicKey } from 'snarkyjs';
 import Authentication from '@/modules/Authentication';
 import AddBjjRankWorkerClient from '@/modules/workers/bjj/AddBjjRankWorkerClient';
 import PromoteBjjStudentWorkerClient from '@/modules/workers/bjj/PromoteBjjStudentWorkerClient';
-
+import QRCodeCreator from '@/components/QRCodeCreator';
 type DashboardState = {
   martialArtsLoaded: boolean,
   martialArts: Array<any>,
@@ -119,7 +119,7 @@ export default function Dashboard() {
   return (
     <Master>
       <AuthPage validate={true}>
-        <div className="mr-auto place-self-center lg:col-span-7  space-y-4">
+        <div className="mr-auto pt-24 place-self-center lg:col-span-7  space-y-4">
           <div className="grid grid-cols-4 gap-4">
             <div>
             <button className='btn btn-primary' onClick={setRoot}>Set Contract Root</button>
@@ -129,6 +129,16 @@ export default function Dashboard() {
             </div>
             <div>
               <button className='btn btn-secondary' onClick={getBackingStoreRoot}>Get Backing Store Root</button>
+            </div>
+            <div>
+<button className="btn" onClick={()=>window.my_modal_3.showModal()}>Show Address</button>
+<dialog id="my_modal_3" className="modal">
+  <form method="dialog" className="modal-box">
+    <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    <QRCodeCreator address="B62qmdQVgKWmWWxtNpfjdx9wUp6fm1eUsBrK4V3PXjm4bFBvDTK5U3U" />
+    <p className="py-4">Press ESC key or click on ✕ button to close</p>
+  </form>
+</dialog>
             </div>
           </div>
           <div>
