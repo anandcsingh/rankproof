@@ -101,6 +101,13 @@
       "feepayerAlias": "allma",
       "fee": "0.1",
       "smartContract": "AllMartialArts"
+    },
+    "allmawithstructs": {
+      "url": "https://proxy.berkeley.minaexplorer.com/graphql",
+      "keyPath": "keys/allmawithstructs.json",
+      "feepayerKeyPath": "C:\\Users\\asingh/.cache/zkapp-cli/keys/allmawithstructs.json",
+      "feepayerAlias": "allmawithstructs",
+      "fee": "0.1"
     }
   }
 }

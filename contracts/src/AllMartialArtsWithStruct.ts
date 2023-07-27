@@ -10,6 +10,8 @@ import {
   Permissions,
   VerificationKey,
   CircuitString,
+  provablePure,
+  Bool,
 } from 'snarkyjs';
 
 import { MartialArtist } from './models/MartialArtist.js';
@@ -100,6 +102,7 @@ export class AllMartialArtsWithStruct extends SmartContract {
     student.instructor = instructor.publicKey;
     const [newRoot, _] = studentWitness.computeRootAndKey(student.hash());
     this.bjjMapRoot.set(newRoot);
+    this.emitEvent('promoted', student.publicKey);
   }
 
   @method promoteJudoka(
@@ -122,6 +125,7 @@ export class AllMartialArtsWithStruct extends SmartContract {
     student.instructor = instructor.publicKey;
     const [newRoot, _] = studentWitness.computeRootAndKey(student.hash());
     this.judoMapRoot.set(newRoot);
+    this.emitEvent('promoted', student.publicKey);
   }
 
   @method promoteKarateka(
@@ -144,5 +148,108 @@ export class AllMartialArtsWithStruct extends SmartContract {
     student.instructor = instructor.publicKey;
     const [newRoot, _] = studentWitness.computeRootAndKey(student.hash());
     this.karateMapRoot.set(newRoot);
+    this.emitEvent('promoted', student.publicKey);
+  }
+
+  events = {
+    prove: provablePure({
+      validProver: PublicKey,
+      inquirer: PublicKey,
+    }),
+    promoted: PublicKey,
+    revoked: PublicKey,
+  };
+
+  @method proveBjjRank(
+    prover: MartialArtist,
+    inquirer: PublicKey,
+    witness: MerkleMapWitness
+  ) {
+    this.bjjMapRoot.getAndAssertEquals();
+
+    const [root, _] = witness.computeRootAndKey(prover.hash());
+    this.bjjMapRoot.assertEquals(root);
+    this.emitEvent('prove', {
+      validProver: prover.publicKey,
+      inquirer: inquirer,
+    });
+  }
+
+  @method proveJudoRank(
+    prover: MartialArtist,
+    inquirer: PublicKey,
+    witness: MerkleMapWitness
+  ) {
+    this.judoMapRoot.getAndAssertEquals();
+
+    const [root, _] = witness.computeRootAndKey(prover.hash());
+    this.judoMapRoot.assertEquals(root);
+    this.emitEvent('prove', {
+      validProver: prover.publicKey,
+      inquirer: inquirer,
+    });
+  }
+
+  @method proveKarateRank(
+    prover: MartialArtist,
+    inquirer: PublicKey,
+    witness: MerkleMapWitness
+  ) {
+    this.karateMapRoot.getAndAssertEquals();
+
+    const [root, _] = witness.computeRootAndKey(prover.hash());
+    this.karateMapRoot.assertEquals(root);
+    this.emitEvent('prove', {
+      validProver: prover.publicKey,
+      inquirer: inquirer,
+    });
+  }
+
+  @method revokeBjjStudent(
+    student: MartialArtist,
+    revoker: PublicKey,
+    verifiedStatus: Bool,
+    witness: MerkleMapWitness
+  ) {
+    this.bjjMapRoot.getAndAssertEquals();
+    this.sender.assertEquals(revoker);
+    revoker.assertEquals(student.instructor);
+    verifiedStatus.assertFalse();
+    student.verified = verifiedStatus;
+    const [newRoot, _] = witness.computeRootAndKey(student.hash());
+    this.bjjMapRoot.set(newRoot);
+    this.emitEvent('revoked', student.publicKey);
+  }
+
+  @method revokeJudoStudent(
+    student: MartialArtist,
+    revoker: PublicKey,
+    verifiedStatus: Bool,
+    witness: MerkleMapWitness
+  ) {
+    this.judoMapRoot.getAndAssertEquals();
+    this.sender.assertEquals(revoker);
+    revoker.assertEquals(student.instructor);
+    verifiedStatus.assertFalse();
+    student.verified = verifiedStatus;
+    const [newRoot, _] = witness.computeRootAndKey(student.hash());
+    this.judoMapRoot.set(newRoot);
+    this.emitEvent('revoked', student.publicKey);
+  }
+
+  @method revokeKarateStudent(
+    student: MartialArtist,
+    revoker: PublicKey,
+    verifiedStatus: Bool,
+    witness: MerkleMapWitness
+  ) {
+    this.karateMapRoot.getAndAssertEquals();
+    this.sender.assertEquals(revoker);
+    revoker.assertEquals(student.instructor);
+    verifiedStatus.assertFalse();
+    student.verified = verifiedStatus;
+    const [newRoot, _] = witness.computeRootAndKey(student.hash());
+    this.karateMapRoot.set(newRoot);
+    this.emitEvent('revoked', student.publicKey);
   }
 }

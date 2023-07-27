@@ -18,8 +18,9 @@ import {
 } from '../models/MartialArtistRepository.js';
 import { AddBjjRank } from '../AddBjjRank.js';
 import { AllMartialArtsWithStruct } from '../AllMartialArtsWithStruct.js';
+import { ProofOfRankData } from './ProofOfRankData.js';
 
-let proofsEnabled = true;
+let proofsEnabled = false;
 
 let senderAccount: PublicKey,
   senderKey: PrivateKey,
@@ -33,16 +34,46 @@ let senderAccount: PublicKey,
   backingStore: BackingStore;
 
 let newKey: any = null;
-console.log(
-  'compiling AllMartialArtsWithStruct',
-  new Date().toLocaleTimeString()
-);
+
 if (proofsEnabled) {
+  console.log(
+    'compiling AllMartialArtsWithStruct',
+    new Date().toLocaleTimeString()
+  );
   const { verificationKey: newVerificationKey } =
     await AllMartialArtsWithStruct.compile();
   newKey = newVerificationKey;
+
+  console.log(
+    'AllMartialArtsWithStruct compiled',
+    new Date().toLocaleTimeString()
+  );
 }
-console.log(
-  'AllMartialArtsWithStruct compiled',
-  new Date().toLocaleTimeString()
-);
+
+const useProof = false;
+[deployerAccount, studentAccount, instructorAccount] = new MinaLocalBlockchain(
+  useProof
+).accounts;
+zkAppPrivateKey = PrivateKey.random();
+zkAppAddress = zkAppPrivateKey.toPublicKey();
+
+async function localDeploy() {
+  const txn = await Mina.transaction(deployerAccount.publicKey, () => {
+    AccountUpdate.fundNewAccount(deployerAccount.publicKey);
+    zkApp.deploy();
+  });
+  await txn.prove();
+  // this tx needs .sign(), because `deploy()` adds an account update that requires signature authorization
+  await txn.sign([deployerAccount.privateKey, zkAppPrivateKey]).send();
+}
+zkApp = new AllMartialArtsWithStruct(zkAppAddress);
+
+await localDeploy();
+let student = new ProofOfRankData().getStudent(studentAccount);
+
+// update transaction
+const txn = await Mina.transaction(studentAccount.publicKey, () => {
+  zkApp.proveBjjRank(student, instructorAccount.publicKey);
+});
+await txn.prove();
+await txn.sign([studentAccount.privateKey]).send();
