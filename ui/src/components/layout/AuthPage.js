@@ -4,15 +4,11 @@ import Link from 'next/link'
 import Header from '../layout/Header'
 import Footer from '../layout/Footer'
 import Authentication from '../../modules/Authentication';
-import RankedBjjWorkerClient from '../../modules/workers/rankedBjjWorkerClient';
-import AddBjjRankWorkerClient from '../../modules/workers/bjj/AddBjjRankWorkerClient';
-import PromoteBjjStudentWorkerClient from '../../modules/workers/bjj/PromoteBjjStudentWorkerClient';
-import ZkappWorkerClient from '../../pages/rankedWorkerClient';
 import Router from 'next/router';
 import { useEffect, useState } from "react";
 import Snackbar from '../../modules/Snackbar'
-import Script from 'next/script'
-import { ContractsLoader } from '../../modules/ContractsLoader';
+import  AllMaWorkerClient from '../../modules/workers/AllMaWorkerClient'
+import RankedBjjWorkerClient from '../../modules/workers/rankedBjjWorkerClient';
 
 import {
   PublicKey,
@@ -54,16 +50,9 @@ const AuthPage = ({ validate, children }) => {
       if (!Authentication.loggedIn) {
         if (!state.hasBeenSetup) {
           console.log("setting up");
+          const allWorkerClient = new AllMaWorkerClient();
           //const zkappWorkerClient = new RankedBjjWorkerClient();
-          const zkappWorkerClient = new AddBjjRankWorkerClient();
-          const zkappWorkerClient2 = new PromoteBjjStudentWorkerClient();
-          //const zkappWorkerClient = new ZkappWorkerClient();
-          //const zkappWorkerClient = new ProofOfRankWorkerClient();
-          const contractsLoader = new ContractsLoader();
-          Authentication.setContractsLoader(contractsLoader);
-          Authentication.setZkClient(zkappWorkerClient);
-          Authentication.setBjjAddClient(zkappWorkerClient);
-          Authentication.setBjjPromoteClient(zkappWorkerClient2);
+          Authentication.setZkClient(allWorkerClient);
           await timeout(15);
           console.log("loading snarky");
           try {
@@ -102,6 +91,7 @@ const AuthPage = ({ validate, children }) => {
           else {
             setState({ ...state, showLoadingContracts: true, showFundAccount: false, showCreateWallet: false, hasWallet: true, snarkyLoaded: true, showRequestingAccount: false });
             const hasBeenSetup = Authentication.setupContracts();
+            //const hasBeenSetup = Authentication.setupBjjPromoteContracts();
             setState({ ...state, hasBeenSetup: hasBeenSetup, showLoadingContracts: false, showFundAccount: false, showCreateWallet: false, hasWallet: true, snarkyLoaded: true, showRequestingAccount: false });
 
             // console.log('fetching account');

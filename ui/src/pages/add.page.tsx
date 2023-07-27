@@ -16,6 +16,8 @@ import Authentication from '@/modules/Authentication';
 import { AddZkClient } from '../../../contracts/build/src/models/RankProofClients';
 import { RankProofRepository } from '../../../contracts/build/src/models/RankProofRepository';
 import AddBjjRankWorkerClient from '@/modules/workers/bjj/AddBjjRankWorkerClient';
+import AllMaWorkerClient from '@/modules/workers/AllMaWorkerClient';
+
 export default function Add() {
 
   let [state, setState] = useState({  
@@ -31,20 +33,31 @@ export default function Add() {
     const { martialArt, rank, notfiy, instructorAddress } = event.target.elements;
     //let studentID = PublicKey.fromBase58("B62qiaZAHzmpwg2CxK9MFhvJLh2A8TJPqYMAmKmy2D8puRWZJHf5Dq4");
     let studentID = Authentication.address;
-    let client = Authentication.bjjAddClient! as AddBjjRankWorkerClient;
-    await client.fetchAccount({ publicKey: PublicKey.fromBase58(Authentication.bjjAddAddress) });
-    console.log('add bjj: fetching account done');
-    console.log('adding martial art...');
-    await client.add(studentID, rank.value);
+    let client = Authentication.zkClient! as AllMaWorkerClient;
+    console.log('fetching account...');
+    await client.fetchAccount({ publicKey: PublicKey.fromBase58(Authentication.contractAddress) });
+    console.log(`fetching account done ${Authentication.contractAddress}`);
+    console.log('adding martial art...', martialArt.value, rank.value);
+    if(martialArt.value == "BJJ") {
+      await client.addBjj(studentID, rank.value);
+    } else if(martialArt.value == "Judo") {
+      await client.addJudo(studentID, rank.value);
+    } else if(martialArt.value == "Karate") {
+      await client.addKarate(studentID, rank.value);
+    }
     console.log("proving update transaction...");
     await client.proveUpdateTransaction();
     console.log("sending transaction...");
     await client.sendTransaction();
     console.log("transaction sent");
-    await client.updateBackingStore(studentID, rank.value)
 
-    //let alertRepo = new AlertRepository();
-    //alertRepo.alertInstructor(student.id.toBigInt().toString(), student.publicKey.toBase58(), instructorAddress.value, student.rank.toString());
+    if(martialArt.value == "BJJ") {
+    await client.updateBjjBackingStore(studentID, rank.value);
+    } else if (martialArt.value == "Judo") {
+      await client.updateJudoBackingStore(studentID, rank.value);
+    } else if (martialArt.value == "Karate") {
+      await client.updateKarateBackingStore(studentID, rank.value);
+    }
   }
 
   return (

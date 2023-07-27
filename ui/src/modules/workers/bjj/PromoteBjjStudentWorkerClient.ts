@@ -29,6 +29,7 @@ export default class PromoteBjjStudentWorkerClient implements PromoteZkClient {
   }
 
   fetchAccount({ publicKey }: { publicKey: PublicKey }): ReturnType<typeof fetchAccount> {
+    console.log('fetchAccount in worker client', publicKey.toBase58());
     const result = this._call('fetchAccount', { publicKey58: publicKey.toBase58() });
     return (result as ReturnType<typeof fetchAccount>);
   }

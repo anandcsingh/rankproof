@@ -93,6 +93,14 @@
       "feepayerAlias": "nextupgrade",
       "fee": "0.1",
       "smartContract": "AddBjjRank"
+    },
+    "allma": {
+      "url": "https://proxy.berkeley.minaexplorer.com/graphql",
+      "keyPath": "keys/allma.json",
+      "feepayerKeyPath": "C:\\Users\\asingh/.cache/zkapp-cli/keys/addbjj.json",
+      "feepayerAlias": "allma",
+      "fee": "0.1",
+      "smartContract": "AllMartialArts"
     }
   }
 }

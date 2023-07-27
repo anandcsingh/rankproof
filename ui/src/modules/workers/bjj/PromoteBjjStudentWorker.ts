@@ -49,6 +49,7 @@ const functions = {
     console.log("contract PromoteBjjStudent compiled");
   },
   fetchAccount: async (args: { publicKey58: string }) => {
+    console.log("fetching account from worker");
     const publicKey = PublicKey.fromBase58(args.publicKey58);
     return await fetchAccount({ publicKey });
   },

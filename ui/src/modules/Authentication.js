@@ -5,7 +5,7 @@ import {
 } from 'snarkyjs'
 
 const Authentication = {
-    contractAddress: 'B62qkSQ9Jy9x5FqDJpDhTjLry2UKpV7Q8Jz81AZh9Cb5oJ5a1FZe9Et',
+    contractAddress: 'B62qr7kgJTtu69wx3LixMtTC7hNBHxYj3xTSJufH94gXGtXJeDtwSJv',
     loggedIn: false,
     zkClient: null,
     authentication: null,
@@ -98,13 +98,13 @@ const Authentication = {
         // this.hasBeenSetup = true;
         // return true;
 
-        await this.bjjAddClient.loadContract();
-        console.log("loaded bjjAddClient contract");
-        await this.bjjAddClient.compileContract();
-        console.log("compiled bjjAddClient contract");
-        const zkappPublicKey = PublicKey.fromBase58(this.bjjAddAddress);
-        await this.bjjAddClient.initZkappInstance(zkappPublicKey);
-        console.log("initialized bjjAddClient zkapp instance");
+        await this.zkClient.loadContract();
+        console.log("loaded AllMaWorkerClient contract");
+        await this.zkClient.compileContract();
+        console.log("compiled AllMaWorkerClient contract");
+        const zkappPublicKey = PublicKey.fromBase58(this.contractAddress);
+        await this.zkClient.initZkappInstance(zkappPublicKey);
+        console.log("initialized AllMaWorkerClient zkapp instance");
 
         // await this.bjjPromoteClient.loadContract();
         // console.log("loaded bjjPromoteClient contract");
@@ -119,7 +119,32 @@ const Authentication = {
         return true;
 
     },
+    setupBjjAddContracts: async function () {
+        await this.bjjAddClient.loadContract();
+        console.log("loaded bjjAddClient contract");
+        await this.bjjAddClient.compileContract();
+        console.log("compiled bjjAddClient contract");
+        const zkappPublicKey = PublicKey.fromBase58(this.bjjAddAddress);
+        await this.bjjAddClient.initZkappInstance(zkappPublicKey);
+        console.log("initialized bjjAddClient zkapp instance");
+        return true;
+    },
+    setupBjjPromoteContracts: async function () {
+        
+        await this.bjjPromoteClient.loadContract();
+        console.log("loaded bjjPromoteClient contract");
+        await this.bjjPromoteClient.compileContract();
+        console.log("compiled bjjPromoteClient contract");
+        const zkappPublicKey1 = PublicKey.fromBase58(this.bjjPromoteAddress);
+        await this.bjjPromoteClient.initZkappInstance(zkappPublicKey1);
+        console.log("initialized bjjPromoteClient zkapp instance");
+        this.hasBeenSetup = true;
 
+        //this.contractsLoader.loadAll();
+        //this.hasBeenSetup = true;
+        return true;
+
+    },
     fetchZkappAccount: async function() {
         await this.zkClient.fetchAccount({ publicKey: this.contractAddress });
     },
