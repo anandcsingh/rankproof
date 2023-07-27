@@ -16,7 +16,7 @@ const Master = ({ children }) => {
       </Head>
       {/* <GradientBG> */}
         <Header />
-        <main bg-white-100>
+        <main>
             {children}
         </main>
       {/* </GradientBG> */}

@@ -28,17 +28,19 @@ const Header = () => {
   }
 
   useEffect(() => {
+
+    setLoggedIn(true);
     // Function to run after the component has loaded
     //check if logged in
-    const checkLoggedIn = async () => {
-      const loggedIn = await Authentication.loggedIn;
-      if (loggedIn) {
-        setLoggedIn(true);
-      } else {
-        Router.push('/');
-      }
-    }
-    checkLoggedIn();
+    // const checkLoggedIn = async () => {
+    //   const loggedIn = await Authentication.loggedIn;
+    //   if (loggedIn) {
+    //     setLoggedIn(true);
+    //   } else {
+    //     Router.push('/');
+    //   }
+    // }
+    // checkLoggedIn();
     // You can put any code here that you want to run after the component has loaded.
   }, []);
 
@@ -50,10 +52,11 @@ const Header = () => {
         <nav className="bg-white border-gray-200 py-2.5 dark:bg-gray-900">
           <div className="flex flex-wrap items-center justify-between max-w-screen-xl px-4 mx-auto">
 
-            <a href="/" className="flex items-center">
+            
+            <Link href="/" className="flex items-center">
               <img src="/assets/images/logo.png" className="h-6 mr-3 sm:h-9" alt="RankProok Logo" />
               <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">RankProof</span>
-            </a>
+            </Link>
             {loggedInState ? (
             <div className="flex items-center lg:order-2">
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
@@ -88,7 +91,7 @@ const Header = () => {
               </div>
             ) : (
               <div className="flex items-center lg:order-2" id="mobile-menu-2">
-                <button className="inline-block py-2 px-4 text-sm leading-5 text-green-50 btn-primary hover:bg-indigo-600 font-medium focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 rounded-md float-right" onClick={loginClicked}>Authenticate</button>
+                <Link href="/dashboard" className="inline-block py-2 px-4 text-sm leading-5 text-green-50 btn-primary hover:bg-indigo-600 font-medium focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 rounded-md float-right">Launch App</Link>
               </div>
             )}
 

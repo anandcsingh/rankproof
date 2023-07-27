@@ -12,7 +12,6 @@ export default function Lineage() {
     <Master>
       <AuthPage validate={false}>
         <div className="mr-auto pt-24 place-self-center lg:col-span-7 space-y-4">
-          <h1>Lineage</h1>
           <DynamicLineageMap />
         </div>
       </AuthPage>
