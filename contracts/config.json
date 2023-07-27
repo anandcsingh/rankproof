@@ -107,7 +107,8 @@
       "keyPath": "keys/allmawithstructs.json",
       "feepayerKeyPath": "C:\\Users\\asingh/.cache/zkapp-cli/keys/allmawithstructs.json",
       "feepayerAlias": "allmawithstructs",
-      "fee": "0.1"
+      "fee": "0.1",
+      "smartContract": "AllMartialArtsWithStruct"
     }
   }
 }

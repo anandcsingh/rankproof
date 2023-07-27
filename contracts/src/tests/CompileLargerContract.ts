@@ -71,9 +71,9 @@ zkApp = new AllMartialArtsWithStruct(zkAppAddress);
 await localDeploy();
 let student = new ProofOfRankData().getStudent(studentAccount);
 
-// update transaction
-const txn = await Mina.transaction(studentAccount.publicKey, () => {
-  zkApp.proveBjjRank(student, instructorAccount.publicKey);
-});
-await txn.prove();
-await txn.sign([studentAccount.privateKey]).send();
+// // update transaction
+// const txn = await Mina.transaction(studentAccount.publicKey, () => {
+//   zkApp.proveBjjRank(student, instructorAccount.publicKey);
+// });
+// await txn.prove();
+// await txn.sign([studentAccount.privateKey]).send();

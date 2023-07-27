@@ -43,7 +43,7 @@ const LineageMap = () => {
       return address.substring(0, 5) + "..." + address.substring(address.length - 5, address.length);
     }
     
-    (await backingStore.getAllVerified())
+    (await backingStore.getAll())
       .forEach((value, key) => {
         data.push( {
           "name": shortName(value.publicKey.toBase58()),//`${value.firstName} ${value.lastName}`,

@@ -1,7 +1,6 @@
 import Master from '../components/layout/Master'
-import AuthPage from '../components/layout/AuthPage'
+import {AuthPage} from '../components/layout/AuthPage'
 import Link from 'next/link'
-
 
 export default function Dashboard() {
 

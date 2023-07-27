@@ -70,7 +70,8 @@ const functions = {
     console.log("storage root set from worker");
   },
   addBjj: async (args: { address: string, rank: string }) => {
-    let backingStore = new FirebaseBackingStore("BJJ");
+    let discipline = "BJJ";
+    let backingStore = new FirebaseBackingStore(discipline);
     const merkleStore = await backingStore.getMerkleMap();
     const currentRoot = merkleStore.map.getRoot();
     let martialArtist = backingStore.getMartialArtistFromDocSnap({
@@ -83,7 +84,7 @@ const functions = {
       instructor: '',
       createdDate: '',
       modifiedDate: '',
-      discipline: "BJJ",
+      discipline: discipline,
     });
     martialArtist.id = Field(merkleStore.nextID);
     let hash = martialArtist.hash();
@@ -101,7 +102,8 @@ const functions = {
     state.transaction = transaction;
   },
   updateBjjBackingStore: async (args: { address: string, rank: string }) => {
-    let backingStore = new FirebaseBackingStore("BJJ");
+    let discipline = "BJJ";
+    let backingStore = new FirebaseBackingStore(discipline);
     const merkleStore = await backingStore.getMerkleMap();
     let martialArtist = backingStore.getMartialArtistFromDocSnap({
       id: 0,
@@ -113,7 +115,7 @@ const functions = {
       instructor: '',
       createdDate: '',
       modifiedDate: '',
-      discipline: "BJJ",
+      discipline: discipline,
     });
     martialArtist.id = Field(merkleStore.nextID);
     backingStore.upsert(martialArtist);
@@ -133,7 +135,8 @@ const functions = {
     console.log("storage root set from worker");
   },
   addJudo: async (args: { address: string, rank: string }) => {
-    let backingStore = new FirebaseBackingStore("Judo");
+    let discipline = "Judo";
+    let backingStore = new FirebaseBackingStore(discipline);
     const merkleStore = await backingStore.getMerkleMap();
     const currentRoot = merkleStore.map.getRoot();
     let martialArtist = backingStore.getMartialArtistFromDocSnap({
@@ -146,7 +149,7 @@ const functions = {
       instructor: '',
       createdDate: '',
       modifiedDate: '',
-      discipline: "BJJ",
+      discipline: discipline,
     });
     martialArtist.id = Field(merkleStore.nextID);
     let hash = martialArtist.hash();
@@ -164,7 +167,8 @@ const functions = {
     state.transaction = transaction;
   },
   updateJudoBackingStore: async (args: { address: string, rank: string }) => {
-    let backingStore = new FirebaseBackingStore("Judo");
+    let discipline = "Judo";
+    let backingStore = new FirebaseBackingStore(discipline);
     const merkleStore = await backingStore.getMerkleMap();
     let martialArtist = backingStore.getMartialArtistFromDocSnap({
       id: 0,
@@ -176,7 +180,7 @@ const functions = {
       instructor: '',
       createdDate: '',
       modifiedDate: '',
-      discipline: "BJJ",
+      discipline: discipline,
     });
     martialArtist.id = Field(merkleStore.nextID);
     backingStore.upsert(martialArtist);
@@ -196,7 +200,8 @@ const functions = {
     console.log("storage root set from worker");
   },
   addKarate: async (args: { address: string, rank: string }) => {
-    let backingStore = new FirebaseBackingStore("Judo");
+    let discipline = "Karate";
+    let backingStore = new FirebaseBackingStore(discipline);
     const merkleStore = await backingStore.getMerkleMap();
     const currentRoot = merkleStore.map.getRoot();
     let martialArtist = backingStore.getMartialArtistFromDocSnap({
@@ -209,7 +214,7 @@ const functions = {
       instructor: '',
       createdDate: '',
       modifiedDate: '',
-      discipline: "BJJ",
+      discipline: discipline,
     });
     martialArtist.id = Field(merkleStore.nextID);
     let hash = martialArtist.hash();
@@ -227,7 +232,8 @@ const functions = {
     state.transaction = transaction;
   },
   updateKarateBackingStore: async (args: { address: string, rank: string }) => {
-    let backingStore = new FirebaseBackingStore("Karate");
+    let discipline = "Karate";
+    let backingStore = new FirebaseBackingStore(discipline);
     const merkleStore = await backingStore.getMerkleMap();
     let martialArtist = backingStore.getMartialArtistFromDocSnap({
       id: 0,
@@ -239,7 +245,7 @@ const functions = {
       instructor: '',
       createdDate: '',
       modifiedDate: '',
-      discipline: "BJJ",
+      discipline: discipline,
     });
     martialArtist.id = Field(merkleStore.nextID);
     backingStore.upsert(martialArtist);
