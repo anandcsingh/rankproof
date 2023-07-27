@@ -49,7 +49,7 @@ export default function Add() {
 
   return (
     <Master>
-      <AuthPage validate={true}>
+      <AuthPage validate={false}>
         <p className={styles.tagline}>
           Add your Martial Art
         </p>
