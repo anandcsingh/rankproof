@@ -86,6 +86,7 @@ const AuthPage = ({ validate, children }) => {
           console.log("requesting account");
           const loginResult = await Authentication.login();
           console.log("login result", loginResult);
+
           if (loginResult.error == "user reject") {
             Snackbar("You cancelled connection with Mina wallet!", 1500);
           }
