@@ -7,7 +7,7 @@ import QRCodeCreator from '@/components/QRCodeCreator';
 import React, { useState } from 'react';
 import Authentication from '@/modules/Authentication';
 import DashboardActions from '@/components/sections/DashboardActions';
-
+import LineagePage from '@/components/sections/LineagePage';
 export default function Dashboard() {
 
   const [address, setAddress] = useState('');
@@ -18,7 +18,7 @@ export default function Dashboard() {
     setAddress(tempAddress);
     setShowAddress(true);
     try {
-    (window as any).share_address_modal.showModal();
+      (window as any).share_address_modal.showModal();
     } catch (error) {
       console.log(error);
     }
@@ -27,7 +27,7 @@ export default function Dashboard() {
 
   return (
     <Master>
-      <AuthPage validate={true}>
+      <AuthPage validate={false}>
         <DashboardActions />
         <div className="bg-white lg:py-10 min-h-screen">
           <section className="bg-white place-self-center lg:col-span-7 space-y-8">
@@ -43,9 +43,15 @@ export default function Dashboard() {
                   <p className="mt-4 text-gray-600">
                     All Martial Artists can view their lineage going as far back as we have data for practitioners. All powered by the Mina blockchain and Zero-Knowledge Proofs.
                   </p>
-                  <Link href="/lineage" className="mt-8 inline-block rounded btn-primary px-12 py-3 text-sm font-medium text-white transition hover:bg-indigo-700 focus:outline-none focus:ring focus:ring-yellow-400"
+                  {/* <Link href="#lineage_address_modal" className="mt-8 inline-block rounded btn-primary px-12 py-3 text-sm font-medium text-white transition hover:bg-indigo-700 focus:outline-none focus:ring focus:ring-yellow-400"
                   >
-                    View Lineage</Link>
+                    View Lineage</Link> */}
+                  <a
+                    className="mt-8 inline-block rounded btn-primary px-12 py-3 text-sm font-medium text-white transition hover:bg-indigo-700 focus:outline-none focus:ring focus:ring-yellow-400"
+                    href="#lineage_address_modal"
+                  >View Lineage</a>
+
+
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
@@ -54,15 +60,15 @@ export default function Dashboard() {
                     className="block rounded-xl border border-gray-100 p-4 shadow-sm hover:border-gray-200 hover:ring-1 hover:ring-gray-200 focus:outline-none focus:ring"
                     href="#my_modal_8"
                   >
-                  <div className="modal" id="my_modal_8">
-                    <div className="modal-box bg-white">
-                      <Add />
-                      <div className="modal-action">
-                      <a href="#" className="btn btn-primary">Close</a>
+                    <div className="modal" id="my_modal_8">
+                      <div className="modal-box bg-white">
+                        <Add />
+                        <div className="modal-action">
+                          <a href="#" className="btn btn-primary">Close</a>
+                        </div>
                       </div>
                     </div>
-                </div>
-                  
+
                     <span className="inline-block rounded-lg bg-gray-50 p-3">
                       <svg
                         className="h-6 w-6"
@@ -95,7 +101,7 @@ export default function Dashboard() {
                       <header className="text-center">
                         <h2 className="text-3xl font-bold sm:text-4xl">Martial Arts Stats</h2>
                       </header>
-                      <InstructorsDen/>
+                      <InstructorsDen />
                       <div className="modal-action">
                         {/* if there is a button in form, it will close the modal */}
                         <button className="btn btn-primary">Close</button>
@@ -105,9 +111,9 @@ export default function Dashboard() {
                   <a
                     className="block rounded-xl border border-gray-100 p-4 shadow-sm hover:border-gray-200 hover:ring-1 hover:ring-gray-200 focus:outline-none focus:ring"
                     href="#"
-                    onClick={()=>window.my_modal_2.showModal()}
+                    onClick={() => window.my_modal_2.showModal()}
                   >
-                  
+
                     <span className="inline-block rounded-lg bg-gray-50 p-3">
                       <svg
                         className="h-6 w-6"
@@ -140,7 +146,7 @@ export default function Dashboard() {
                     className="cursor-pointer block rounded-xl border border-gray-100 p-4 shadow-sm hover:border-gray-200 hover:ring-1 hover:ring-gray-200 focus:outline-none focus:ring"
                     onClick={showAddressModal}
                   >
-                    
+
                     <span className="inline-block rounded-lg bg-gray-50 p-3">
                       <svg
                         className="h-6 w-6"
@@ -168,17 +174,17 @@ export default function Dashboard() {
                       View or share my MINA address.
                     </p>
                   </a>
-                  <dialog  className="modal" id="share_address_modal">
-                  <form method="dialog" className="modal-box bg-white w-1/2 max-w-5xl">
+                  <dialog className="modal" id="share_address_modal">
+                    <form method="dialog" className="modal-box bg-white w-1/2 max-w-5xl">
 
-                    <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-                     {showAddress && <QRCodeCreator address={address}  /> }
-                      
+                      <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                      {showAddress && <QRCodeCreator address={address} />}
+
                     </form>
                     <form method="dialog" className="modal-backdrop">
-    <button>close</button>
-  </form>
-</dialog>
+                      <button>close</button>
+                    </form>
+                  </dialog>
                   <a
                     className="block rounded-xl border border-gray-100 p-4 shadow-sm hover:border-gray-200 hover:ring-1 hover:ring-gray-200 focus:outline-none focus:ring"
                     href="/lineage"
@@ -328,6 +334,20 @@ export default function Dashboard() {
               </div>
             </div>
           </section>
+        </div>
+
+        <div className='modals-area'>
+          <dialog className="modal" id="lineage_address_modal">
+            <form method="dialog" className="modal-box bg-white w-11/12 max-w-5xl">
+              <div className="modal-action">
+                <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={() => (window as any).lineage_address_modal.close()}>✕</button>
+              </div>
+              <LineagePage />
+            </form>
+            <form method="dialog" className="modal-backdrop">
+              <button>close</button>
+            </form>
+          </dialog>
         </div>
 
       </AuthPage>
