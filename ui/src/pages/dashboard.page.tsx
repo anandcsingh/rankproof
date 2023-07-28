@@ -13,7 +13,7 @@ export default function Dashboard() {
   const [showAddress, setShowAddress] = useState(false);
   const showAddressModalRef = React.useRef<HTMLDivElement>(null);
   const showAddressModal = async () => {
-    let tempAddress = 'B62qjBcYihfVGHyQGuxgG5m4QbPrq6jEEMys5p4fe4Pt33CmWy7Bvuq';// Authentication.address;
+    let tempAddress = Authentication.address ? Authentication.address : 'No address loaded';// Authentication.address;
     setAddress(tempAddress);
     setShowAddress(true);
     try {
