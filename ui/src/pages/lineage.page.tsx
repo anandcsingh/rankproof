@@ -34,17 +34,17 @@ export default function Lineage() {
     </div>
 
         {activeTabIndex === 0 && (
-          <div className="mr-auto pt-16 place-self-center lg:col-span-7 space-y-4">
+          <div className="mr-auto place-self-center lg:col-span-7 space-y-4">
           <DynamicLineageMap parentDiscipline={tabs[0]} />
         </div>
           )}
             {activeTabIndex === 1 && (
-          <div className="mr-auto pt-16 place-self-center lg:col-span-7 space-y-4">
+          <div className="mr-auto place-self-center lg:col-span-7 space-y-4">
           <DynamicLineageMap parentDiscipline={tabs[1]} />
         </div>
           )}
             {activeTabIndex === 2 && (
-          <div className="mr-auto pt-16 place-self-center lg:col-span-7 space-y-4">
+          <div className="mr-auto place-self-center lg:col-span-7 space-y-4">
           <DynamicLineageMap parentDiscipline={tabs[2]} />
         </div>
           )}
