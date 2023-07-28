@@ -159,22 +159,28 @@ export default function Dashboard() {
     //let studentID = PublicKey.fromBase58("B62qiaZAHzmpwg2CxK9MFhvJLh2A8TJPqYMAmKmy2D8puRWZJHf5Dq4");
     let studentID = Authentication.address;
     let client = Authentication.zkClient! as AllMaWorkerClient;
-    console.log('fetching account...');
-    await client.fetchAccount({ publicKey: PublicKey.fromBase58(Authentication.contractAddress) });
-    console.log(`fetching account done ${Authentication.contractAddress}`);
+    // console.log('fetching account...');
+    // await client.fetchAccount({ publicKey: PublicKey.fromBase58(Authentication.contractAddress) });
+    // console.log(`fetching account done ${Authentication.contractAddress}`);
     console.log('adding martial art...', disciplineValue, rankValue);
+
     if(disciplineValue == "BJJ") {
+      console.log("adding bjj...");
       await client.addBjj(studentID, rankValue);
     } else if(disciplineValue == "Judo") {
+      console.log("adding judo...");
       await client.addJudo(studentID, rankValue);
     } else if(disciplineValue == "Karate") {
+      console.log("adding karate...");
       await client.addKarate(studentID, rankValue);
+    } else {
+      console.log("adding nothing...");
     }
-    console.log("proving update transaction...");
-    await client.proveUpdateTransaction();
-    console.log("sending transaction...");
-    await client.sendTransaction();
-    console.log("transaction sent");
+    // console.log("proving update transaction...");
+    // await client.proveUpdateTransaction();
+    // console.log("sending transaction...");
+    // await client.sendTransaction();
+    // console.log("transaction sent");
 
     if(disciplineValue == "BJJ") {
     await client.updateBjjBackingStore(studentID, rankValue);
@@ -189,16 +195,23 @@ export default function Dashboard() {
     
     //let studentID = PublicKey.fromBase58("B62qiaZAHzmpwg2CxK9MFhvJLh2A8TJPqYMAmKmy2D8puRWZJHf5Dq4");
     let studentID = Authentication.address;
+    console.log('adding martial art...');
+    console.log("studentID", studentID);
+    console.log("instructorValue", instructorValue);
+    console.log("rankValue", rankValue);
+    console.log("disciplineValue", disciplineValue);
     let client = Authentication.zkClient! as AllMaWorkerClient;
-    console.log('fetching account...');
-    await client.fetchAccount({ publicKey: PublicKey.fromBase58(Authentication.contractAddress) });
-    console.log(`fetching account done ${Authentication.contractAddress}`);
-    console.log('adding martial art...', disciplineValue, rankValue);
+    // console.log('fetching account...');
+    // await client.fetchAccount({ publicKey: PublicKey.fromBase58(Authentication.contractAddress) });
+    // console.log(`fetching account done ${Authentication.contractAddress}`);
     if(disciplineValue == "BJJ") {
+      console.log("promoting bjj...");
       await client.promoteBjjStudent(studentID, rankValue, instructorValue);
     } else if(disciplineValue == "Judo") {
+      console.log("promoting judo...");
       await client.promoteJudoStudent(studentID, rankValue, instructorValue);
     } else if(disciplineValue == "Karate") {
+      console.log("promoting karate...");
       await client.promoteKarateStudent(studentID, rankValue, instructorValue);
     }
     console.log("proving update transaction...");
@@ -243,7 +256,7 @@ export default function Dashboard() {
       <div className="bg-white lg:py-10 min-h-screen">
       <section className='bg-white place-self-center lg:col-span-7 space-y-8"'>
           <div className="m-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
-            <ManagePage></ManagePage>
+            {/* <ManagePage></ManagePage> */}
           </div>
         </section>
         <div className='divider'></div>
@@ -270,8 +283,6 @@ export default function Dashboard() {
                 <input onChange={handleTextboxChange} type="text" placeholder="Enter new contract root" className="input input-bordered w-full max-w-xs" />
               </div>
             </div>
-            <div className="divider"></div>
-                <QRCodeCreator address={"B62qqzMHkbogU9gnQ3LjrKomimsXYt4qHcXc8Cw4aX7tok8DjuDsAzx"}></QRCodeCreator>
             <div className="divider"></div>
             <div>
               <div>
@@ -332,7 +343,7 @@ export default function Dashboard() {
                         <div className="sm:col-span-4">
                           <label htmlFor="instructorAddress" className="block text-sm font-medium leading-6 text-gray-900">Instructor address</label>
                           <div className="mt-2">
-                            <QRCodeScanner onScan={addressScanned}></QRCodeScanner>
+                            {/* <QRCodeScanner onScan={addressScanned}></QRCodeScanner> */}
                             <input id="instructorAddress" onChange={handleInstructorChange} value={instructorValue}  name="instructorAddress" type="text" autoComplete="instructor-address" className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                           </div>
                         </div>

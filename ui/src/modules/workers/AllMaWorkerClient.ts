@@ -6,7 +6,7 @@ import {
   MerkleMapWitness,
 } from 'snarkyjs'
 
-import type { ZkappWorkerRequest, ZkappWorkerReponse, WorkerFunctions } from './AllMaWorker';
+import type { ZkappWorkerRequest, ZkappWorkerReponse, WorkerFunctions } from './AllMaWorker'
 export default class AllMaWorkerClient {
 
   // ---------------------------------------------------------------------------------------
@@ -44,6 +44,7 @@ export default class AllMaWorkerClient {
   }
 
   async addBjj(address: string, rank: string): Promise<void> {
+    console.log("addBjj client", address, rank);
     await this._call('addBjj', { address, rank });
   }
   async updateBjjBackingStore(address: string, rank: string): Promise<void> {
@@ -83,6 +84,7 @@ export default class AllMaWorkerClient {
     instructorPublicKey: string,
   ): Promise<void>
   {
+    console.log("client: promoteBjjStudent", studentPublicKey, rank, instructorPublicKey);
     await this._call('promoteBjjStudent', { studentPublicKey, rank, instructorPublicKey });
   }
   async promoteJudoStudent(

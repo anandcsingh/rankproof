@@ -8,6 +8,8 @@ import {
   MerkleMapWitness,
   CircuitString,
 } from 'snarkyjs'
+import { BackingStore, MerkleMapDatabase } from '../../../../contracts/build/src/models/MartialArtistRepository.js';
+
 
 type Transaction = Awaited<ReturnType<typeof Mina.transaction>>;
 
@@ -16,11 +18,13 @@ type Transaction = Awaited<ReturnType<typeof Mina.transaction>>;
 import type { AllMartialArts } from '../../../../contracts/src/AllMartialArts';
 import { MartialArtistRepository } from '../../../../contracts/src/models/MartialArtistRepository';
 import { FirebaseBackingStore } from '../../../../contracts/build/src/models/firebase/FirebaseBackingStore';
+import { MartialArtist } from '../../../../contracts/build/src/models/MartialArtist';
 
 const state = {
   zkapp: null as null | AllMartialArts,
   transaction: null as null | Transaction,
-  AllMartialArts: null as null | typeof AllMartialArts
+  AllMartialArts: null as null | typeof AllMartialArts,
+  pendingMartialArtist: null as null | MartialArtist,
 }
 
 // ---------------------------------------------------------------------------------------
@@ -70,11 +74,13 @@ const functions = {
     console.log("storage root set from worker");
   },
   addBjj: async (args: { address: string, rank: string }) => {
+    console.log("creating worker transaction");
     let discipline = "BJJ";
     let backingStore = new FirebaseBackingStore(discipline);
     const merkleStore = await backingStore.getMerkleMap();
     const currentRoot = merkleStore.map.getRoot();
-    let martialArtist = backingStore.getMartialArtistFromDocSnap({
+    console.log("currentRoot addbjj: ", currentRoot.toString());
+    state.pendingMartialArtist = backingStore.getMartialArtistFromDocSnap({
       id: 0,
       publicKey: args.address,
       firstName: '',
@@ -86,39 +92,40 @@ const functions = {
       modifiedDate: '',
       discipline: discipline,
     });
-    martialArtist.id = Field(merkleStore.nextID);
-    let hash = martialArtist.hash();
-    merkleStore.map.set(martialArtist.id, hash);
-    const witness = merkleStore.map.getWitness(martialArtist.id);
-    console.log("creating worker transaction");
-    console.log("address: ", args.address);
+    state.pendingMartialArtist.id = Field(merkleStore.nextID);
+    console.log("martialArtist.id: ", state.pendingMartialArtist.id.toBigInt().toString());
+    let hash = state.pendingMartialArtist.hash();
+    console.log("hash: ", hash.toString());
+    merkleStore.map.set(state.pendingMartialArtist.id, hash);
+    const witness = merkleStore.map.getWitness(state.pendingMartialArtist.id);
+    const [newRoot, _] = witness.computeRootAndKey(hash);
+    console.log("bjj add root: ", newRoot.toString());
     const transaction = await Mina.transaction(
-      { sender: martialArtist.publicKey },
+      { sender: state.pendingMartialArtist.publicKey },
       () => {
-      state.zkapp!.addJuijiteiro(hash, martialArtist.publicKey, witness, currentRoot);
+      state.zkapp!.addJuijiteiro(hash, state.pendingMartialArtist!.publicKey, witness, currentRoot);
     }
     );
 
     state.transaction = transaction;
   },
-  updateBjjBackingStore: async (args: { address: string, rank: string }) => {
+  updateBjjBackingStore: async (args: { }) => {
+    console.log("update backing store");
     let discipline = "BJJ";
     let backingStore = new FirebaseBackingStore(discipline);
     const merkleStore = await backingStore.getMerkleMap();
-    let martialArtist = backingStore.getMartialArtistFromDocSnap({
-      id: 0,
-      publicKey: args.address,
-      firstName: '',
-      lastName: '',
-      rank: args.rank,
-      verified: false,
-      instructor: '',
-      createdDate: '',
-      modifiedDate: '',
-      discipline: discipline,
-    });
-    martialArtist.id = Field(merkleStore.nextID);
-    backingStore.upsert(martialArtist);
+    const currentRoot = merkleStore.map.getRoot();
+    console.log("currentRoot updatebjj: ", currentRoot.toString());
+    
+    console.log("martialArtist.id: ", state.pendingMartialArtist!.id.toString());
+    let hash = state.pendingMartialArtist!.hash();
+    console.log("hash: ", hash.toString());
+    
+    merkleStore.map.set(state.pendingMartialArtist!.id, hash);
+    const witness = merkleStore.map.getWitness(state.pendingMartialArtist!.id);
+    const [newRoot, _] = witness.computeRootAndKey(hash);
+    console.log("bjj update root: ", newRoot.toString());
+    backingStore.upsert(state.pendingMartialArtist!);
   },
   getJudoStorageRoot: async (args: {}) => {
     const currentNum = await state.zkapp!.judoMapRoot.get();
@@ -139,7 +146,7 @@ const functions = {
     let backingStore = new FirebaseBackingStore(discipline);
     const merkleStore = await backingStore.getMerkleMap();
     const currentRoot = merkleStore.map.getRoot();
-    let martialArtist = backingStore.getMartialArtistFromDocSnap({
+    state.pendingMartialArtist = backingStore.getMartialArtistFromDocSnap({
       id: 0,
       publicKey: args.address,
       firstName: '',
@@ -151,39 +158,27 @@ const functions = {
       modifiedDate: '',
       discipline: discipline,
     });
-    martialArtist.id = Field(merkleStore.nextID);
-    let hash = martialArtist.hash();
-    merkleStore.map.set(martialArtist.id, hash);
-    const witness = merkleStore.map.getWitness(martialArtist.id);
+    state.pendingMartialArtist.id = Field(merkleStore.nextID);
+    let hash = state.pendingMartialArtist.hash();
+    merkleStore.map.set(state.pendingMartialArtist.id, hash);
+    const witness = merkleStore.map.getWitness(state.pendingMartialArtist.id);
     console.log("creating worker transaction");
     console.log("address: ", args.address);
     const transaction = await Mina.transaction(
-      { sender: martialArtist.publicKey },
+      { sender: state.pendingMartialArtist.publicKey },
       () => {
-      state.zkapp!.addJudoka(hash, martialArtist.publicKey, witness, currentRoot);
+      state.zkapp!.addJudoka(hash, state.pendingMartialArtist!.publicKey, witness, currentRoot);
     }
     );
 
     state.transaction = transaction;
   },
-  updateJudoBackingStore: async (args: { address: string, rank: string }) => {
+  updateJudoBackingStore: async (args: {  }) => {
     let discipline = "Judo";
     let backingStore = new FirebaseBackingStore(discipline);
     const merkleStore = await backingStore.getMerkleMap();
-    let martialArtist = backingStore.getMartialArtistFromDocSnap({
-      id: 0,
-      publicKey: args.address,
-      firstName: '',
-      lastName: '',
-      rank: args.rank,
-      verified: false,
-      instructor: '',
-      createdDate: '',
-      modifiedDate: '',
-      discipline: discipline,
-    });
-    martialArtist.id = Field(merkleStore.nextID);
-    backingStore.upsert(martialArtist);
+    
+    backingStore.upsert(state.pendingMartialArtist!);
   },
   getKarateStorageRoot: async (args: {}) => {
     const currentNum = await state.zkapp!.karateMapRoot.get();
@@ -204,7 +199,7 @@ const functions = {
     let backingStore = new FirebaseBackingStore(discipline);
     const merkleStore = await backingStore.getMerkleMap();
     const currentRoot = merkleStore.map.getRoot();
-    let martialArtist = backingStore.getMartialArtistFromDocSnap({
+    state.pendingMartialArtist = backingStore.getMartialArtistFromDocSnap({
       id: 0,
       publicKey: args.address,
       firstName: '',
@@ -216,63 +211,59 @@ const functions = {
       modifiedDate: '',
       discipline: discipline,
     });
-    martialArtist.id = Field(merkleStore.nextID);
-    let hash = martialArtist.hash();
-    merkleStore.map.set(martialArtist.id, hash);
-    const witness = merkleStore.map.getWitness(martialArtist.id);
+    state.pendingMartialArtist.id = Field(merkleStore.nextID);
+    let hash = state.pendingMartialArtist.hash();
+    merkleStore.map.set(state.pendingMartialArtist.id, hash);
+    const witness = merkleStore.map.getWitness(state.pendingMartialArtist.id);
     console.log("creating worker transaction");
     console.log("address: ", args.address);
     const transaction = await Mina.transaction(
-      { sender: martialArtist.publicKey },
+      { sender: state.pendingMartialArtist.publicKey },
       () => {
-      state.zkapp!.addKarateka(hash, martialArtist.publicKey, witness, currentRoot);
+      state.zkapp!.addKarateka(hash, state.pendingMartialArtist!.publicKey, witness, currentRoot);
     }
     );
 
     state.transaction = transaction;
   },
-  updateKarateBackingStore: async (args: { address: string, rank: string }) => {
+  updateKarateBackingStore: async (args: {  }) => {
     let discipline = "Karate";
     let backingStore = new FirebaseBackingStore(discipline);
     const merkleStore = await backingStore.getMerkleMap();
-    let martialArtist = backingStore.getMartialArtistFromDocSnap({
-      id: 0,
-      publicKey: args.address,
-      firstName: '',
-      lastName: '',
-      rank: args.rank,
-      verified: false,
-      instructor: '',
-      createdDate: '',
-      modifiedDate: '',
-      discipline: discipline,
-    });
-    martialArtist.id = Field(merkleStore.nextID);
-    backingStore.upsert(martialArtist);
+    
+    backingStore.upsert(state.pendingMartialArtist!);
   },
   promoteBjjStudent: async (args: { studentPublicKey: string, rank: string, instructorPublicKey: string }) => { 
+    console.log("promoteBjjStudent from worker");
     let discipline = "BJJ";
+    console.log("worker: getting backing store");
     let backingStore = new FirebaseBackingStore(discipline);
     let studentKey = PublicKey.fromBase58(args.studentPublicKey);
+    console.log("worker: getting student key", studentKey.toBase58());
+
     let instructorKey = PublicKey.fromBase58(args.instructorPublicKey);
-    const student = await functions.get( {publicKey: studentKey, backingStore: backingStore });
+    console.log("worker: getting instructor key", instructorKey.toBase58());
+   console.log("worker: getting student");
+    state.pendingMartialArtist = await functions.get( {publicKey: studentKey, backingStore: backingStore });
+    console.log("worker: ", state.pendingMartialArtist);
+    console.log("worker: getting instructor");
     const instructor = await functions.get({publicKey: instructorKey, backingStore: backingStore });
     const merkleMapDB = await backingStore.getMerkleMap();
     const currentRoot = merkleMapDB.map.getRoot();
+    console.log("worker: before if statement"); 
+    if (state.pendingMartialArtist != null && instructor != null) {
+      console.log("worker: inside if statement");
+      const witness = merkleMapDB.map.getWitness(state.pendingMartialArtist.id);
 
-    if (student != null && instructor != null) {
-      const witness = merkleMapDB.map.getWitness(student.id);
+      state.pendingMartialArtist.rank = CircuitString.fromString(args.rank);
+      state.pendingMartialArtist.instructor = instructor.publicKey;
 
-      student.rank = CircuitString.fromString(args.rank);
-      student.instructor = instructor.publicKey;
-
-      const transaction = await Mina.transaction(
-        { sender: instructorKey },
-        () => {
-        state.zkapp!.promoteJuijiteiro(student.hash(), studentKey, instructorKey, instructor.rank, witness, currentRoot);
+      console.log("creating worker transaction");
+      const transaction = await Mina.transaction(() => {
+        state.zkapp!.promoteJuijiteiro(state.pendingMartialArtist!.hash(), studentKey, instructorKey, instructor.rank, witness, currentRoot);
       }
       );
-  
+      console.log("transaction created");
       state.transaction = transaction;
     }
   },
@@ -281,21 +272,21 @@ const functions = {
     let backingStore = new FirebaseBackingStore(discipline);
     let studentKey = PublicKey.fromBase58(args.studentPublicKey);
     let instructorKey = PublicKey.fromBase58(args.instructorPublicKey);
-    const student = await functions.get( {publicKey: studentKey, backingStore: backingStore });
+    state.pendingMartialArtist = await functions.get( {publicKey: studentKey, backingStore: backingStore });
     const instructor = await functions.get({publicKey: instructorKey, backingStore: backingStore });
     const merkleMapDB = await backingStore.getMerkleMap();
     const currentRoot = merkleMapDB.map.getRoot();
 
-    if (student != null && instructor != null) {
-      const witness = merkleMapDB.map.getWitness(student.id);
+    if (state.pendingMartialArtist != null && instructor != null) {
+      const witness = merkleMapDB.map.getWitness(state.pendingMartialArtist.id);
 
-      student.rank = CircuitString.fromString(args.rank);
-      student.instructor = instructor.publicKey;
+      state.pendingMartialArtist.rank = CircuitString.fromString(args.rank);
+      state.pendingMartialArtist.instructor = instructor.publicKey;
 
       const transaction = await Mina.transaction(
         { sender: instructorKey },
         () => {
-        state.zkapp!.promoteJuijiteiro(student.hash(), studentKey, instructorKey, instructor.rank, witness, currentRoot);
+        state.zkapp!.promoteJuijiteiro(state.pendingMartialArtist!.hash(), studentKey, instructorKey, instructor.rank, witness, currentRoot);
       }
       );
   
@@ -307,21 +298,21 @@ const functions = {
     let backingStore = new FirebaseBackingStore(discipline);
     let studentKey = PublicKey.fromBase58(args.studentPublicKey);
     let instructorKey = PublicKey.fromBase58(args.instructorPublicKey);
-    const student = await functions.get( {publicKey: studentKey, backingStore: backingStore });
+    state.pendingMartialArtist = await functions.get( {publicKey: studentKey, backingStore: backingStore });
     const instructor = await functions.get({publicKey: instructorKey, backingStore: backingStore });
     const merkleMapDB = await backingStore.getMerkleMap();
     const currentRoot = merkleMapDB.map.getRoot();
 
-    if (student != null && instructor != null) {
-      const witness = merkleMapDB.map.getWitness(student.id);
+    if (state.pendingMartialArtist != null && instructor != null) {
+      const witness = merkleMapDB.map.getWitness(state.pendingMartialArtist.id);
 
-      student.rank = CircuitString.fromString(args.rank);
-      student.instructor = instructor.publicKey;
+      state.pendingMartialArtist.rank = CircuitString.fromString(args.rank);
+      state.pendingMartialArtist.instructor = instructor.publicKey;
 
       const transaction = await Mina.transaction(
         { sender: instructorKey },
         () => {
-        state.zkapp!.promoteJuijiteiro(student.hash(), studentKey, instructorKey, instructor.rank, witness, currentRoot);
+        state.zkapp!.promoteJuijiteiro(state.pendingMartialArtist!.hash(), studentKey, instructorKey, instructor.rank, witness, currentRoot);
       }
       );
   
@@ -333,7 +324,7 @@ const functions = {
     if (ma) {
         return ma;
       } else {
-        return undefined;
+        return null;
       }
   },
   proveUpdateTransaction: async (args: {}) => {

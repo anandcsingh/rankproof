@@ -21,6 +21,21 @@ export class FirebaseBackingStore extends BackingStore {
     this.collectionName = collectionName;
   }
 
+  async getMerkleMap(): Promise<MerkleMapDatabase> {
+    let map = new MerkleMap();
+    let index = 0;
+
+    const all = await this.getAllHashes();
+    for (let [key, value] of all) {
+      map.set(Field(++index), value);
+    }
+    return {
+      map: map,
+      nextID: BigInt(index + 1),
+      length: all.size,
+    };
+  }
+
   async clearStore(): Promise<void> {
     const maQuery = query(collection(database, this.collectionName));
     const querySnapshot = await getDocs(maQuery);
@@ -94,6 +109,7 @@ export class FirebaseBackingStore extends BackingStore {
         PublicKey.fromBase58(doc.data().publicKey),
         Field(doc.data().hash)
       );
+      //console.log(doc.data().id, 'hash: ', doc.data().hash);
     });
     return all;
   }

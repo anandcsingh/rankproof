@@ -19,6 +19,7 @@ let expectedRoot = Field(new MerkleMap().getRoot()).toString();
 let actualRoot = map.getRoot().toString();
 let emptyAssertion = actualRoot == expectedRoot;
 console.log(`actualRoot: ${actualRoot}`);
+console.log(`expectedRoot: ${expectedRoot}`);
 console.log(`${emptyAssertion}: Can create empty MerkleMap`);
 
 const [deployerAccount, studentAccount, instructorAccount] =
@@ -33,6 +34,7 @@ expectedRoot =
 actualRoot = map.getRoot().toString();
 let addedAssertion = actualRoot == expectedRoot;
 console.log(`actualRoot: ${actualRoot}`);
+console.log(`expectedRoot: ${expectedRoot}`);
 console.log(`${addedAssertion}: Can create MerkleMap with one Martial Artists`);
 
 let instructor = data.getInstructor(instructorAccount);
@@ -43,6 +45,7 @@ expectedRoot =
 actualRoot = map.getRoot().toString();
 addedAssertion = actualRoot == expectedRoot;
 console.log(`actualRoot: ${actualRoot}`);
+console.log(`expectedRoot: ${expectedRoot}`);
 console.log(
   `${addedAssertion}: Can create MerkleMap with multiple Martial Artists`
 );
@@ -57,6 +60,7 @@ if (studentRetrieved) {
   actualRoot = map.getRoot().toString();
   addedAssertion = actualRoot == expectedRoot;
   console.log(`actualRoot: ${actualRoot}`);
+  console.log(`expectedRoot: ${expectedRoot}`);
   console.log(
     `${addedAssertion}: Can change Martial Artist and generate valid MerkleMap`
   );

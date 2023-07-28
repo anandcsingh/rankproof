@@ -79,6 +79,7 @@ const functions = {
     // state.transaction = transaction;
   },
   add: async (args: { address: string, rank: string }) => {
+    console.log("creating worker transaction");
     let backingStore = new FirebaseBackingStore("BJJ");
     const merkleStore = await backingStore.getMerkleMap();
     const currentRoot = merkleStore.map.getRoot();
