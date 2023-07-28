@@ -67,7 +67,7 @@ const InstructorMartialArts = () => {
 
     <div>
       {state.show && state.items.map((i, index) => (
-        <div className="collapse collapse-plus bg-gray-100 mb-5">
+        <div key={index} className="collapse collapse-plus bg-gray-100 mb-5">
           <input type="radio" name="my-accordion-3" className="w-full" />
           <div className="collapse-title text-xl font-medium text-primary">
             {i.discipline}

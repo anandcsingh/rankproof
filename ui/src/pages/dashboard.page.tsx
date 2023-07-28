@@ -6,6 +6,7 @@ import InstructorsDen from './instructorsden.page';
 import QRCodeCreator from '@/components/QRCodeCreator';
 import React, { useState } from 'react';
 import Authentication from '@/modules/Authentication';
+import DashboardActions from '@/components/sections/DashboardActions';
 
 export default function Dashboard() {
 
@@ -26,7 +27,8 @@ export default function Dashboard() {
 
   return (
     <Master>
-      <AuthPage validate={false}>
+      <AuthPage validate={true}>
+        <DashboardActions />
         <div className="bg-white lg:py-10 min-h-screen">
           <section className="bg-white place-self-center lg:col-span-7 space-y-8">
             <div className="m-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
