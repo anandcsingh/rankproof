@@ -3,8 +3,25 @@ import { AuthPage } from '../components/layout/AuthPage'
 import Link from 'next/link'
 import Add from './add.page';
 import InstructorsDen from './instructorsden.page';
+import QRCodeCreator from '@/components/QRCodeCreator';
+import React, { useState } from 'react';
+import Authentication from '@/modules/Authentication';
 
 export default function Dashboard() {
+
+  const [address, setAddress] = useState('');
+  const [showAddress, setShowAddress] = useState(false);
+  const showAddressModalRef = React.useRef<HTMLDivElement>(null);
+  const showAddressModal = async () => {
+    let tempAddress = 'B62qjBcYihfVGHyQGuxgG5m4QbPrq6jEEMys5p4fe4Pt33CmWy7Bvuq';// Authentication.address;
+    setAddress(tempAddress);
+    setShowAddress(true);
+    try {
+    (window as any).share_address_modal.showModal();
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
 
   return (
@@ -31,9 +48,9 @@ export default function Dashboard() {
 
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
                   {/* Open the modal using ID.showModal() method */}
-                  <a
+                  <a onClick={showAddressModal}
                     className="block rounded-xl border border-gray-100 p-4 shadow-sm hover:border-gray-200 hover:ring-1 hover:ring-gray-200 focus:outline-none focus:ring"
-                    href="#my_modal_8"
+                    href="#"
                   >
                   <div className="modal" id="my_modal_8">
                     <div className="modal-box bg-white">
@@ -118,9 +135,10 @@ export default function Dashboard() {
                   </a>
 
                   <a
-                    className="block rounded-xl border border-gray-100 p-4 shadow-sm hover:border-gray-200 hover:ring-1 hover:ring-gray-200 focus:outline-none focus:ring"
-                    href="/lineage"
+                    className="cursor-pointer block rounded-xl border border-gray-100 p-4 shadow-sm hover:border-gray-200 hover:ring-1 hover:ring-gray-200 focus:outline-none focus:ring"
+                    onClick={showAddressModal}
                   >
+                    
                     <span className="inline-block rounded-lg bg-gray-50 p-3">
                       <svg
                         className="h-6 w-6"
@@ -142,13 +160,23 @@ export default function Dashboard() {
                       </svg>
                     </span>
 
-                    <h2 className="mt-2 font-bold">Lineage</h2>
+                    <h2 className="mt-2 font-bold">My Address</h2>
 
                     <p className="hidden sm:mt-1 sm:block sm:text-sm sm:text-gray-600">
-                      View Lineage.
+                      View or share my MINA address.
                     </p>
                   </a>
+                  <dialog  className="modal" id="share_address_modal">
+                  <form method="dialog" className="modal-box bg-white w-1/2 max-w-5xl">
 
+                    <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                     {showAddress && <QRCodeCreator address={address}  /> }
+                      
+                    </form>
+                    <form method="dialog" className="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
                   <a
                     className="block rounded-xl border border-gray-100 p-4 shadow-sm hover:border-gray-200 hover:ring-1 hover:ring-gray-200 focus:outline-none focus:ring"
                     href="/lineage"
