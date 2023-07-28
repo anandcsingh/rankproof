@@ -66,23 +66,17 @@ const InstructorMartialArts = () => {
   return (
 
     <div>
-      {state.show &&
-        <div>
-          <div>
-
-            {state.items.map((i, index) => (
-              <div>
-                <h1>{i.discipline}</h1>
-                <StudentList studentList={i.students} />
-                <div className="divider"></div>
-
-              </div>
-
-            ))}
-
+      {state.show && state.items.map((i, index) => (
+        <div className="collapse collapse-plus bg-gray-100 mb-5">
+          <input type="radio" name="my-accordion-3" className="w-full" />
+          <div className="collapse-title text-xl font-medium text-primary">
+            {i.discipline}
+          </div>
+          <div className="collapse-content">
+            <StudentList studentList={i.students} />
           </div>
         </div>
-      }
+      ))}
     </div>
   );
 }

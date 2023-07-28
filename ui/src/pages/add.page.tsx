@@ -18,7 +18,7 @@ import { RankProofRepository } from '../../../contracts/build/src/models/RankPro
 import AddBjjRankWorkerClient from '@/modules/workers/bjj/AddBjjRankWorkerClient';
 import AllMaWorkerClient from '@/modules/workers/AllMaWorkerClient';
 
-export default function Add() {
+const Add = () => {
 
   let [state, setState] = useState({  
     show: false,
@@ -121,8 +121,7 @@ export default function Add() {
   }
 
   return (
-    <Master>
-      <AuthPage validate={true}>
+    <div>
         <p className={styles.tagline}>
           Add your Martial Art
         </p>
@@ -202,9 +201,7 @@ export default function Add() {
           :
           <div className="alert">Loading...</div>
 }
-        
-
-      </AuthPage>
-    </Master>
+    </div>
   );
 }
+export default Add;
