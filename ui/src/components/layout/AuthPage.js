@@ -38,6 +38,10 @@ const AuthPage = ({ validate, children }) => {
     authentication: null,
   });
 
+  const [userAuthenticated, setUserAuthenticated] = useState(false);
+  const [userAddress, setUserAddress] = useState('');
+  const [firstFetchAccount, setFirstFetchAccount] = useState(false);
+
   useEffect(() => {
 
     function timeout(seconds) {
@@ -96,10 +100,15 @@ const AuthPage = ({ validate, children }) => {
             const hasBeenSetup = Authentication.setupContracts();
             //const hasBeenSetup = Authentication.setupBjjPromoteContracts();
             setState({ ...state, hasBeenSetup: hasBeenSetup, showLoadingContracts: false, showFundAccount: false, showCreateWallet: false, hasWallet: true, snarkyLoaded: true, showRequestingAccount: false, userAddress: Authentication.address, authentication: Authentication });
+            setUserAuthenticated(true);
+            setUserAddress(Authentication.address);
 
-            // console.log('fetching account');
-            // await Authentication.zkClient.fetchAccount({ publicKey: PublicKey.fromBase58(Authentication.contractAddress) });
-            // console.log('fetching account done');
+
+
+            console.log('fetching account');
+            await Authentication.zkClient.fetchAccount({ publicKey: PublicKey.fromBase58(Authentication.contractAddress) });
+            console.log('fetching account done');
+            setFirstFetchAccount(true);
             // console.log('fetching storage root');
             // let root = await Authentication.zkClient.getNum();
             // console.log("storage root", root.toString());
@@ -187,7 +196,7 @@ const AuthPage = ({ validate, children }) => {
           </section>
           :
           <div>
-             <AuthContext.Provider value={{ state, setState }}>
+             <AuthContext.Provider value={{ userAuthenticated, userAddress, firstFetchAccount }}>
               {children}
             </AuthContext.Provider>
           </div>
