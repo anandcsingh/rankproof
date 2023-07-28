@@ -1,6 +1,8 @@
 import Master from '../components/layout/Master'
-import {AuthPage} from '../components/layout/AuthPage'
+import { AuthPage } from '../components/layout/AuthPage'
 import Link from 'next/link'
+import Add from './add.page';
+import InstructorsDen from './instructorsden.page';
 
 export default function Dashboard() {
 
@@ -28,10 +30,20 @@ export default function Dashboard() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                  {/* Open the modal using ID.showModal() method */}
                   <a
                     className="block rounded-xl border border-gray-100 p-4 shadow-sm hover:border-gray-200 hover:ring-1 hover:ring-gray-200 focus:outline-none focus:ring"
-                    href="/accountant"
+                    href="#my_modal_8"
                   >
+                  <div className="modal" id="my_modal_8">
+                    <div className="modal-box bg-white">
+                      <Add />
+                      <div className="modal-action">
+                      <a href="#" className="btn btn-primary">Close</a>
+                      </div>
+                    </div>
+                </div>
+                  
                     <span className="inline-block rounded-lg bg-gray-50 p-3">
                       <svg
                         className="h-6 w-6"
@@ -59,11 +71,24 @@ export default function Dashboard() {
                       Add a Student.
                     </p>
                   </a>
-
+                  <dialog id="my_modal_2" className="modal">
+                    <form method="dialog" className="modal-box w-11/12 max-w-5xl bg-white">
+                      <header className="text-center">
+                        <h2 className="text-3xl font-bold sm:text-4xl">Martial Arts Stats</h2>
+                      </header>
+                      <InstructorsDen/>
+                      <div className="modal-action">
+                        {/* if there is a button in form, it will close the modal */}
+                        <button className="btn btn-primary">Close</button>
+                      </div>
+                    </form>
+                  </dialog>
                   <a
                     className="block rounded-xl border border-gray-100 p-4 shadow-sm hover:border-gray-200 hover:ring-1 hover:ring-gray-200 focus:outline-none focus:ring"
-                    href="/accountant"
+                    href="#"
+                    onClick={()=>window.my_modal_2.showModal()}
                   >
+                  
                     <span className="inline-block rounded-lg bg-gray-50 p-3">
                       <svg
                         className="h-6 w-6"
@@ -94,7 +119,7 @@ export default function Dashboard() {
 
                   <a
                     className="block rounded-xl border border-gray-100 p-4 shadow-sm hover:border-gray-200 hover:ring-1 hover:ring-gray-200 focus:outline-none focus:ring"
-                    href="/accountant"
+                    href="/lineage"
                   >
                     <span className="inline-block rounded-lg bg-gray-50 p-3">
                       <svg
@@ -126,7 +151,7 @@ export default function Dashboard() {
 
                   <a
                     className="block rounded-xl border border-gray-100 p-4 shadow-sm hover:border-gray-200 hover:ring-1 hover:ring-gray-200 focus:outline-none focus:ring"
-                    href="/accountant"
+                    href="/lineage"
                   >
                     <span className="inline-block rounded-lg bg-gray-50 p-3">
                       <svg
@@ -149,7 +174,7 @@ export default function Dashboard() {
                       </svg>
                     </span>
 
-                    <h2 className="mt-2 font-bold">Accountant</h2>
+                    <h2 className="mt-2 font-bold">Promote</h2>
 
                     <p className="hidden sm:mt-1 sm:block sm:text-sm sm:text-gray-600">
                       Lorem ipsum dolor sit amet consectetur.
@@ -181,7 +206,7 @@ export default function Dashboard() {
                       </svg>
                     </span>
 
-                    <h2 className="mt-2 font-bold">Accountant</h2>
+                    <h2 className="mt-2 font-bold">Revoke</h2>
 
                     <p className="hidden sm:mt-1 sm:block sm:text-sm sm:text-gray-600">
                       Lorem ipsum dolor sit amet consectetur.
@@ -213,7 +238,7 @@ export default function Dashboard() {
                       </svg>
                     </span>
 
-                    <h2 className="mt-2 font-bold">Accountant</h2>
+                    <h2 className="mt-2 font-bold">Prove</h2>
 
                     <p className="hidden sm:mt-1 sm:block sm:text-sm sm:text-gray-600">
                       Lorem ipsum dolor sit amet consectetur.
@@ -274,7 +299,7 @@ export default function Dashboard() {
             </div>
           </section>
         </div>
-        
+
       </AuthPage>
     </Master>
   );

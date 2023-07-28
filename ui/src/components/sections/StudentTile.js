@@ -29,19 +29,13 @@ const StudentTile = ({
   }
 
     return (
-        <Card className="max-w-sm" href="#">
-        <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-          <p>
-          {shortName(student.publicKey)}
-          </p>
-        </h5>
-        <p className="font-normal text-gray-700 dark:text-gray-400">
-          <p>
-          {student.rank}
-          </p>
-        </p>
-      </Card>
-       
+        <div className="card w-50 bg-white shadow-xl">
+          <figure className="bg-gray-100"></figure>
+          <div className="card-body">
+            <h2 className="card-title">{shortName(student.publicKey)}</h2>
+            <p className="text-primary">{student.rank}</p>
+          </div>
+        </div>      
     );
 }
 
