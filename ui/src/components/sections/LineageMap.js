@@ -8,7 +8,7 @@ import { Disciplines } from '../../../../contracts/build/src/models/MartialArtis
 import { FirebaseBackingStore } from '../../../../contracts/build/src/models/firebase/FirebaseBackingStore';
 import {Authentication } from '../../modules/Authentication'
 
-const LineageMap = () => {
+const LineageMap = ({parentDiscipline}) => {
 
     const [data, setData] = useState(null);
     const [show, setShow] = useState(false);
@@ -30,7 +30,7 @@ const LineageMap = () => {
 
   useEffect(() => {
     (async () => {
-    let discipline = Disciplines.BJJ;
+    let discipline = parentDiscipline;//Disciplines.BJJ;
     let backingStore = new FirebaseBackingStore(discipline);
     let data = [];
     let idMap = {};
