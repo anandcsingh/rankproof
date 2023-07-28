@@ -50,15 +50,15 @@ export default function Dashboard() {
     let currentRoot = merkleStore.map.getRoot().toString();
     console.log(`bjj backing store root: ${currentRoot}`);
 
-    backingStore = new FirebaseBackingStore("Judo");
-    merkleStore = await backingStore.getMerkleMap();
-    currentRoot = merkleStore.map.getRoot().toString();
-    console.log(`judo backing store root: ${currentRoot}`);
+    // backingStore = new FirebaseBackingStore("Judo");
+    // merkleStore = await backingStore.getMerkleMap();
+    // currentRoot = merkleStore.map.getRoot().toString();
+    // console.log(`judo backing store root: ${currentRoot}`);
 
-    backingStore = new FirebaseBackingStore("Karate");
-    merkleStore = await backingStore.getMerkleMap();
-    currentRoot = merkleStore.map.getRoot().toString();
-    console.log(`karate backing store root: ${currentRoot}`);
+    // backingStore = new FirebaseBackingStore("Karate");
+    // merkleStore = await backingStore.getMerkleMap();
+    // currentRoot = merkleStore.map.getRoot().toString();
+    // console.log(`karate backing store root: ${currentRoot}`);
 
   }
   const getMartialArt = async (discipline: string) => {

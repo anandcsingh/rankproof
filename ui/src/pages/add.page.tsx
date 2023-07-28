@@ -44,13 +44,10 @@ export default function Add() {
 
   const promoteMartialArt = async (event: any) => {
 
-    
-    //let studentID = PublicKey.fromBase58("B62qiaZAHzmpwg2CxK9MFhvJLh2A8TJPqYMAmKmy2D8puRWZJHf5Dq4");
-    let studentID = Authentication.address;
-    let temp = studentID;
-    studentID = instructorValue;
-    setInstructorValue(temp);
-
+    let instructorID = Authentication.address;
+    let studentID = instructorValue; // using the same form field for instructor and student
+    console.log("instructorID", instructorID);
+    console.log("studentID", studentID);
     let client = Authentication.zkClient! as AllMaWorkerClient;
     
       console.log('promoting martial art...', disciplineValue, rankValue);
@@ -63,13 +60,13 @@ export default function Add() {
       // console.log(`fetching account done ${Authentication.contractAddress}`);
       if(disciplineValue == "BJJ") {
         console.log("promoting bjj...");
-        await client.promoteBjjStudent(studentID, rankValue, instructorValue);
+        await client.promoteBjjStudent(studentID, rankValue, instructorID);
       } else if(disciplineValue == "Judo") {
         console.log("promoting judo...");
-        await client.promoteJudoStudent(studentID, rankValue, instructorValue);
+        await client.promoteJudoStudent(studentID, rankValue, instructorID);
       } else if(disciplineValue == "Karate") {
         console.log("promoting karate...");
-        await client.promoteKarateStudent(studentID, rankValue, instructorValue);
+        await client.promoteKarateStudent(studentID, rankValue, instructorID);
       }
       console.log("proving update transaction...");
       await client.proveUpdateTransaction();
@@ -77,6 +74,7 @@ export default function Add() {
       await client.sendTransaction();
       console.log("transaction sent");
   
+      //console.log("not updating backing store...");
       if(disciplineValue == "BJJ") {
       await client.updateBjjBackingStore(studentID, rankValue);
       } else if (disciplineValue == "Judo") {

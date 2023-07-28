@@ -7,6 +7,7 @@ import {
   fetchAccount,
   MerkleMapWitness,
   CircuitString,
+  Bool,
 } from 'snarkyjs'
 import { BackingStore, MerkleMapDatabase } from '../../../../contracts/build/src/models/MartialArtistRepository.js';
 
@@ -234,32 +235,29 @@ const functions = {
     backingStore.upsert(state.pendingMartialArtist!);
   },
   promoteBjjStudent: async (args: { studentPublicKey: string, rank: string, instructorPublicKey: string }) => { 
-    console.log("promoteBjjStudent from worker");
     let discipline = "BJJ";
-    console.log("worker: getting backing store");
     let backingStore = new FirebaseBackingStore(discipline);
     let studentKey = PublicKey.fromBase58(args.studentPublicKey);
-    console.log("worker: getting student key", studentKey.toBase58());
 
     let instructorKey = PublicKey.fromBase58(args.instructorPublicKey);
-    console.log("worker: getting instructor key", instructorKey.toBase58());
-   console.log("worker: getting student");
     state.pendingMartialArtist = await functions.get( {publicKey: studentKey, backingStore: backingStore });
-    console.log("worker: ", state.pendingMartialArtist);
-    console.log("worker: getting instructor");
     const instructor = await functions.get({publicKey: instructorKey, backingStore: backingStore });
     const merkleMapDB = await backingStore.getMerkleMap();
     const currentRoot = merkleMapDB.map.getRoot();
-    console.log("worker: before if statement"); 
     if (state.pendingMartialArtist != null && instructor != null) {
-      console.log("worker: inside if statement");
       const witness = merkleMapDB.map.getWitness(state.pendingMartialArtist.id);
 
       state.pendingMartialArtist.rank = CircuitString.fromString(args.rank);
       state.pendingMartialArtist.instructor = instructor.publicKey;
-
+      state.pendingMartialArtist.verified = Bool(true);
+      
       console.log("creating worker transaction");
-      const transaction = await Mina.transaction(() => {
+      console.log("student hash: ", state.pendingMartialArtist.hash().toString());
+      console.log("Student Key: ", studentKey.toBase58())
+      console.log("Instructor Key: ", instructorKey.toBase58());
+      console.log("Instructor Rank: ", instructor.rank.toString());
+      const transaction = await Mina.transaction({ sender: instructorKey },
+        () => {
         state.zkapp!.promoteJuijiteiro(state.pendingMartialArtist!.hash(), studentKey, instructorKey, instructor.rank, witness, currentRoot);
       }
       );
@@ -271,25 +269,30 @@ const functions = {
     let discipline = "Judo";
     let backingStore = new FirebaseBackingStore(discipline);
     let studentKey = PublicKey.fromBase58(args.studentPublicKey);
+
     let instructorKey = PublicKey.fromBase58(args.instructorPublicKey);
     state.pendingMartialArtist = await functions.get( {publicKey: studentKey, backingStore: backingStore });
     const instructor = await functions.get({publicKey: instructorKey, backingStore: backingStore });
     const merkleMapDB = await backingStore.getMerkleMap();
     const currentRoot = merkleMapDB.map.getRoot();
-
     if (state.pendingMartialArtist != null && instructor != null) {
       const witness = merkleMapDB.map.getWitness(state.pendingMartialArtist.id);
 
       state.pendingMartialArtist.rank = CircuitString.fromString(args.rank);
       state.pendingMartialArtist.instructor = instructor.publicKey;
-
-      const transaction = await Mina.transaction(
-        { sender: instructorKey },
+      state.pendingMartialArtist.verified = Bool(true);
+      
+      console.log("creating worker transaction");
+      console.log("student hash: ", state.pendingMartialArtist.hash().toString());
+      console.log("Student Key: ", studentKey.toBase58())
+      console.log("Instructor Key: ", instructorKey.toBase58());
+      console.log("Instructor Rank: ", instructor.rank.toString());
+      const transaction = await Mina.transaction({ sender: instructorKey },
         () => {
-        state.zkapp!.promoteJuijiteiro(state.pendingMartialArtist!.hash(), studentKey, instructorKey, instructor.rank, witness, currentRoot);
+        state.zkapp!.promoteJudoka(state.pendingMartialArtist!.hash(), studentKey, instructorKey, instructor.rank, witness, currentRoot);
       }
       );
-  
+      console.log("transaction created");
       state.transaction = transaction;
     }
   },
@@ -297,25 +300,30 @@ const functions = {
     let discipline = "Karate";
     let backingStore = new FirebaseBackingStore(discipline);
     let studentKey = PublicKey.fromBase58(args.studentPublicKey);
+
     let instructorKey = PublicKey.fromBase58(args.instructorPublicKey);
     state.pendingMartialArtist = await functions.get( {publicKey: studentKey, backingStore: backingStore });
     const instructor = await functions.get({publicKey: instructorKey, backingStore: backingStore });
     const merkleMapDB = await backingStore.getMerkleMap();
     const currentRoot = merkleMapDB.map.getRoot();
-
     if (state.pendingMartialArtist != null && instructor != null) {
       const witness = merkleMapDB.map.getWitness(state.pendingMartialArtist.id);
 
       state.pendingMartialArtist.rank = CircuitString.fromString(args.rank);
       state.pendingMartialArtist.instructor = instructor.publicKey;
-
-      const transaction = await Mina.transaction(
-        { sender: instructorKey },
+      state.pendingMartialArtist.verified = Bool(true);
+      
+      console.log("creating worker transaction");
+      console.log("student hash: ", state.pendingMartialArtist.hash().toString());
+      console.log("Student Key: ", studentKey.toBase58())
+      console.log("Instructor Key: ", instructorKey.toBase58());
+      console.log("Instructor Rank: ", instructor.rank.toString());
+      const transaction = await Mina.transaction({ sender: instructorKey },
         () => {
-        state.zkapp!.promoteJuijiteiro(state.pendingMartialArtist!.hash(), studentKey, instructorKey, instructor.rank, witness, currentRoot);
+        state.zkapp!.promoteKarateka(state.pendingMartialArtist!.hash(), studentKey, instructorKey, instructor.rank, witness, currentRoot);
       }
       );
-  
+      console.log("transaction created");
       state.transaction = transaction;
     }
   },
