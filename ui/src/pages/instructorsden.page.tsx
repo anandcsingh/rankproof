@@ -6,7 +6,7 @@ import styles from '../styles/Home.module.css';
 import InstructorMartialArts from '../components/sections/InstructorMartialArts';
 
 const InstructorsDen = () => {
-
+  console.log("InstructorsDen starting");
   return (
     <div>
       <div className="mr-auto pt-24 place-self-center lg:col-span-7 space-y-4">

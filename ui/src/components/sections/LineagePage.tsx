@@ -12,7 +12,7 @@ const LineagePage = () => {
   return (
     <div className="lg:py-10 min-h-screen">
     <section className="place-self-center lg:col-span-7 space-y-8">
-<div className="tabs flex pt-20">
+<div className="tabs flex">
 {tabs.map((tab, index) => (
   <a
     key={index}
