@@ -9,7 +9,7 @@ export default function DashboardSkeleton() {
     return (
         <Master>
             <AuthPage validate={true}>
-                <DashboardContainer />
+                {/* <DashboardContainer /> */}
                 
             </AuthPage>
         </Master>

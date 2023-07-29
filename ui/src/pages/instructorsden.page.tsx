@@ -10,7 +10,7 @@ const InstructorsDen = () => {
   return (
     <div>
       <div className="mr-auto pt-24 place-self-center lg:col-span-7 space-y-4">
-        <InstructorMartialArts />
+        {/* <InstructorMartialArts /> */}
       </div>
 
     </div>
