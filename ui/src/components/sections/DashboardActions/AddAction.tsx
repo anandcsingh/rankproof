@@ -8,11 +8,12 @@ const AddAction: React.FC<DashboardActionsProps> = ({ isInstructor }) => {
         <a className="block rounded-xl border border-gray-100 p-4 shadow-sm hover:border-gray-200 hover:ring-1 hover:ring-gray-200 focus:outline-none focus:ring"
         href="#my_modal_8">
         <div className="modal" id="my_modal_8">
+        <div className="modal-action">
+                        <a href="#" className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">X</a>
+                    </div>
           <div className="modal-box bg-white">
             <Add />
-            <div className="modal-action">
-              <a href="#" className="btn btn-primary">Close</a>
-            </div>
+            
           </div>
         </div>
 

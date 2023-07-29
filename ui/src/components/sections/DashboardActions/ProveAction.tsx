@@ -1,11 +1,13 @@
+import Add from "@/pages/add.page";
 import { DashboardActionsProps } from "./DashboardActions";
 
 const ProveAction: React.FC<DashboardActionsProps> = ({ isInstructor }) => {
 
     return (
+        <div>
 <a
                     className="block rounded-xl border border-gray-100 p-4 shadow-sm hover:border-gray-200 hover:ring-1 hover:ring-gray-200 focus:outline-none focus:ring"
-                    href="/accountant"
+                    href="#prove_modal"
                   >
                     <span className="inline-block rounded-lg bg-gray-50 p-3">
                       <svg
@@ -34,6 +36,19 @@ const ProveAction: React.FC<DashboardActionsProps> = ({ isInstructor }) => {
                       Prove my rank to another practitioner.
                     </p>
                   </a>
+
+                  
+            <div className="modal" id="prove_modal">
+            <div className="modal-action">
+                <a href="#" className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">X</a>
+            </div>
+            <div className="modal-box bg-white">
+                <h2>Prove</h2>
+                <Add />
+
+            </div>
+        </div>
+    </div>
     );
 }
 export default ProveAction;

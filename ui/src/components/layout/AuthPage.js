@@ -9,6 +9,7 @@ import { useEffect, useState, createContext } from "react";
 import Snackbar from '../../modules/Snackbar'
 import  AllMaWorkerClient from '../../modules/workers/AllMaWorkerClient'
 import RankedBjjWorkerClient from '../../modules/workers/rankedBjjWorkerClient';
+import DashboardHeader from './DashboardHeader'
 
 import {
   PublicKey,
@@ -140,6 +141,8 @@ const AuthPage = ({ validate, children }) => {
     // }
   }
   return (
+    <>
+    <DashboardHeader />
     <div className='rankproof-page'>
 
       <div className='rankproof-content-wrap'>
@@ -162,23 +165,18 @@ const AuthPage = ({ validate, children }) => {
                       {state.hasWallet != null && !state.hasWallet &&
                         <div className='text-color-warning'>
                           Could not find a wallet. Install Auro wallet here <a href='https://www.aurowallet.com/' target="_blank" rel="noreferrer">Auro wallet</a>
-                        </div>
-                      }
+                        </div>}
 
                       {state.showRequestingAccount &&
-                        <div>Requesting account</div>
-                      }
+                        <div>Requesting account</div>}
 
                       {state.showCreateWallet &&
-                        <div className='text-color-warning'>Please create or restore a wallet first!</div>
-                      }
+                        <div className='text-color-warning'>Please create or restore a wallet first!</div>}
                       {state.showFundAccount &&
-                        <div className='text-color-warning'>Your account does not exist, visit the <a href="https://faucet.minaprotocol.com/" target="_blank" rel="noreferrer">faucet</a> to fund it</div>
-                      }
+                        <div className='text-color-warning'>Your account does not exist, visit the <a href="https://faucet.minaprotocol.com/" target="_blank" rel="noreferrer">faucet</a> to fund it</div>}
 
                       {state.showLoadingContracts &&
-                        <div>Loading contracts...</div>
-                      }
+                        <div>Loading contracts...</div>}
 
 
 
@@ -196,15 +194,14 @@ const AuthPage = ({ validate, children }) => {
           </section>
           :
           <div>
-             <AuthContext.Provider value={{ userAuthenticated, userAddress, firstFetchAccount }}>
+            <AuthContext.Provider value={{ userAuthenticated, userAddress, firstFetchAccount }}>
               {children}
             </AuthContext.Provider>
-          </div>
-        }
+          </div>}
 
       </div>
 
-    </div>
+    </div></>
 
   );
 

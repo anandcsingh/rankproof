@@ -1,10 +1,12 @@
+import InstructorsDen from "@/pages/instructorsden.page";
 import { DashboardActionsProps } from "./DashboardActions";
 
     const InstructorsAction: React.FC<DashboardActionsProps> = ({ isInstructor }) => {
 
     return (
+        <div>
 <a className="block rounded-xl border border-gray-100 p-4 shadow-sm hover:border-gray-200 hover:ring-1 hover:ring-gray-200 focus:outline-none focus:ring"
-        href="#my_modal_2">
+        href="#instructorsarea">
 
         <span className="inline-block rounded-lg bg-gray-50 p-3">
           <svg
@@ -33,6 +35,21 @@ import { DashboardActionsProps } from "./DashboardActions";
           Manage my students.
         </p>
       </a>
+
+      <dialog id="instructorsarea" className="modal">
+                    <form method="dialog" className="modal-box w-11/12 max-w-5xl bg-white">
+                      <header className="text-center">
+                        <h2 className="text-3xl font-bold sm:text-4xl">Martial Arts Stats</h2>
+                      </header>
+                      <InstructorsDen />
+                      <div className="modal-action">
+                        {/* if there is a button in form, it will close the modal */}
+                        <button className="btn btn-primary">Close</button>
+                      </div>
+                    </form>
+                  </dialog>
+
+      </div>
     );
     
 }
