@@ -47,6 +47,12 @@ const DashboardContainer = () => {
                     <div className="grid grid-cols-1 gap-y-8 lg:grid-cols-2 lg:items-center lg:gap-x-16">
                      {disciplinesLoaded && 
                 <DashboardProfile disciplines={disciplines} />}
+                {!disciplinesLoaded && 
+                        <div className='m-auto'>
+<span className="loading loading-dots loading-lg"></span>
+                            
+                            </div>
+                            }
                 </div>
                 </div>
             </section>
@@ -56,6 +62,12 @@ const DashboardContainer = () => {
                     <div className="grid grid-cols-1 gap-y-8 lg:grid-cols-2 lg:items-center lg:gap-x-16">
                         <DashboardLineageHero />
                         {disciplinesLoaded && <DashboardActions isInstructor={isInstructor} />}
+                        {!disciplinesLoaded && 
+                        <div className='m-auto'>
+<span className="loading loading-dots loading-lg"></span>
+                            
+                            </div>
+                            }
                     </div>
                 </div>
             </section>

@@ -24,7 +24,7 @@ import QRCodeCreator from "@/components/QRCodeCreator";
             <div>
 <a
         className="cursor-pointer block rounded-xl border border-gray-100 p-4 shadow-sm hover:border-gray-200 hover:ring-1 hover:ring-gray-200 focus:outline-none focus:ring"
-        onClick={showAddressModal}
+        href="#share_address_modal"
       >
 
         <span className="inline-block rounded-lg bg-gray-50 p-3">
@@ -54,7 +54,25 @@ import QRCodeCreator from "@/components/QRCodeCreator";
           View or share my MINA address.
         </p>
       </a>
-      <dialog className="modal" id="share_address_modal">
+
+      <div className='modals-area'>
+                <dialog className="modal" id="share_address_modal">
+                    <form method="dialog" className="modal-box bg-white w-11/12 max-w-5xl">
+                        <div className="modal-action">
+                            <a href="#" className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">X</a>
+                        </div>
+                        <QRCodeCreator address={address} />
+                    </form>
+                    <form method="dialog" className="modal-backdrop">
+                        <button>close</button>
+                    </form>
+                </dialog>
+            </div>
+
+      
+
+
+      {/* <dialog className="modal" id="share_address_modal">
                     <form method="dialog" className="modal-box bg-white w-1/2 max-w-5xl">
 
                       <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
@@ -64,7 +82,7 @@ import QRCodeCreator from "@/components/QRCodeCreator";
                     <form method="dialog" className="modal-backdrop">
                       <button>close</button>
                     </form>
-                  </dialog>
+                  </dialog> */}
       </div>
         );
     }

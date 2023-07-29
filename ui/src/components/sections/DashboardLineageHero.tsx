@@ -19,49 +19,19 @@ const DashboardLineageHero = () => {
             </div>
 
             <div className='modals-area'>
-          <dialog className="modal" id="lineage_address_modal1">
-            <form method="dialog" className="modal-box bg-white w-11/12 max-w-5xl">
-            <div className="modal-action">
-                        <a href="#" className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">X</a>
-                    </div>
-              {/* <div className="modal-action">
-                <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={() => (window as any).lineage_address_modal.close()}>✕</button>
-              </div> */}
-              <LineagePage />
-            </form>
-            <form method="dialog" className="modal-backdrop">
-              <button>close</button>
-            </form>
-          </dialog>
-        </div>
-
-            <div className="modal" id="my_modal_18">
-                <div className="modal-box bg-white w-1/2 max-w-5xl">
-                <div className="modal-action">
-                        <a href="#" className="btn btn-primary">Close</a>
-                    </div>
-                <form method="dialog" className="modal-backdrop">
+                <dialog className="modal" id="lineage_address_modal1">
+                    <form method="dialog" className="modal-box bg-white w-11/12 max-w-5xl">
+                        <div className="modal-action">
+                            <a href="#" className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">X</a>
+                        </div>
+                        <LineagePage />
+                    </form>
+                    <form method="dialog" className="modal-backdrop">
                         <button>close</button>
                     </form>
-                    <LineagePage />
-                  
-                    
-                    
-                </div>
+                </dialog>
             </div>
 
-
-            {/* <dialog className="modal" id="my_modal_18">
-                <form method="dialog" className="modal-box bg-white w-11/12 max-w-5xl">
-                    <div className="modal-action">
-                        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={() => (window as any).lineage_address_modal.close()}>✕</button>
-                    </div>
-                    <LineagePage />
-                </form>
-                <form method="dialog" className="modal-backdrop">
-                    <button>close</button>
-                </form>
-            </dialog> */}
         </div>
     );
 }

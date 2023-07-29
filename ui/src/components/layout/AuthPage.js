@@ -7,7 +7,7 @@ import Authentication from '../../modules/Authentication';
 import Router from 'next/router';
 import { useEffect, useState, createContext } from "react";
 import Snackbar from '../../modules/Snackbar'
-import  AllMaWorkerClient from '../../modules/workers/AllMaWorkerClient'
+import AllMaWorkerClient from '../../modules/workers/AllMaWorkerClient'
 import RankedBjjWorkerClient from '../../modules/workers/rankedBjjWorkerClient';
 import DashboardHeader from './DashboardHeader'
 
@@ -88,6 +88,7 @@ const AuthPage = ({ validate, children }) => {
             Snackbar("You cancelled connection with Mina wallet!", 1500);
           }
           else if (loginResult.error == "please create or restore wallet first") {
+            console.log("please create or restore wallet first");
             setState({ ...state, showCreateWallet: true, hasWallet: true, snarkyLoaded: true, showRequestingAccount: false });
           }
 
@@ -142,69 +143,81 @@ const AuthPage = ({ validate, children }) => {
   }
   return (
     <>
-    <DashboardHeader />
-    <div className='rankproof-page'>
+      <Head>
+        <title>RankProof zkApp</title>
+        <link rel="icon" href="/assets/favicon.ico" />
+      </Head>
+      <DashboardHeader />
+      <main>
+        <div className='rankproof-page'>
 
-      <div className='rankproof-content-wrap'>
+          <div className='rankproof-content-wrap'>
 
 
-        {!state.hasBeenSetup ?
-          <section className="hero section center-content has-top-divider">
-            <div className="container-sm">
-              <div className="hero-inner section-inner">
-                <div className="hero-content">
-                  <h1 className="mt-0 mb-16 reveal-from-bottom" data-reveal-delay="200">
-                    Getting things ready...
+          {!state.hasBeenSetup ?
+         
+              <div className="hero min-h-screen bg-base-200">
+                <div className="hero-content text-center">
+                  <div className="max-w-md">
+                    <h1 className="text-5xl font-bold">Getting things ready</h1>
+                    <div className='pt-20'>
+                      <div className={`${!state.snarkyLoaded || state.showRequestingAccount || state.showLoadingContracts ? 'loading-snarky' : ''}`} data-reveal-delay="400">
+                        <div style={{ display: state.snarkyLoaded ? "none" : "block" }}>
+                          Loading <span className="text-color-primary">SnarkyJS</span>...
+                        </div>
+                        {state.hasWallet != null && !state.hasWallet &&
+                          <div className='text-color-warning'>
+                            Could not find a wallet. Install Auro wallet here 
+                            <div className='pt-4'>
+                            <a className='btn btn-accent' href='https://www.aurowallet.com/' target="_blank" rel="noreferrer">Auro wallet</a>
+                            </div>
+                          </div>}
 
-                  </h1>
-                  <div className="container-xs">
-                    <div className={`${!state.snarkyLoaded || state.showRequestingAccount || state.showLoadingContracts ? 'loading-snarky' : ''} m-0 mb-32 reveal-from-bottom login-subtext p-16`} data-reveal-delay="400">
-                      <div style={{ display: state.snarkyLoaded ? "none" : "block" }}>
-                        Loading <span className="text-color-primary">SnarkyJS</span>...
+                        {state.showRequestingAccount &&
+                          <div>Requesting account</div>}
+
+                        {state.showCreateWallet &&
+                          <div className='text-color-warning'>Please create or restore a wallet first!</div>}
+                        {state.showFundAccount &&
+                          <div className='text-color-warning'>Your account does not exist, visit thefaucet to fund your account
+                          <div className='pt-4'>
+                            <a className='btn btn-accent' 
+                           href="https://faucet.minaprotocol.com/" target="_blank" rel="noreferrer">Faucet</a></div>
+                           </div>
+                           }
+
+                        {state.showLoadingContracts &&
+                          <div>Loading contracts...</div>}
+
+
+
                       </div>
-                      {state.hasWallet != null && !state.hasWallet &&
-                        <div className='text-color-warning'>
-                          Could not find a wallet. Install Auro wallet here <a href='https://www.aurowallet.com/' target="_blank" rel="noreferrer">Auro wallet</a>
-                        </div>}
-
-                      {state.showRequestingAccount &&
-                        <div>Requesting account</div>}
-
-                      {state.showCreateWallet &&
-                        <div className='text-color-warning'>Please create or restore a wallet first!</div>}
-                      {state.showFundAccount &&
-                        <div className='text-color-warning'>Your account does not exist, visit the <a href="https://faucet.minaprotocol.com/" target="_blank" rel="noreferrer">faucet</a> to fund it</div>}
-
-                      {state.showLoadingContracts &&
-                        <div>Loading contracts...</div>}
-
-
-
-                    </div>
-                    <div className="reveal-from-bottom login-btn-container" data-reveal-delay="600">
-                      {/* Button area */}
                     </div>
 
+                    <div className='pt-20'>
+                      <span className="loading loading-dots loading-lg"></span>
+
+                    </div>
                   </div>
                 </div>
-
-
               </div>
-            </div>
-          </section>
-          :
-          <div>
-            <AuthContext.Provider value={{ userAuthenticated, userAddress, firstFetchAccount }}>
-              {children}
-            </AuthContext.Provider>
-          </div>}
 
-      </div>
 
-    </div></>
+              :
+              <div>
+                <AuthContext.Provider value={{ userAuthenticated, userAddress, firstFetchAccount }}>
+                  {children}
+                </AuthContext.Provider>
+              </div>}
+
+          </div>
+
+        </div>
+      </main>
+    </>
 
   );
 
 }
 
-export {AuthContext, AuthPage };
+export { AuthContext, AuthPage };

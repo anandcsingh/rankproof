@@ -17,7 +17,7 @@ const DashboardProfile: React.FC<DashboardProfileProps> = ({ disciplines }) => {
         <div>
             <div className="grid grid-cols-4 gap-4">
                 {disciplines.map((discipline, index) => (
-                    <div className="card w-32 bg-gradient-to-r from-yellow-100 to-amber-200 shadow-xl">
+                    <div key={index} className="card w-32 bg-gradient-to-r from-yellow-100 to-amber-200 shadow-xl">
                     <figure className="bg-gray-100"></figure>
                     <div className="card-body">
                         <h2 className="card-title">{discipline.discipline}</h2>

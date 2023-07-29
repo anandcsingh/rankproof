@@ -11,8 +11,12 @@ export default function Home() {
 
   return (
     <>
-      <Master>
+      <Head>
+        <title>RankProof zkApp</title>
+        <link rel="icon" href="/assets/favicon.ico" />
+      </Head>
         <LandingPageHeader />
+        <main>
       <div>
           
           {/* Start block */}
@@ -165,8 +169,8 @@ export default function Home() {
               </div>
             </div>
           </footer>
-        </div>    
-      </Master>
+        </div>   
+        </main> 
     </>
   );
 }

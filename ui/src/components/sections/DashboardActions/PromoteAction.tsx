@@ -33,21 +33,26 @@ const PromoteAction: React.FC<DashboardActionsProps> = ({ isInstructor }) => {
                 <h2 className="mt-2 font-bold">Promote</h2>
 
                 <p className="hidden sm:mt-1 sm:block sm:text-sm sm:text-gray-600">
-                    Promote a student.
+                    Promote my students across disciplines.
                 </p>
             </a>
 
+            <div className='modals-area'>
+                <dialog className="modal" id="promote_modal">
+                    <form method="dialog" className="modal-box bg-white w-11/12 max-w-5xl">
+                        <div className="modal-action">
+                            <a href="#" className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">X</a>
+                        </div>
+                        <Add />
 
-            <div className="modal" id="promote_modal">
-                <div className="modal-action">
-                    <a href="#" className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">X</a>
-                </div>
-                <div className="modal-box bg-white">
-                    <h3>Promote</h3>
-                    <Add />
-
-                </div>
+                    </form>
+                    <form method="dialog" className="modal-backdrop">
+                        <button>close</button>
+                    </form>
+                </dialog>
             </div>
+
+            
         </div>
     );
 }
