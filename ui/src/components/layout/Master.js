@@ -15,7 +15,7 @@ const Master = ({ children }) => {
         <link rel="icon" href="/assets/favicon.ico" />
       </Head>
       {/* <GradientBG> */}
-        <Header />
+        {/* <Header /> */}
         <main>
             {children}
         </main>

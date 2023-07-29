@@ -1,5 +1,4 @@
 import React from 'react';
-import { useEffect, useState } from "react";
 
 import { OrgChartComponent } from './OrgChart';
 import * as d3 from 'd3';
@@ -8,10 +7,14 @@ import { Disciplines } from '../../../../contracts/build/src/models/MartialArtis
 import { FirebaseBackingStore } from '../../../../contracts/build/src/models/firebase/FirebaseBackingStore';
 import {Authentication } from '../../modules/Authentication'
 
+import { useEffect, useState, useContext } from "react";
+import { AuthContext } from '@/components/layout/AuthPage';
+
 const LineageMap = ({parentDiscipline}) => {
 
     const [data, setData] = useState(null);
     const [show, setShow] = useState(false);
+    const authState = useContext(AuthContext);
   let addNodeChildFunc = null;
 
   function addNode() {

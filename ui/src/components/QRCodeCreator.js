@@ -7,22 +7,23 @@ import { prop } from "snarkyjs";
 
 const QRCodeCreator = (props) => {
   console.log("QRCodeCreator address: ", props.address);
+  const authState = useContext(AuthContext);
 
   const copyAddressToClipboard = () => {
     navigator.clipboard.writeText(props.address);
   };
   return (
     <div className="">
-      <div class="grid gap-y-24 grid-cols-1 text-center">
+      <div className="grid gap-y-24 grid-cols-1 text-center">
       <div className="m-auto">
-      <h2 class="text-3xl font-bold sm:text-4xl">Share your address</h2>
-      <p class="mt-4 text-gray-600">Allow others to scan your address or click the QR code to copy.</p>
+      <h2 className="text-3xl font-bold sm:text-4xl">Share your address</h2>
+      <p className="mt-4 text-gray-600">Allow others to scan your address or click the QR code to copy.</p>
         </div>
         <div className="m-auto">
       
           <a onClick={copyAddressToClipboard} className="cursor-pointer">
         <QRCode
-          value={props.address}
+          value={authState.userAddress}
         />
         </a>
         </div>

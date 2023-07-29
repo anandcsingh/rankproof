@@ -26,8 +26,8 @@ studentList,
   
     return (
         <div className="grid grid-cols-4 gap-4">
-            {studentList.map((student) => (
-                <StudentTile student={student} />
+            {studentList.map((student, index) => (
+                <StudentTile key={index} student={student} />
             ))}
         </div>
     );
