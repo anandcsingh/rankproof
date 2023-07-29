@@ -10,11 +10,8 @@ import { Field, MerkleMap, PublicKey } from 'snarkyjs';
 import { FirebaseBackingStore } from '../../../../contracts/build/src/models/firebase/FirebaseBackingStore';
 import { AuthContext } from '@/components/layout/AuthPage';
 
-const InstructorMartialArts = (martialArts) => {
-  let [state, setState] = useState({
-    show: false,
-    items: [],
-  });
+const InstructorMartialArts = ({martialArts}) => {
+  let [showStudents, setShowStudents] = useState(false);
   const authState = useContext(AuthContext);
 
   const getMartialArt = async (discipline) => {
@@ -33,35 +30,25 @@ const InstructorMartialArts = (martialArts) => {
   useEffect(() => {
 
     (async () => {
-      let arts = [];
-      console.log("instructor martialArts", martialArts);
-      if (Object.keys(martialArts).length === 0) { // remove after refactor into separate components
-        console.log("inside if not martial arts");
-        let disciplines = Disciplines;
-        for (let discipline in disciplines) {
-          let ma = await getMartialArt(discipline);
-          if (ma) {
-            arts.push(ma);
-            let backingStore = new FirebaseBackingStore(discipline);
-            let students = await backingStore.getAllStudents(ma.publicKey);
-            ma.students = students;
-          }
-        }
-
-        setState({ ...state, items: arts, show: true });
+      if(authState.userAuthenticated) {
+        console.log("InstructorMartialArts martialArts", martialArts);
+        setShowStudents(true);
       }
-      else {
-
-        setState({ ...state, items: martialArts.disciplines, show: true });
-      }
-    })();
+        })();
 
   }, []);
 
   return (
+<>
 
     <div>
-      {state.show && state.items.map((i, index) => (
+    <h2 className='text-3xl font-bold sm:text-4xl'>Manage my students</h2>
+                  <div className='divider'></div>
+                  <div className="flex space-x-4 items-center justify-center gap-2 overflow-x-hidden p-4 bg-white">
+                    <a href='#promote_modal' className='btn btn-primary'>Promote</a>
+                    <a href='#revoke_modal' className='btn btn-warning'>Revoke</a>
+                  </div>
+      {showStudents && martialArts.map((i, index) => (
         <div key={index} className="collapse collapse-plus bg-gray-100 mb-5">
           <input type="radio" name="my-accordion-3" className="w-full" />
           <div className="collapse-title text-xl font-medium text-primary">
@@ -73,6 +60,8 @@ const InstructorMartialArts = (martialArts) => {
         </div>
       ))}
     </div>
+
+</>
   );
 }
 

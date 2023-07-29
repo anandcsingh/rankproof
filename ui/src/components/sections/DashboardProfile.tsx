@@ -26,12 +26,14 @@ const DashboardProfile: React.FC<DashboardProfileProps> = ({ disciplines }) => {
                     </div>
                     
                 ))}
+                <a href='#add_action_modal' className='cursor-pointer'>
                 <div className="card w-96 bg-zinc-300">
                         <div className="card-body">
                             <h2 className="card-title">ADD new Martial Art</h2>
                             <p>Start your journey in a new Martial Art</p>
                         </div>
                     </div>
+                    </a>
             </div>
         </div>
     );

@@ -14,19 +14,25 @@ import ProveAction from './ProveAction';
 export interface DashboardActionsProps {
   // Define any props you want to pass to the component here
   isInstructor: boolean;
+  disciplines: Array<UserMartialArt>;
 }
-const DashboardActions: React.FC<DashboardActionsProps> = ({ isInstructor }) => {
+const DashboardActions: React.FC<DashboardActionsProps> = ({ isInstructor, disciplines }) => {
   const authState = useContext(AuthContext);
 
   return (
+    <>
+    {authState.userAuthenticated && 
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-      <AddAction isInstructor={isInstructor} />
-      <InstructorsAction isInstructor={isInstructor} />
-      <ShareAction isInstructor={isInstructor} />
-      <PromoteAction isInstructor={isInstructor} />
-      <RevokeAction isInstructor={isInstructor} />
-      <ProveAction isInstructor={isInstructor} />
+      
+      <AddAction isInstructor={isInstructor} disciplines={disciplines} />
+      <InstructorsAction isInstructor={isInstructor} disciplines={disciplines}/>
+      <ShareAction isInstructor={isInstructor} disciplines={disciplines} />
+      <PromoteAction isInstructor={isInstructor} disciplines={disciplines} />
+      <RevokeAction isInstructor={isInstructor} disciplines={disciplines} />
+      <ProveAction isInstructor={isInstructor} disciplines={disciplines} />
     </div>
+}
+    </>
   );
 };
 
