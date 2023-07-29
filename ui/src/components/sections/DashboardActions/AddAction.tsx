@@ -1,5 +1,6 @@
 import Add from "@/pages/add.page";
 import { DashboardActionsProps } from "./DashboardActions";
+import AddForm from "../Forms/AddForm";
 
 
 const AddAction: React.FC<DashboardActionsProps> = ({ isInstructor }) => {
@@ -39,11 +40,11 @@ const AddAction: React.FC<DashboardActionsProps> = ({ isInstructor }) => {
 
             <div className='modals-area'>
                 <dialog className="modal" id="add_action_modal">
-                    <form method="dialog" className="modal-box bg-white w-11/12 max-w-5xl">
+                <form method="dialog" className="modal-box bg-white">
                         <div className="modal-action">
                             <a href="#" className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">X</a>
                         </div>
-                        <Add />
+                        <AddForm />
                     </form>
                     <form method="dialog" className="modal-backdrop">
                         <button>close</button>
