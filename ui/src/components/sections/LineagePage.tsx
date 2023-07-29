@@ -10,8 +10,9 @@ const LineagePage = () => {
       setActiveTabIndex(index);
     };
   return (
-    <div className="lg:py-10 min-h-screen">
-    <section className="place-self-center lg:col-span-7 space-y-8">
+    <div>
+    <section>
+    <h2 className='text-3xl font-bold sm:text-4xl'>Trace your lineage</h2>
 <div className="tabs flex">
 {tabs.map((tab, index) => (
   <a

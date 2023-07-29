@@ -42,6 +42,12 @@ const InstructorMartialArts = ({martialArts}) => {
 <>
 
     <div>
+    <h2 className='text-3xl font-bold sm:text-4xl'>Manage my students</h2>
+                  <div className='divider'></div>
+                  <div className="flex space-x-4 items-center justify-center gap-2 overflow-x-hidden p-4 bg-white">
+                    <a href='#promote_modal' className='btn btn-primary'>Promote</a>
+                    <a href='#revoke_modal' className='btn btn-warning'>Revoke</a>
+                  </div>
       {showStudents && martialArts.map((i, index) => (
         <div key={index} className="collapse collapse-plus bg-gray-100 mb-5">
           <input type="radio" name="my-accordion-3" className="w-full" />
