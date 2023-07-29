@@ -27,10 +27,8 @@ export default function Dashboard() {
 
 
   return (
-      <AuthPage validate={true}>
-                <DashboardContainer />
- 
-
-      </AuthPage>
+      <AuthPage validate={false}>
+                <DashboardContainer showDummyData={true} dummyDataIsInstructor={true} />
+       </AuthPage>
   );
 }
