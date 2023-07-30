@@ -41,9 +41,7 @@ const AddForm = () => {
       setVisibility('hidden');
     }
   }
-  const handleError = async (event: any) => {
-    console.error(event);
-  };
+
 
   const addMartialArtist = async (event: any) => {
   
@@ -99,7 +97,6 @@ const AddForm = () => {
         let hashStr = `https://berkeley.minaexplorer.com/transaction/${hash}`;
         let hashlink = `<a href="${hashStr}" class="btn btn-sm" target="_blank">View transaction</a>`;
         setAuthState({ ...authState, alertAvailable: true, alertMessage: `Add martial art transaction submitted ${hashlink}`, alertNeedsSpinner: false });
-        Router.back();
         
       }
       else {

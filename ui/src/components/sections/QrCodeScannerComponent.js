@@ -1,21 +1,9 @@
 import { useRef, useState } from "react";
 import {QrReader} from "react-qr-scanner";
 
-const QRCodeCreator = (props) => {
+const QrCodeScannerComponent = (props) => {
 
-    const addressRef = useRef(null);
-    const [visibility, setVisibility] = useState('');
-    const startScan = async (event) => {
-        setVisibility('visible');
-
-    }
-    const handleScan = async (event) => {
-        if (event) {
-            console.log(event);
-            (addressRef.current! as any).value = event.text;
-            setVisibility('hidden');
-        }
-    }
+ 
 
     return (
         <div>
