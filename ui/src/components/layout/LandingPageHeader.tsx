@@ -27,6 +27,12 @@ const Header = () => {
                  href='/dashboard' >
                     Launch App
                 </Link>
+                <Link 
+                className="inline-block py-2 px-4 text-sm leading-5 text-green-50 btn-primary hover:bg-indigo-600 font-medium focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 rounded-md float-right"
+                 href='/manage' >
+                    Manage App
+                </Link>
+                
               </div>
             
 

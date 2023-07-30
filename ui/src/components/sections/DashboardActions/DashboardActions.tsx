@@ -17,7 +17,7 @@ export interface DashboardActionsProps {
   disciplines: Array<UserMartialArt>;
 }
 const DashboardActions: React.FC<DashboardActionsProps> = ({ isInstructor, disciplines }) => {
-  const authState = useContext(AuthContext);
+  const [authState, _]  = useContext(AuthContext);
 
   return (
     <>

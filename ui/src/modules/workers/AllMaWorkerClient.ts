@@ -107,7 +107,7 @@ export default class AllMaWorkerClient {
     await this._call('proveUpdateTransaction', {});
   }
 
-  async sendTransaction(): Promise<any> {
+  async sendTransaction(): Promise<string> {
     let transactionJSON = await this.getTransactionJSON();
     let transactionFee = 0.1;
 
@@ -122,7 +122,7 @@ export default class AllMaWorkerClient {
     const transactionLink = `https://berkeley.minaexplorer.com/transaction/${hash}`;
     console.log(`View transaction at ${transactionLink}`);
     console.log(`Transaction success: ${isSuccess}`);
-    return { hash, isSuccess };
+    return hash;
   }
 
   async getTransactionJSON() {
