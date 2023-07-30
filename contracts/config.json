@@ -109,6 +109,14 @@
       "feepayerAlias": "allmawithstructs",
       "fee": "0.1",
       "smartContract": "AllMartialArtsWithStruct"
+    },
+    "allmaevents": {
+      "url": "https://proxy.berkeley.minaexplorer.com/graphql",
+      "keyPath": "keys/allmaevents.json",
+      "feepayerKeyPath": "C:\\Users\\asingh/.cache/zkapp-cli/keys/allmaevents.json",
+      "feepayerAlias": "allmaevents",
+      "fee": "0.1",
+      "smartContract": "AllMartialArtsEvents"
     }
   }
 }

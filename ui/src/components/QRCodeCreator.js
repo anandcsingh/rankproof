@@ -7,7 +7,7 @@ import { prop } from "snarkyjs";
 
 const QRCodeCreator = (props) => {
   console.log("QRCodeCreator address: ", props.address);
-  const authState = useContext(AuthContext);
+  const [authState, _] = useContext(AuthContext);
 
   const copyAddressToClipboard = () => {
     navigator.clipboard.writeText(authState.userAddress);

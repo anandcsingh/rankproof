@@ -4,7 +4,7 @@ import DashboardContainer from "@/components/sections/DashboardContainer";
 import { useContext } from "react";
 
 export default function DashboardSkeleton() {
-    const authState = useContext(AuthContext);
+    const [authState, _]  = useContext(AuthContext);
 
     return (
         <Master>

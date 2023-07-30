@@ -12,7 +12,7 @@ import { AuthContext } from '@/components/layout/AuthPage';
 
 const InstructorMartialArts = ({martialArts}) => {
   let [showStudents, setShowStudents] = useState(false);
-  const authState = useContext(AuthContext);
+  const [authState, _]  = useContext(AuthContext);
 
   const getMartialArt = async (discipline) => {
     let instructorAddress = PublicKey.fromBase58("B62qqzMHkbogU9gnQ3LjrKomimsXYt4qHcXc8Cw4aX7tok8DjuDsAzx");

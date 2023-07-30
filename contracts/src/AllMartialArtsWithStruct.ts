@@ -97,6 +97,7 @@ export class AllMartialArtsWithStruct extends SmartContract {
 
     this.sender.assertEquals(instructor.publicKey);
     instructor.rank.assertEquals(CircuitString.fromString('Black Belt'));
+    instructor.verified.assertTrue();
 
     student.rank = newRank;
     student.instructor = instructor.publicKey;
@@ -120,6 +121,7 @@ export class AllMartialArtsWithStruct extends SmartContract {
 
     this.sender.assertEquals(instructor.publicKey);
     instructor.rank.assertEquals(CircuitString.fromString('Black Belt'));
+    instructor.verified.assertTrue();
 
     student.rank = newRank;
     student.instructor = instructor.publicKey;
@@ -143,7 +145,7 @@ export class AllMartialArtsWithStruct extends SmartContract {
 
     this.sender.assertEquals(instructor.publicKey);
     instructor.rank.assertEquals(CircuitString.fromString('Black Belt'));
-
+    instructor.verified.assertTrue();
     student.rank = newRank;
     student.instructor = instructor.publicKey;
     const [newRoot, _] = studentWitness.computeRootAndKey(student.hash());

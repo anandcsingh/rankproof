@@ -14,7 +14,7 @@ const LineageMap = ({parentDiscipline}) => {
 
     const [data, setData] = useState(null);
     const [show, setShow] = useState(false);
-    const authState = useContext(AuthContext);
+    const [authState, _]  = useContext(AuthContext);
   let addNodeChildFunc = null;
 
   function addNode() {

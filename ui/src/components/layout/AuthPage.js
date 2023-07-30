@@ -39,6 +39,15 @@ const AuthPage = ({ validate, children }) => {
     authentication: null,
   });
 
+  let [authState, setAuthState] = useState({
+    userAuthenticated: false,
+    userAddress: '',
+    firstFetchAccount: false,
+    alertAvailable: false,
+    alertMessage: '',
+    alertNeedsSpinner: false,
+  });
+
   const [userAuthenticated, setUserAuthenticated] = useState(false);
   const [userAddress, setUserAddress] = useState('');
   const [firstFetchAccount, setFirstFetchAccount] = useState(false);
@@ -111,6 +120,8 @@ const AuthPage = ({ validate, children }) => {
             await Authentication.zkClient.fetchAccount({ publicKey: PublicKey.fromBase58(Authentication.contractAddress) });
             console.log('fetching account done');
             setFirstFetchAccount(true);
+
+            setAuthState({ ...authState, userAuthenticated: true, userAddress: Authentication.address, firstFetchAccount: true, alertAvailable:true, alertMessage: 'Successfully logged in' });
             // console.log('fetching storage root');
             // let root = await Authentication.zkClient.getNum();
             // console.log("storage root", root.toString());
@@ -205,7 +216,7 @@ const AuthPage = ({ validate, children }) => {
 
               :
               <div>
-                <AuthContext.Provider value={{ userAuthenticated, userAddress, firstFetchAccount }}>
+                <AuthContext.Provider value={[authState, setAuthState]}>
                   {children}
                 </AuthContext.Provider>
               </div>}
