@@ -8,6 +8,15 @@ import {
 
 import type { ZkappWorkerRequest, ZkappWorkerReponse, WorkerFunctions } from './AllMaWorker'
 export default class AllMaWorkerClient {
+  updateBackingStore() {
+    throw new Error("Method not implemented.");
+  }
+  revokeBjjStudent(studentID: string, instructorID: string) {
+    throw new Error("Method not implemented.");
+  }
+  proveStudent(practitionerID: string, disciplineValue: string, inquirerID: string) {
+    throw new Error("Method not implemented.");
+  }
 
   // ---------------------------------------------------------------------------------------
 

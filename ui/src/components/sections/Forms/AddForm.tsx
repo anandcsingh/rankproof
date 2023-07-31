@@ -41,9 +41,7 @@ const AddForm = () => {
       setVisibility('hidden');
     }
   }
-  const handleError = async (event: any) => {
-    console.error(event);
-  };
+
 
   const addMartialArtist = async (event: any) => {
   
@@ -99,7 +97,6 @@ const AddForm = () => {
         let hashStr = `https://berkeley.minaexplorer.com/transaction/${hash}`;
         let hashlink = `<a href="${hashStr}" class="btn btn-sm" target="_blank">View transaction</a>`;
         setAuthState({ ...authState, alertAvailable: true, alertMessage: `Add martial art transaction submitted ${hashlink}`, alertNeedsSpinner: false });
-        Router.back();
         
       }
       else {
@@ -154,7 +151,7 @@ const AddForm = () => {
             <span className="text-base label-text">Instructor address</span>
           </label>
           <div className="join">
-            <QRCodeScanner onScan={handleScan} />
+            <QRCodeScanner uniqueID="add-form-scan" className="btn join-item" onScan={handleScan} />
              <input onChange={handleInstructorChange} value={instructorValue} className="input input-bordered join-item bg-white" />
           </div>
         </div>
