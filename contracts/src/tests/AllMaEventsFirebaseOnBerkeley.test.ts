@@ -7,6 +7,7 @@ import {
   MerkleMap,
   CircuitString,
   fetchAccount,
+  Bool,
 } from 'snarkyjs';
 import { MinaLocalBlockchain } from '../local/MinaLocalBlockchain.js';
 import { Sender } from '../models/Sender.js';
@@ -20,21 +21,16 @@ import { AllMartialArts } from '../AllMartialArts.js';
 import { FirebaseDataGenerator } from '../models/firebase/FirebaseDataGenerator.js';
 import { tr } from '@faker-js/faker';
 import PromptSync from 'prompt-sync';
+import { AllMartialArtsEvents } from '../AllMartialArtsEvents.js';
 
 let prompt = PromptSync();
 
 const contractAddress = PublicKey.fromBase58(
-  'B62qr7kgJTtu69wx3LixMtTC7hNBHxYj3xTSJufH94gXGtXJeDtwSJv'
+  'B62qkDQqHBkiL6bXWh2RU81C1fBLQqQVK3CMVmW7DAq1yiAg2QPRtdC'
 );
-console.log(
-  'compiling AllMartialArtsWithStruct',
-  new Date().toLocaleTimeString()
-);
-await AllMartialArts.compile();
-console.log(
-  'AllMartialArtsWithStruct compiled',
-  new Date().toLocaleTimeString()
-);
+console.log('compiling AllMartialArtsEvents', new Date().toLocaleTimeString());
+await AllMartialArtsEvents.compile();
+console.log('AllMartialArtsEvents compiled', new Date().toLocaleTimeString());
 const Berkeley = Mina.Network(
   'https://proxy.berkeley.minaexplorer.com/graphql'
 );
@@ -60,7 +56,7 @@ let instructorAccount = {
 };
 const transactionFee = 100_000_000;
 
-let zkApp = new AllMartialArts(contractAddress);
+let zkApp = new AllMartialArtsEvents(contractAddress);
 let collectionName = 'BJJ';
 
 // deploy zkApp
@@ -217,4 +213,85 @@ addedAssertion = contractRoot == backingStoreRoot;
 console.log('contract root: ', contractRoot);
 console.log('backing store root: ', backingStoreRoot);
 console.log(`${addedAssertion}: Promote Martial Artist`);
+question = prompt('Transaction completed? ');
+
+// Prove Martial Artist rank
+
+console.log('Prove student rank');
+merkleStore = await backingStore.getMerkleMap();
+currentRoot = merkleStore.map.getRoot();
+witness = merkleStore.map.getWitness(student.id);
+
+let inquirer = PublicKey.fromBase58(
+  'B62qpzAWcbZSjzQH9hiTKvHbDx1eCsmRR7dDzK2DuYjRT2sTyW9vSpR'
+);
+txn = await Mina.transaction(
+  { sender: student.publicKey, fee: transactionFee },
+  () => {
+    zkApp.proveJuijiteiro(student.publicKey, hash, inquirer, witness);
+  }
+);
+await txn.prove();
+result = await txn.sign([studentAccount.privateKey]).send();
+console.log('transaction sent: ', result.isSuccess);
+console.log('hash: ', result.hash());
+console.log(`https://berkeley.minaexplorer.com/transaction/${result.hash()}`);
+
+await backingStore.upsert(student);
+
+question = prompt('Transaction completed? ');
+backingStoreRoot = (await backingStore.getMerkleMap()).map.getRoot().toString();
+contractRoot = zkApp.bjjMapRoot.get().toString();
+addedAssertion = contractRoot == backingStoreRoot;
+console.log('contract root: ', contractRoot);
+console.log('backing store root: ', backingStoreRoot);
+console.log(`${addedAssertion}: Prove Martial Artist rank`);
+question = prompt('Transaction completed? ');
+
+// Revoke student
+console.log('promoting student');
+merkleStore = await backingStore.getMerkleMap();
+currentRoot = merkleStore.map.getRoot();
+student.instructor = instructor.publicKey;
+student.verified = Bool(false);
+hash = student.hash();
+console.log('hash: ', hash.toString());
+
+merkleStore.map.set(student.id, hash);
+witness = merkleStore.map.getWitness(student.id);
+// console.log('witness: ', Field(witness.toString()).toString());
+// console.log('currentRoot: ', currentRoot.toString());
+// console.log('hash: ', hash.toString());
+// console.log("student key: ", student.publicKey.toString());
+// console.log("instructor key: ", instructor.publicKey.toString());
+// console.log("instructor rank: ", instructor.rank.toString());
+txn = await Mina.transaction(
+  { sender: instructor.publicKey, fee: transactionFee },
+  () => {
+    zkApp.revokeJuijiteiro(
+      hash,
+      student.publicKey,
+      student.instructor,
+      instructor.publicKey,
+      instructor.rank,
+      witness,
+      currentRoot
+    );
+  }
+);
+await txn.prove();
+result = await txn.sign([instructorAccount.privateKey]).send();
+console.log('transaction sent: ', result.isSuccess);
+console.log('hash: ', result.hash());
+console.log(`https://berkeley.minaexplorer.com/transaction/${result.hash()}`);
+
+await backingStore.upsert(student);
+
+question = prompt('Transaction completed? ');
+backingStoreRoot = (await backingStore.getMerkleMap()).map.getRoot().toString();
+contractRoot = zkApp.bjjMapRoot.get().toString();
+addedAssertion = contractRoot == backingStoreRoot;
+console.log('contract root: ', contractRoot);
+console.log('backing store root: ', backingStoreRoot);
+console.log(`${addedAssertion}: Revoke Martial Artist`);
 question = prompt('Transaction completed? ');

@@ -5,7 +5,7 @@ import {
 } from 'snarkyjs'
 
 const Authentication = {
-    contractAddress: 'B62qr7kgJTtu69wx3LixMtTC7hNBHxYj3xTSJufH94gXGtXJeDtwSJv',
+    contractAddress: 'B62qkDQqHBkiL6bXWh2RU81C1fBLQqQVK3CMVmW7DAq1yiAg2QPRtdC',
     loggedIn: false,
     zkClient: null,
     authentication: null,
@@ -24,12 +24,12 @@ const Authentication = {
     contractsLoaded: false,
     contractsLoader: null,
     bjjAddClient: null,
-    bjjAddAddress: 'B62qkSQ9Jy9x5FqDJpDhTjLry2UKpV7Q8Jz81AZh9Cb5oJ5a1FZe9Et',
+    bjjAddAddress: 'B62qkDQqHBkiL6bXWh2RU81C1fBLQqQVK3CMVmW7DAq1yiAg2QPRtdC',
     setBjjAddClient: function (client) {
         this.bjjAddClient = client;
     },
     bjjPromoteClient: null,
-    bjjPromoteAddress: 'B62qrrwFn6GbeVJats2Qk86xRS3JBDhdfEyM1zmMP4hc8bwrfgrDPmT',
+    bjjPromoteAddress: 'B62qkDQqHBkiL6bXWh2RU81C1fBLQqQVK3CMVmW7DAq1yiAg2QPRtdC',
     setBjjPromoteClient: function (client) {
         this.bjjPromoteClient = client;
     },

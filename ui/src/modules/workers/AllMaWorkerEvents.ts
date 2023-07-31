@@ -16,16 +16,17 @@ type Transaction = Awaited<ReturnType<typeof Mina.transaction>>;
 
 // ---------------------------------------------------------------------------------------
 
-import type { AllMartialArtsEvents } from '../../../../contracts/src/AllMartialArtsEvents';
-import { MartialArtistRepository } from '../../../../contracts/src/models/MartialArtistRepository';
-import { FirebaseBackingStore } from '../../../../contracts/build/src/models/firebase/FirebaseBackingStore';
-import { MartialArtist } from '../../../../contracts/build/src/models/MartialArtist';
+import type { AllMartialArtsEvents } from '../../../../contracts/src/AllMartialArtsEvents.js';
+import { MartialArtistRepository } from '../../../../contracts/src/models/MartialArtistRepository.js';
+import { FirebaseBackingStore } from '../../../../contracts/build/src/models/firebase/FirebaseBackingStore.js';
+import { MartialArtist } from '../../../../contracts/build/src/models/MartialArtist.js';
 
 const state = {
   zkapp: null as null | AllMartialArtsEvents,
   transaction: null as null | Transaction,
   AllMartialArtsEvents: null as null | typeof AllMartialArtsEvents,
   pendingMartialArtist: null as null | MartialArtist,
+  addMap: null as null | any,
 }
 
 // ---------------------------------------------------------------------------------------
@@ -59,6 +60,11 @@ const functions = {
   initZkappInstance: async (args: { publicKey58: string }) => {
     const publicKey = PublicKey.fromBase58(args.publicKey58);
     state.zkapp = new state.AllMartialArtsEvents!(publicKey);
+    console.log("zkapp instance initialized");
+
+    state.addMap.BJJ = state.zkapp.addJuijiteiro;
+    state.addMap.Judo = state.zkapp.addJudoka;
+    state.addMap.Karate = state.zkapp.addKarateka;
   },
   getBjjStorageRoot: async (args: {}) => {
     const currentNum = await state.zkapp!.bjjMapRoot.get();
@@ -73,6 +79,9 @@ const functions = {
     );
     state.transaction = transaction;
     console.log("storage root set from worker");
+  },
+  add: async (args: { address: string, rank: string, discipline: string }) => {
+    
   },
   addBjj: async (args: { address: string, rank: string }) => {
     console.log("creating worker transaction");
