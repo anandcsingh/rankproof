@@ -53,6 +53,7 @@ async function localDeploy() {
   await txn.sign([deployerAccount.privateKey, zkAppPrivateKey]).send();
 }
 
+// deploy zkApp
 backingStore = new FirebaseBackingStore(collectionName);
 await backingStore.clearStore();
 await localDeploy();
@@ -63,8 +64,8 @@ let emptyAssertion = contractRoot == backingStoreRoot;
 console.log('contract root: ', contractRoot);
 console.log(`${emptyAssertion}: Can create deploy contract`);
 
-// let zkClient = new SingleContractZkClient(zkApp, studentAccount);
-//let repo = new MartialArtistRepository(zkClient, backingStore);
+// Add single student
+console.log('adding student');
 let student = new ProofOfRankData().getStudent(studentAccount);
 student.discipline = CircuitString.fromString(collectionName);
 
@@ -83,6 +84,7 @@ let txn = await Mina.transaction({ sender: studentAccount.publicKey }, () => {
 });
 await txn.prove();
 let result = await txn.sign([studentAccount.privateKey]).send();
+console.log('transaction sent: ', result.isSuccess);
 
 await backingStore.upsert(student);
 backingStoreRoot = (await backingStore.getMerkleMap()).map.getRoot().toString();
@@ -92,6 +94,8 @@ console.log('contract root: ', contractRoot);
 console.log('backing store root: ', backingStoreRoot);
 console.log(`${addedAssertion}: Can add a new Martial Artist to a merkle tree`);
 
+// Add single instructor
+console.log('adding instructor');
 let instructor = new ProofOfRankData().getInstructor(instructorAccount);
 instructor.discipline = CircuitString.fromString(collectionName);
 
@@ -110,6 +114,7 @@ txn = await Mina.transaction({ sender: instructorAccount.publicKey }, () => {
 });
 await txn.prove();
 result = await txn.sign([instructorAccount.privateKey]).send();
+console.log('transaction sent: ', result.isSuccess);
 
 await backingStore.upsert(instructor);
 backingStoreRoot = (await backingStore.getMerkleMap()).map.getRoot().toString();
@@ -121,19 +126,44 @@ console.log(
   `${addedAssertion}: Can add a multiple Martial Artists to a merkle tree`
 );
 
-// let instructor = new ProofOfRankData().getInstructor(instructorAccount);
-// zkClient.sender = instructorAccount;
-// instructor.discipline = CircuitString.fromString(collectionName);
-// let transaction1 = await repo.add(instructor);
-// backingStoreRoot = (await repo.backingStore.getMerkleMap()).map
-//   .getRoot()
-//   .toString();
-// contractRoot = zkApp.mapRoot.get().toString();
-// addedAssertion = contractRoot == backingStoreRoot;
-// console.log('contract root: ', contractRoot);
-// console.log(
-//   `${addedAssertion}: Can add a multiple Martial Artist to a merkle tree`
-// );
+// Promote student
+console.log('promoting student');
+merkleStore = await backingStore.getMerkleMap();
+currentRoot = merkleStore.map.getRoot();
+student.instructor = instructor.publicKey;
+student.rank = CircuitString.fromString('Purple Belt');
+hash = student.hash();
+console.log('hash: ', hash.toString());
+
+merkleStore.map.set(student.id, hash);
+witness = merkleStore.map.getWitness(student.id);
+// console.log('witness: ', Field(witness.toString()).toString());
+// console.log('currentRoot: ', currentRoot.toString());
+// console.log('hash: ', hash.toString());
+// console.log("student key: ", student.publicKey.toString());
+// console.log("instructor key: ", instructor.publicKey.toString());
+// console.log("instructor rank: ", instructor.rank.toString());
+txn = await Mina.transaction({ sender: instructor.publicKey }, () => {
+  zkApp.promoteJuijiteiro(
+    hash,
+    student.publicKey,
+    instructor.publicKey,
+    instructor.rank,
+    witness,
+    currentRoot
+  );
+});
+await txn.prove();
+result = await txn.sign([instructorAccount.privateKey]).send();
+console.log('transaction sent: ', result.isSuccess);
+
+await backingStore.upsert(student);
+backingStoreRoot = (await backingStore.getMerkleMap()).map.getRoot().toString();
+contractRoot = zkApp.bjjMapRoot.get().toString();
+addedAssertion = contractRoot == backingStoreRoot;
+console.log('contract root: ', contractRoot);
+console.log('backing store root: ', backingStoreRoot);
+console.log(`${addedAssertion}: Promote Martial Artist`);
 
 // let transaction2 = await repo.promoteStudent(
 //   student.publicKey,
