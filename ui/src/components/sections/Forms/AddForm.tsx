@@ -151,7 +151,7 @@ const AddForm = () => {
             <span className="text-base label-text">Instructor address</span>
           </label>
           <div className="join">
-            <QRCodeScanner onScan={handleScan} />
+            <QRCodeScanner uniqueID="add-form-scan" className="btn join-item" onScan={handleScan} />
              <input onChange={handleInstructorChange} value={instructorValue} className="input input-bordered join-item bg-white" />
           </div>
         </div>

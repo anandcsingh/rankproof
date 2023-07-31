@@ -110,7 +110,7 @@ const PromoteForm = () => {
                         <span className="text-base label-text">Student address</span>
                       </label>
                       <div className="join">
-                      <QRCodeScanner onScan={handleScan} />
+                      <QRCodeScanner uniqueID="promote-form-scan" className="btn join-item" onScan={handleScan} />
                       <input onChange={handleStudentChange} value={studentValue} className="input input-bordered join-item bg-white" />
                       </div>
                     </div>

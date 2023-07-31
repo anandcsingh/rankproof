@@ -67,7 +67,7 @@ const PromoteForm = () => {
   
     return (
         <div>
-            <h2 className='text-3xl font-bold sm:text-4xl'>Promote your student</h2>
+            <h2 className='text-3xl font-bold sm:text-4xl'>Revoke your student's rank</h2>
                   <div className='divider'></div>
                   <div className='grid grid-cols-1 space-y-6'>
 
@@ -76,7 +76,7 @@ const PromoteForm = () => {
                         <span className="text-base label-text">Student address</span>
                       </label>
                       <div className="join">
-                      <QRCodeScanner onScan={handleScan} />
+                      <QRCodeScanner uniqueID="revoke-form-scan" className="btn join-item" onScan={handleScan} />
                       <input onChange={handleStudentChange} value={studentValue} className="input input-bordered join-item bg-white" />
                       </div>
                     </div>
@@ -106,7 +106,7 @@ const PromoteForm = () => {
 
                     
                     <div className=''>
-                      <button onClick={promoteMartialArtist} className="btn btn-accent">Promote</button>
+                      <button onClick={promoteMartialArtist} className="btn btn-accent">Revoke</button>
                     </div>
                   </div>
 

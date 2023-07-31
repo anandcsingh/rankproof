@@ -69,7 +69,7 @@ const ProveForm = () => {
             <span className="text-base label-text">Inquirer address</span>
           </label>
           <div className="join">
-            <QRCodeScanner onScan={handleScan} />
+            <QRCodeScanner uniqueID="prove-form-scan" className="btn join-item" onScan={handleScan} />
             <input onChange={handleStudentChange} value={inquirerValue} className="input input-bordered join-item bg-white" />
           </div>
         </div>
@@ -89,15 +89,6 @@ const ProveForm = () => {
         </div>
 
 
-        <div className="form-control">
-          <label className="label">
-            <span className="text-base label-text">Inquirer address</span>
-          </label>
-          <div className="join">
-            <input className="input input-bordered join-item bg-white" />
-            <button className="btn join-item ">Scan</button>
-          </div>
-        </div>
         <div className=''>
           <button onClick={proveMartialArtist} className="btn btn-accent">Prove</button>
         </div>
