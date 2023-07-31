@@ -21,12 +21,27 @@ import { MartialArtistRepository } from '../../../../contracts/src/models/Martia
 import { FirebaseBackingStore } from '../../../../contracts/build/src/models/firebase/FirebaseBackingStore.js';
 import { MartialArtist } from '../../../../contracts/build/src/models/MartialArtist.js';
 
+
+export default class ActionResult {
+  success: boolean;
+  message: string;
+  constructor(success: boolean, message: string) {
+    this.success = success;
+    this.message = message;
+  }
+}
+
 const state = {
   zkapp: null as null | AllMartialArtsEvents,
   transaction: null as null | Transaction,
   AllMartialArtsEvents: null as null | typeof AllMartialArtsEvents,
-  pendingMartialArtist: null as null | MartialArtist,
+  pendingMartialArtist: null as null | undefined | MartialArtist,
   addMap: null as null | any,
+  promoteMap: null as null | any,
+  proveMap: null as null | any,
+  revokeMap: null as null | any,
+  getRootMap: null as null | any,
+  setRootMap: null as null | any,
 }
 
 // ---------------------------------------------------------------------------------------
@@ -54,6 +69,7 @@ const functions = {
     console.log("contract AllMartialArts compiled");
   },
   fetchAccount: async (args: { publicKey58: string }) => {
+    console.log("fetching account:", args.publicKey58);
     const publicKey = PublicKey.fromBase58(args.publicKey58);
     return await fetchAccount({ publicKey });
   },
@@ -61,35 +77,75 @@ const functions = {
     const publicKey = PublicKey.fromBase58(args.publicKey58);
     state.zkapp = new state.AllMartialArtsEvents!(publicKey);
     console.log("zkapp instance initialized");
+    console.log("zkapp address: ", args.publicKey58);
 
     state.addMap.BJJ = state.zkapp.addJuijiteiro;
     state.addMap.Judo = state.zkapp.addJudoka;
     state.addMap.Karate = state.zkapp.addKarateka;
+
+    state.promoteMap.BJJ = state.zkapp.promoteJuijiteiro;
+    state.promoteMap.Judo = state.zkapp.promoteJudoka;
+    state.promoteMap.Karate = state.zkapp.promoteKarateka;
+
+    state.proveMap.BJJ = state.zkapp.proveJuijiteiro;
+    state.proveMap.Judo = state.zkapp.proveJudoka;
+    state.proveMap.Karate = state.zkapp.proveKarateka;
+
+    state.revokeMap.BJJ = state.zkapp.revokeJuijiteiro;
+    state.revokeMap.Judo = state.zkapp.revokeJudoka;
+    state.revokeMap.Karate = state.zkapp.revokeKarateka;
+
+    state.getRootMap.BJJ = state.zkapp.bjjMapRoot;
+    state.getRootMap.Judo = state.zkapp.judoMapRoot;
+    state.getRootMap.Karate = state.zkapp.karateMapRoot;
   },
-  getBjjStorageRoot: async (args: {}) => {
-    const currentNum = await state.zkapp!.bjjMapRoot.get();
+  getStorageRoot: async (args: { discipline: string }) => {
+    const currentNum = await state.getRootMap[args.discipline].get();
     return JSON.stringify(currentNum.toJSON());
   },
-  setBjjStorageRoot: async (args: { root: string }) => {
-    console.log("setting storage root from worker");
+  setStorageRoot: async (args: { root: string, discipline: string }) => {
     let storage = Field(args.root);
+
+    // create storage root transaction for a discipline
     const transaction = await Mina.transaction(() => {
-      state.zkapp!.setbBjjMapRoot(storage);
-    }
-    );
+      state.setRootMap[args.discipline](storage);
+    });
+
+    // set pending transaction to state
     state.transaction = transaction;
-    console.log("storage root set from worker");
   },
-  add: async (args: { address: string, rank: string, discipline: string }) => {
+  rootsVerified: async (args: { merkleStore: MerkleMapDatabase, contractRoot: string, discipline: string } ): Promise<ActionResult> => {
+    const backingStoreRoot = args.merkleStore.map.getRoot();
+
+  // verify roots match
+  if (backingStoreRoot.toString() != args.contractRoot) {
+    console.log("backing store root: ", backingStoreRoot.toString());
+    console.log("contract root: ", args.contractRoot);
+    console.log("Roots do not match");
+
+    return {
+      success: false,
+      message: "Roots do not match",
+    };
+  }
+
+  return {
+    success: true,
+    message: "Roots match",
+  };
+  },
+  add: async (args: { address: string, rank: string, discipline: string }): Promise<ActionResult> => {
     
-  },
-  addBjj: async (args: { address: string, rank: string }) => {
-    console.log("creating worker transaction");
-    let discipline = "BJJ";
-    let backingStore = new FirebaseBackingStore(discipline);
+    let backingStore = new FirebaseBackingStore(args.discipline);
     const merkleStore = await backingStore.getMerkleMap();
-    const currentRoot = merkleStore.map.getRoot();
-    console.log("currentRoot addbjj: ", currentRoot.toString());
+    const backingStoreRoot = merkleStore.map.getRoot();
+    const contractRoot = await state.getRootMap[args.discipline].get();
+
+    // verify roots match
+    const rootsVerified = await functions.rootsVerified( { merkleStore:merkleStore, contractRoot:contractRoot, discipline: args.discipline });
+    if(!rootsVerified.success) return rootsVerified;
+
+    // get student new martial artist from object in backing store
     state.pendingMartialArtist = backingStore.getMartialArtistFromDocSnap({
       id: 0,
       publicKey: args.address,
@@ -100,249 +156,100 @@ const functions = {
       instructor: '',
       createdDate: '',
       modifiedDate: '',
-      discipline: discipline,
+      discipline: args.discipline,
     });
+
+    // set student id to next id in merkle map
     state.pendingMartialArtist.id = Field(merkleStore.nextID);
-    console.log("martialArtist.id: ", state.pendingMartialArtist.id.toBigInt().toString());
     let hash = state.pendingMartialArtist.hash();
-    console.log("hash: ", hash.toString());
+
+    // add student to merkle map and get witness
     merkleStore.map.set(state.pendingMartialArtist.id, hash);
     const witness = merkleStore.map.getWitness(state.pendingMartialArtist.id);
-    const [newRoot, _] = witness.computeRootAndKey(hash);
-    console.log("bjj add root: ", newRoot.toString());
+
+    // create discipline specific transaction
     const transaction = await Mina.transaction(
       { sender: state.pendingMartialArtist.publicKey },
       () => {
-      state.zkapp!.addJuijiteiro(hash, state.pendingMartialArtist!.publicKey, witness, currentRoot);
+      state.addMap[args.discipline](hash, state.pendingMartialArtist!.publicKey, witness, contractRoot);
     }
     );
 
+    // add pending transaction to state
     state.transaction = transaction;
-  },
-  updateBjjBackingStore: async (args: { }) => {
-    console.log("update backing store");
-    let discipline = "BJJ";
-    let backingStore = new FirebaseBackingStore(discipline);
-    const merkleStore = await backingStore.getMerkleMap();
-    const currentRoot = merkleStore.map.getRoot();
-    console.log("currentRoot updatebjj: ", currentRoot.toString());
-    
-    console.log("martialArtist.id: ", state.pendingMartialArtist!.id.toString());
-    let hash = state.pendingMartialArtist!.hash();
-    console.log("hash: ", hash.toString());
-    
-    merkleStore.map.set(state.pendingMartialArtist!.id, hash);
-    const witness = merkleStore.map.getWitness(state.pendingMartialArtist!.id);
-    const [newRoot, _] = witness.computeRootAndKey(hash);
-    console.log("bjj update root: ", newRoot.toString());
-    backingStore.upsert(state.pendingMartialArtist!);
-  },
-  getJudoStorageRoot: async (args: {}) => {
-    const currentNum = await state.zkapp!.judoMapRoot.get();
-    return JSON.stringify(currentNum.toJSON());
-  },
-  setJudoStorageRoot: async (args: { root: string }) => {
-    console.log("setting storage root from worker");
-    let storage = Field(args.root);
-    const transaction = await Mina.transaction(() => {
-      state.zkapp!.setJudoMapRoot(storage);
+    return {
+      success: true,
+      message: "Transaction created",
     }
-    );
-    state.transaction = transaction;
-    console.log("storage root set from worker");
   },
-  addJudo: async (args: { address: string, rank: string }) => {
-    let discipline = "Judo";
-    let backingStore = new FirebaseBackingStore(discipline);
+  updateBackingStore: async (args: { discipline: string }): Promise<ActionResult> => {
+    
+    let backingStore = new FirebaseBackingStore(args.discipline);
     const merkleStore = await backingStore.getMerkleMap();
-    const currentRoot = merkleStore.map.getRoot();
-    state.pendingMartialArtist = backingStore.getMartialArtistFromDocSnap({
-      id: 0,
-      publicKey: args.address,
-      firstName: '',
-      lastName: '',
-      rank: args.rank,
-      verified: false,
-      instructor: '',
-      createdDate: '',
-      modifiedDate: '',
-      discipline: discipline,
-    });
-    state.pendingMartialArtist.id = Field(merkleStore.nextID);
-    let hash = state.pendingMartialArtist.hash();
-    merkleStore.map.set(state.pendingMartialArtist.id, hash);
-    const witness = merkleStore.map.getWitness(state.pendingMartialArtist.id);
-    console.log("creating worker transaction");
-    console.log("address: ", args.address);
-    const transaction = await Mina.transaction(
-      { sender: state.pendingMartialArtist.publicKey },
-      () => {
-      state.zkapp!.addJudoka(hash, state.pendingMartialArtist!.publicKey, witness, currentRoot);
-    }
-    );
+    const backingStoreRoot = merkleStore.map.getRoot();
+    const contractRoot = await state.getRootMap[args.discipline].get();
 
-    state.transaction = transaction;
-  },
-  updateJudoBackingStore: async (args: {  }) => {
-    let discipline = "Judo";
-    let backingStore = new FirebaseBackingStore(discipline);
-    const merkleStore = await backingStore.getMerkleMap();
-    
-    backingStore.upsert(state.pendingMartialArtist!);
-  },
-  getKarateStorageRoot: async (args: {}) => {
-    const currentNum = await state.zkapp!.karateMapRoot.get();
-    return JSON.stringify(currentNum.toJSON());
-  },
-  setKarateStorageRoot: async (args: { root: string }) => {
-    console.log("setting storage root from worker");
-    let storage = Field(args.root);
-    const transaction = await Mina.transaction(() => {
-      state.zkapp!.setKarateMapRoot(storage);
-    }
-    );
-    state.transaction = transaction;
-    console.log("storage root set from worker");
-  },
-  addKarate: async (args: { address: string, rank: string }) => {
-    let discipline = "Karate";
-    let backingStore = new FirebaseBackingStore(discipline);
-    const merkleStore = await backingStore.getMerkleMap();
-    const currentRoot = merkleStore.map.getRoot();
-    state.pendingMartialArtist = backingStore.getMartialArtistFromDocSnap({
-      id: 0,
-      publicKey: args.address,
-      firstName: '',
-      lastName: '',
-      rank: args.rank,
-      verified: false,
-      instructor: '',
-      createdDate: '',
-      modifiedDate: '',
-      discipline: discipline,
-    });
-    state.pendingMartialArtist.id = Field(merkleStore.nextID);
-    let hash = state.pendingMartialArtist.hash();
-    merkleStore.map.set(state.pendingMartialArtist.id, hash);
-    const witness = merkleStore.map.getWitness(state.pendingMartialArtist.id);
-    console.log("creating worker transaction");
-    console.log("address: ", args.address);
-    const transaction = await Mina.transaction(
-      { sender: state.pendingMartialArtist.publicKey },
-      () => {
-      state.zkapp!.addKarateka(hash, state.pendingMartialArtist!.publicKey, witness, currentRoot);
-    }
-    );
+    // verify roots match
+    const rootsVerified = await functions.rootsVerified( { merkleStore:merkleStore, contractRoot:contractRoot, discipline: args.discipline });
+    if(!rootsVerified.success) return rootsVerified;
 
-    state.transaction = transaction;
-  },
-  updateKarateBackingStore: async (args: {  }) => {
-    let discipline = "Karate";
-    let backingStore = new FirebaseBackingStore(discipline);
-    const merkleStore = await backingStore.getMerkleMap();
-    
+    // update student in backing store
     backingStore.upsert(state.pendingMartialArtist!);
+
+    return {
+      success: true,
+      message: "Backing store updated",
+    };
   },
-  promoteBjjStudent: async (args: { studentPublicKey: string, rank: string, instructorPublicKey: string }) => { 
-    let discipline = "BJJ";
-    let backingStore = new FirebaseBackingStore(discipline);
+  
+  promoteStudent: async (args: { studentPublicKey: string, rank: string, instructorPublicKey: string, discipline: string }) => { 
+    let backingStore = new FirebaseBackingStore(args.discipline);
+    const merkleStore = await backingStore.getMerkleMap();
+    const backingStoreRoot = merkleStore.map.getRoot();
+    const contractRoot = await state.getRootMap[args.discipline].get();
+
+    // verify roots match
+    const rootsVerified = await functions.rootsVerified( { merkleStore:merkleStore, contractRoot:contractRoot, discipline: args.discipline });
+    if(!rootsVerified.success) return rootsVerified;
+
+    // find student and instructor in backing store
     let studentKey = PublicKey.fromBase58(args.studentPublicKey);
-
     let instructorKey = PublicKey.fromBase58(args.instructorPublicKey);
-    state.pendingMartialArtist = await functions.get( {publicKey: studentKey, backingStore: backingStore });
-    const instructor = await functions.get({publicKey: instructorKey, backingStore: backingStore });
+    state.pendingMartialArtist = await backingStore.get(studentKey); 
+    const instructor = await backingStore.get(instructorKey);
     const merkleMapDB = await backingStore.getMerkleMap();
-    const currentRoot = merkleMapDB.map.getRoot();
-    if (state.pendingMartialArtist != null && instructor != null) {
-      const witness = merkleMapDB.map.getWitness(state.pendingMartialArtist.id);
 
+    if (state.pendingMartialArtist != null && instructor != null) {
+
+      // update student rank and instructor and verified status
       state.pendingMartialArtist.rank = CircuitString.fromString(args.rank);
       state.pendingMartialArtist.instructor = instructor.publicKey;
       state.pendingMartialArtist.verified = Bool(true);
-      
-      console.log("creating worker transaction");
-      console.log("student hash: ", state.pendingMartialArtist.hash().toString());
-      console.log("Student Key: ", studentKey.toBase58())
-      console.log("Instructor Key: ", instructorKey.toBase58());
-      console.log("Instructor Rank: ", instructor.rank.toString());
-      const transaction = await Mina.transaction({ sender: instructorKey },
-        () => {
-        state.zkapp!.promoteJuijiteiro(state.pendingMartialArtist!.hash(), studentKey, instructorKey, instructor.rank, witness, currentRoot);
-      }
-      );
-      console.log("transaction created");
-      state.transaction = transaction;
-    }
-  },
-  promoteJudoStudent: async (args: { studentPublicKey: string, rank: string, instructorPublicKey: string }) => { 
-    let discipline = "Judo";
-    let backingStore = new FirebaseBackingStore(discipline);
-    let studentKey = PublicKey.fromBase58(args.studentPublicKey);
 
-    let instructorKey = PublicKey.fromBase58(args.instructorPublicKey);
-    state.pendingMartialArtist = await functions.get( {publicKey: studentKey, backingStore: backingStore });
-    const instructor = await functions.get({publicKey: instructorKey, backingStore: backingStore });
-    const merkleMapDB = await backingStore.getMerkleMap();
-    const currentRoot = merkleMapDB.map.getRoot();
-    if (state.pendingMartialArtist != null && instructor != null) {
+      // update merkle map with new student hash
+      merkleMapDB.map.set(state.pendingMartialArtist.id, state.pendingMartialArtist.hash());
+
+      // get witness for student
       const witness = merkleMapDB.map.getWitness(state.pendingMartialArtist.id);
 
-      state.pendingMartialArtist.rank = CircuitString.fromString(args.rank);
-      state.pendingMartialArtist.instructor = instructor.publicKey;
-      state.pendingMartialArtist.verified = Bool(true);
-      
-      console.log("creating worker transaction");
-      console.log("student hash: ", state.pendingMartialArtist.hash().toString());
-      console.log("Student Key: ", studentKey.toBase58())
-      console.log("Instructor Key: ", instructorKey.toBase58());
-      console.log("Instructor Rank: ", instructor.rank.toString());
+      // create discipline specific transaction
       const transaction = await Mina.transaction({ sender: instructorKey },
         () => {
-        state.zkapp!.promoteJudoka(state.pendingMartialArtist!.hash(), studentKey, instructorKey, instructor.rank, witness, currentRoot);
-      }
-      );
-      console.log("transaction created");
-      state.transaction = transaction;
-    }
-  },
-  promoteKarateStudent: async (args: { studentPublicKey: string, rank: string, instructorPublicKey: string }) => { 
-    let discipline = "Karate";
-    let backingStore = new FirebaseBackingStore(discipline);
-    let studentKey = PublicKey.fromBase58(args.studentPublicKey);
+        state.promoteMap[args.discipline](state.pendingMartialArtist!.hash(), studentKey, instructorKey, instructor.rank, witness, contractRoot);
+      });
 
-    let instructorKey = PublicKey.fromBase58(args.instructorPublicKey);
-    state.pendingMartialArtist = await functions.get( {publicKey: studentKey, backingStore: backingStore });
-    const instructor = await functions.get({publicKey: instructorKey, backingStore: backingStore });
-    const merkleMapDB = await backingStore.getMerkleMap();
-    const currentRoot = merkleMapDB.map.getRoot();
-    if (state.pendingMartialArtist != null && instructor != null) {
-      const witness = merkleMapDB.map.getWitness(state.pendingMartialArtist.id);
-
-      state.pendingMartialArtist.rank = CircuitString.fromString(args.rank);
-      state.pendingMartialArtist.instructor = instructor.publicKey;
-      state.pendingMartialArtist.verified = Bool(true);
-      
-      console.log("creating worker transaction");
-      console.log("student hash: ", state.pendingMartialArtist.hash().toString());
-      console.log("Student Key: ", studentKey.toBase58())
-      console.log("Instructor Key: ", instructorKey.toBase58());
-      console.log("Instructor Rank: ", instructor.rank.toString());
-      const transaction = await Mina.transaction({ sender: instructorKey },
-        () => {
-        state.zkapp!.promoteKarateka(state.pendingMartialArtist!.hash(), studentKey, instructorKey, instructor.rank, witness, currentRoot);
-      }
-      );
-      console.log("transaction created");
+      // add pending transaction to state
       state.transaction = transaction;
-    }
-  },
-  get: async (args: {publicKey: PublicKey, backingStore: FirebaseBackingStore }) => {
-    const ma = await args.backingStore.get(args.publicKey);
-    if (ma) {
-        return ma;
-      } else {
-        return null;
+
+      return {
+        success: true,
+        message: "Transaction created",
       }
+    } else {
+      return {
+        success: false,
+      }
+    }
   },
   proveUpdateTransaction: async (args: {}) => {
     await state.transaction!.prove();
