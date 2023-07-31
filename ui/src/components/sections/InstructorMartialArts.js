@@ -31,7 +31,6 @@ const InstructorMartialArts = ({martialArts}) => {
 
     (async () => {
       if(authState.userAuthenticated) {
-        console.log("InstructorMartialArts martialArts", martialArts);
         setShowStudents(true);
       }
         })();
