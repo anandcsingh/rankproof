@@ -32,23 +32,20 @@ const DashboardContainer: React.FC<DashboardContainerProps> = ({ showDummyData, 
             return 'B62qjBcYihfVGHyQGuxgG5m4QbPrq6jEEMys5p4fe4Pt33CmWy7Bvuq';
         }
     }
-    console.log("DashboardContainer starting", authState);
     useEffect(() => {
 
         (async () => {
-            console.log("DashboardContainer useEffect starting");
             if(showDummyData) {
                 authState.userAuthenticated = true;
                 authState.userAddress = getDummyAddress();
                 Authentication.address = getDummyAddress();
 
             if (authState.userAuthenticated) {
-                console.log("DashboardContainer useEffect userAuthenticated");
                 const disciplines = new UserMartialArts();
                 const userDisciplines = await disciplines.getMartialArts(authState.userAddress);
                 setDisciplines(userDisciplines);
                 setDisciplinesLoaded(true);
-                console.log("DashboardActions userDisciplines", userDisciplines);
+
                 // get a boolen if the user is an instructor from the userDisciplines collection
                 const instructor = userDisciplines.find((discipline) => discipline.isInstructor);
                 setIsInstructor(instructor ? true : false);
