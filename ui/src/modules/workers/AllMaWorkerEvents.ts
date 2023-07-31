@@ -61,46 +61,52 @@ const functions = {
 
     const { AllMartialArtsEvents } = await import('../../../../contracts/build/src/AllMartialArtsEvents.js');
     state.AllMartialArtsEvents = AllMartialArtsEvents;
-    console.log("contract AllMartialArts loaded");
+    console.log("contract AllMartialArtsEvents loaded");
   },
   compileContract: async (args: {}) => {
-    console.log("compiling AllMartialArts contract");
+    console.log("compiling AllMartialArtsEvents contract");
     state.AllMartialArtsEvents!.compile();
-    console.log("contract AllMartialArts compiled");
+    console.log("contract AllMartialArtsEvents compiled");
   },
   fetchAccount: async (args: { publicKey58: string }) => {
-    console.log("fetching account:", args.publicKey58);
+    console.log("fetching account AllMartialArtsEvents:", args.publicKey58);
     const publicKey = PublicKey.fromBase58(args.publicKey58);
     return await fetchAccount({ publicKey });
   },
   initZkappInstance: async (args: { publicKey58: string }) => {
     const publicKey = PublicKey.fromBase58(args.publicKey58);
     state.zkapp = new state.AllMartialArtsEvents!(publicKey);
-    console.log("zkapp instance initialized");
-    console.log("zkapp address: ", args.publicKey58);
-
+    console.log("zkapp AllMartialArtsEvents instance initialized");
+    console.log("zkapp AllMartialArtsEvents address: ", args.publicKey58);
+    state.addMap = {};
     state.addMap.BJJ = state.zkapp.addJuijiteiro;
     state.addMap.Judo = state.zkapp.addJudoka;
     state.addMap.Karate = state.zkapp.addKarateka;
 
+    state.promoteMap = {};
     state.promoteMap.BJJ = state.zkapp.promoteJuijiteiro;
     state.promoteMap.Judo = state.zkapp.promoteJudoka;
     state.promoteMap.Karate = state.zkapp.promoteKarateka;
 
+    state.proveMap = {};
     state.proveMap.BJJ = state.zkapp.proveJuijiteiro;
     state.proveMap.Judo = state.zkapp.proveJudoka;
     state.proveMap.Karate = state.zkapp.proveKarateka;
 
+    state.revokeMap = {};
     state.revokeMap.BJJ = state.zkapp.revokeJuijiteiro;
     state.revokeMap.Judo = state.zkapp.revokeJudoka;
     state.revokeMap.Karate = state.zkapp.revokeKarateka;
 
+    state.getRootMap = {};
     state.getRootMap.BJJ = state.zkapp.bjjMapRoot;
     state.getRootMap.Judo = state.zkapp.judoMapRoot;
     state.getRootMap.Karate = state.zkapp.karateMapRoot;
   },
   getStorageRoot: async (args: { discipline: string }) => {
+    console.log("getting storage root for discipline: ", args.discipline);
     const currentNum = await state.getRootMap[args.discipline].get();
+    console.log("storage root: ", currentNum.toString());
     return JSON.stringify(currentNum.toJSON());
   },
   setStorageRoot: async (args: { root: string, discipline: string }) => {
@@ -135,12 +141,12 @@ const functions = {
   };
   },
   add: async (args: { address: string, rank: string, discipline: string }): Promise<ActionResult> => {
-    
+    console.log("add worker", args.address, args.rank);
     let backingStore = new FirebaseBackingStore(args.discipline);
     const merkleStore = await backingStore.getMerkleMap();
     const backingStoreRoot = merkleStore.map.getRoot();
     const contractRoot = await state.getRootMap[args.discipline].get();
-
+    console.log("contract root in worker add: ", contractRoot);
     // verify roots match
     const rootsVerified = await functions.rootsVerified( { merkleStore:merkleStore, contractRoot:contractRoot, discipline: args.discipline });
     if(!rootsVerified.success) return rootsVerified;
@@ -171,7 +177,12 @@ const functions = {
     const transaction = await Mina.transaction(
       { sender: state.pendingMartialArtist.publicKey },
       () => {
-      state.addMap[args.discipline](hash, state.pendingMartialArtist!.publicKey, witness, contractRoot);
+    //zkApp.addJuijiteiro(hash, student.publicKey, witness, currentRoot);
+      //state.zkapp!.addJuijiteiro(hash, state.pendingMartialArtist!.publicKey, witness, currentRoot);
+        
+
+      state.zkapp!.addJuijiteiro(hash, state.pendingMartialArtist!.publicKey, witness, contractRoot);
+      //state.addMap[args.discipline](hash, state.pendingMartialArtist!.publicKey, witness, contractRoot);
     }
     );
 

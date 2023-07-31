@@ -99,12 +99,13 @@ const Authentication = {
         // return true;
 
         await this.zkClient.loadContract();
-        console.log("loaded AllMaWorkerClient contract");
+        console.log("loaded AllMaWorkerEventsClient contract");
         await this.zkClient.compileContract();
-        console.log("compiled AllMaWorkerClient contract");
+        console.log("compiled AllMaWorkerEventsClient contract");
         const zkappPublicKey = PublicKey.fromBase58(this.contractAddress);
         await this.zkClient.initZkappInstance(zkappPublicKey);
-        console.log("initialized AllMaWorkerClient zkapp instance");
+        console.log("initialized AllMaWorkerEventsClient zkapp instance");
+        console.log("contract address", this.contractAddress);
 
         // await this.bjjPromoteClient.loadContract();
         // console.log("loaded bjjPromoteClient contract");

@@ -8,6 +8,7 @@ import Router from 'next/router';
 import { useEffect, useState, createContext } from "react";
 import Snackbar from '../../modules/Snackbar'
 import AllMaWorkerClient from '../../modules/workers/AllMaWorkerClient'
+import AllMaWorkerEventsClient from '../../modules/workers/AllMaWorkerEventsClient'
 import RankedBjjWorkerClient from '../../modules/workers/rankedBjjWorkerClient';
 import DashboardHeader from './DashboardHeader'
 
@@ -67,7 +68,8 @@ const AuthPage = ({ validate, children }) => {
       if (!Authentication.loggedIn) {
         if (!state.hasBeenSetup) {
           console.log("setting up");
-          const allWorkerClient = new AllMaWorkerClient();
+          const allWorkerClient = new AllMaWorkerEventsClient();
+          //const allWorkerClient = new AllMaWorkerClient();
           //const zkappWorkerClient = new RankedBjjWorkerClient();
           Authentication.setZkClient(allWorkerClient);
           await timeout(15);
