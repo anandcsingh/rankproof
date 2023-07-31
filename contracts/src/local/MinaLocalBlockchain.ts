@@ -18,7 +18,8 @@ export class MinaLocalBlockchain {
     } = this.local.testAccounts[0]);
 
     let senderPrivate = PrivateKey.fromBase58(
-      'EKEUf9qCfAj4d9tVFQ7RpUHzny3e4xmed5MZRCSnQNJkEYsDVYPU'
+      'EKFUES7YfgYm38njcBHzxyU6RPZQdZnfThcMzLrHL9LjyxJKfXzY'
+      //'EKEUf9qCfAj4d9tVFQ7RpUHzny3e4xmed5MZRCSnQNJkEYsDVYPU'
     );
     let senderPublic = senderPrivate.toPublicKey();
     const sender = {
@@ -27,7 +28,8 @@ export class MinaLocalBlockchain {
     };
 
     let instructorPrivate = PrivateKey.fromBase58(
-      'EKEx9KsVNBXumarh3Xs5KmTtFZpCaAVMAEpg974vEkG3xzB962aD'
+      'EKFZWMtRmcQELaJvqcEyEEJqh874B3PndA8kpxSst6AiHtErn7Xw'
+      // 'EKEx9KsVNBXumarh3Xs5KmTtFZpCaAVMAEpg974vEkG3xzB962aD'
     );
     let instructorPublic = instructorPrivate.toPublicKey();
     const instructorAccount = {

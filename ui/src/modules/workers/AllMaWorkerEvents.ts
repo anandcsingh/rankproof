@@ -236,7 +236,6 @@ const functions = {
       message: "Backing store updated",
     };
   },
-
   promoteStudent: async (args: { studentPublicKey: string, rank: string, instructorPublicKey: string, discipline: string }) => {
     let backingStore = new FirebaseBackingStore(args.discipline);
     const merkleStore = await backingStore.getMerkleMap();

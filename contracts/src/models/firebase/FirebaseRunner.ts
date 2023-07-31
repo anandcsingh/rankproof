@@ -13,7 +13,7 @@ disciple = Disciplines.Judo;
 backingStore = new FirebaseBackingStore(disciple);
 await backingStore.clearStore();
 dataGen = new FirebaseDataGenerator(backingStore);
-await dataGen.generateData(disciple, 10, 5);
+await dataGen.generateData(disciple, 20, 15);
 
 disciple = Disciplines.Karate;
 backingStore = new FirebaseBackingStore(disciple);

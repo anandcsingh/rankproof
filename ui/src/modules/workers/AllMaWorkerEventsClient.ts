@@ -10,17 +10,25 @@ import type { ZkappWorkerRequest, ZkappWorkerReponse, WorkerFunctions } from './
 import ActionResult from './AllMaWorkerEvents';
 export default class AllMaWorkerEventsClient {
   
-  revokeStudent(studentID: string, instructorID: string, discipline: string) {
-    throw new Error("Method not implemented.");
+  async revokeStudent(studentID: string, instructorID: string, discipline: string): Promise<ActionResult> {
+    console.log("prove client", studentID, instructorID, discipline);
+    const result = await this._call('revokeStudent', { studentID, instructorID, discipline });
+    return result as ActionResult;
   }
-  proveStudent(practitionerID: string, disciplineValue: string, inquirerID: string, discipline: string) {
-    throw new Error("Method not implemented.");
+  async prove(practitionerID: string, inquirerID: string, discipline: string): Promise<ActionResult> {
+    console.log("prove client", practitionerID, inquirerID, discipline);
+    const result = await this._call('prove', { practitionerID, inquirerID, discipline });
+    return result as ActionResult;
   }
 
   // ---------------------------------------------------------------------------------------
 
   loadSnarkyJS() {
     return this._call('loadSnarkyJS', {});
+  }
+
+  setupLocalBlockchain() {
+  
   }
 
   setActiveInstanceToBerkeley() {
@@ -48,7 +56,7 @@ export default class AllMaWorkerEventsClient {
     return Field.fromJSON(JSON.parse(result as string));
   }
   async setStorageRoot(root: string, discipline: string): Promise<void> {
-    await this._call('setStorageRoot', { root });
+    await this._call('setStorageRoot', { root, discipline });
   }
   async add(address: string, rank: string, discipline: string): Promise<ActionResult> {
     console.log("add client", address, rank);
