@@ -70,7 +70,7 @@ const LineageMap = ({ parentDiscipline }) => {
         }
         else if (value.Instructor) {
           console.log("Missing instructor: ", value.Instructor);
-          console.log("choosing a random instructor, this should be fixed in the data");
+          console.log("choosing a random instructor, this should be fixed in the data generation");
           
           // choose a random instructor
           value.parentId = 1;
@@ -81,14 +81,14 @@ const LineageMap = ({ parentDiscipline }) => {
           safeData.push(value);
         }
         else {
-          console.log("Fallt through: ", value);
+          console.log("Fall through: ", value);
         }
       }
 
-      for (let i = 0; i < safeData.length; i++) {
-        let value = safeData[i];
-        console.log("id: ", value.id, " parent: ", value.parentId, "key: ", value.publicKey, "instructor: ", value.Instructor);
-      }
+      // for (let i = 0; i < safeData.length; i++) {
+      //   let value = safeData[i];
+      //   console.log("id: ", value.id, " parent: ", value.parentId, "key: ", value.publicKey, "instructor: ", value.Instructor);
+      // }
 
 
       console.log(data.length);
