@@ -110,16 +110,15 @@ const AuthPage = ({ validate, children }) => {
           }
           else {
             setState({ ...state, showLoadingContracts: true, showFundAccount: false, showCreateWallet: false, hasWallet: true, snarkyLoaded: true, showRequestingAccount: false, userAddress: true });
-            const hasBeenSetup = Authentication.setupContracts();
-            //const hasBeenSetup = Authentication.setupBjjPromoteContracts();
-            setState({ ...state, hasBeenSetup: hasBeenSetup, showLoadingContracts: false, showFundAccount: false, showCreateWallet: false, hasWallet: true, snarkyLoaded: true, showRequestingAccount: false, userAddress: Authentication.address, authentication: Authentication });
+            const hasBeenSetup = await Authentication.setupContracts();
             setUserAuthenticated(true);
             setUserAddress(Authentication.address);
+            //const hasBeenSetup = Authentication.setupBjjPromoteContracts();
+            setState({ ...state, hasBeenSetup: hasBeenSetup, showLoadingContracts: false, showFundAccount: false, showCreateWallet: false, hasWallet: true, snarkyLoaded: true, showRequestingAccount: false, userAddress: Authentication.address, authentication: Authentication });
 
-
-
+            
             console.log('fetching account');
-            await Authentication.zkClient.fetchAccount({ publicKey: PublicKey.fromBase58(Authentication.contractAddress) });
+            Authentication.zkClient.fetchAccount({ publicKey: PublicKey.fromBase58(Authentication.contractAddress) });
             console.log('fetching account done');
             setFirstFetchAccount(true);
 

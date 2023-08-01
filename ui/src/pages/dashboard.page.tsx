@@ -27,8 +27,8 @@ export default function Dashboard() {
 
 
   return (
-      <AuthPage validate={false}>
-                <DashboardContainer showDummyData={true} dummyDataIsInstructor={true} />
+      <AuthPage validate={true}>
+                <DashboardContainer showDummyData={false} dummyDataIsInstructor={true} />
                 <footer className="bg-gray-100 dark:bg-gray-800">
             <div className="max-w-screen-xl p-4 py-6 mx-auto lg:py-16 md:p-8 lg:p-10">
               
