@@ -39,9 +39,8 @@ let rootNode = {
 let root = await backingStore.getMartialArtistFromDocSnap(rootNode);
 await backingStore.upsert(root);
 console.log('root key', root.publicKey.toBase58());
-
-const [deployerAccount, studentAccount, instructorAccount] =
-  new MinaLocalBlockchain(false).accounts;
+const minalocal = new MinaLocalBlockchain(false);
+const [deployerAccount, studentAccount, instructorAccount] = minalocal.accounts;
 let data = new ProofOfRankData();
 let student = data.getStudent(studentAccount);
 student.verified = Bool(true);
@@ -56,6 +55,13 @@ let addedAssertion = actualRoot == expectedRoot;
 console.log(`actualRoot: ${actualRoot}`);
 console.log(`expectedRoot: ${expectedRoot}`);
 console.log(`${addedAssertion}: Can create MerkleMap with one Martial Artists`);
+
+let newStudent = data.getStudent(minalocal.newStudent);
+
+newStudent.verified = Bool(true);
+newStudent.instructor = instructorAccount.publicKey;
+newStudent.id = Field(2);
+await backingStore.upsert(newStudent);
 
 let instructor = data.getInstructor(instructorAccount);
 instructor.instructor = root.publicKey;

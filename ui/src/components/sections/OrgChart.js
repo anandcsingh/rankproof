@@ -1,11 +1,14 @@
-import React, { useLayoutEffect, useRef, useEffect } from 'react';
+import React, { useLayoutEffect, useRef, useEffect, useContext } from 'react';
 import { OrgChart } from 'd3-org-chart';
 import * as d3 from 'd3';
+import { Authentication } from './../../modules/Authentication'
+import { AuthContext } from '@/components/layout/AuthPage';
 
 //https://github.com/bumbeishvili/org-chart
 export const OrgChartComponent = (props, ref) => {
   const d3Container = useRef(null);
   let chart = null;
+  const [authState, _] = useContext(AuthContext);
 
   function addNode(node) {
     chart.addNode(node);
@@ -14,9 +17,11 @@ export const OrgChartComponent = (props, ref) => {
   props.setClick(addNode);
 
   // We need to manipulate DOM
-  useLayoutEffect(() => {
-    let myAddress = "B62qqzMHkbogU9gnQ3LjrKomimsXYt4qHcXc8Cw4aX7tok8DjuDsAzx";//Authentication.address;
-
+  useLayoutEffect(() => { 
+    let myAddress = authState.userAuthenticated ? authState.userAddress :"B62qqzMHkbogU9gnQ3LjrKomimsXYt4qHcXc8Cw4aX7tok8DjuDsAzx";//Authentication.address;
+    console.log("my address: ", myAddress);
+    if(authState.userAuthenticated) {
+      console.log("org cahrt authenticated");
     if (props.data && d3Container.current) {
       if (!chart) {
         chart = new OrgChart();
@@ -65,6 +70,7 @@ export const OrgChartComponent = (props, ref) => {
           })
         .render();
     }
+  }
   }, [props.data, d3Container.current]);
 
   return (

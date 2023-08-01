@@ -48,6 +48,7 @@ const AddForm = () => {
 
     setAuthState({ ...authState, alertAvailable: true, alertMessage: `Adding Martial Artist, please wait this can take a few mins`, alertNeedsSpinner: true });
     Router.back();
+    window.scrollTo({top: 0, left: 0, behavior: 'smooth'});
     console.log("Discipline: ", disciplineValue);
     console.log("Rank: ", rankValue);
     console.log("Instructor: ", instructorValue);

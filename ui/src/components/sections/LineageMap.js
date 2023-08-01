@@ -13,6 +13,7 @@ import { AuthContext } from '@/components/layout/AuthPage';
 const LineageMap = ({ parentDiscipline }) => {
 
   const [data, setData] = useState(null);
+  const [myParentID, setMyParentIDtData] = useState(0);
   const [show, setShow] = useState(false);
   const [authState, _] = useContext(AuthContext);
   let addNodeChildFunc = null;
@@ -38,7 +39,8 @@ const LineageMap = ({ parentDiscipline }) => {
       let data = [];
       let idMap = {};
 
-      let myAddress = Authentication?.address;
+      let myAddress = authState.userAuthenticated ? authState.userAddress :"B62qqzMHkbogU9gnQ3LjrKomimsXYt4qHcXc8Cw4aX7tok8DjuDsAzx";//Authentication.address;
+      console.log("my address: ", myAddress);
       let shortName = (address) => {
         if (address && address === myAddress) {
           return "Me";
@@ -67,6 +69,10 @@ const LineageMap = ({ parentDiscipline }) => {
         if (value.Instructor && idMap[value.Instructor]) {
           value.parentId = idMap[value.Instructor];
           safeData.push(value);
+
+          if (value.publicKey && value.publicKey === myAddress) {
+            setMyParentIDtData(value.parentId);
+          }
         }
         else if (value.Instructor) {
           // console.log("Missing instructor: ", value.Instructor);
@@ -76,6 +82,10 @@ const LineageMap = ({ parentDiscipline }) => {
           value.parentId = 1;
           // console.log("chose: ", value);
           safeData.push(value);
+
+          if (value.publicKey && value.publicKey === myAddress) {
+            setMyParentIDtData(value.parentId);
+          }
         }
         else if (!value.Instructor) {
           safeData.push(value);

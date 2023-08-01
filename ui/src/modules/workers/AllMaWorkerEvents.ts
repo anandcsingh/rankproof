@@ -66,10 +66,14 @@ const functions = {
       let senderPrivate = PrivateKey.fromBase58('EKFUES7YfgYm38njcBHzxyU6RPZQdZnfThcMzLrHL9LjyxJKfXzY');
       let senderPublic = senderPrivate.toPublicKey();
 
-      let instructorPrivate = PrivateKey.fromBase58('EKFZWMtRmcQELaJvqcEyEEJqh874B3PndA8kpxSst6AiHtErn7Xw');
+      let instructorPrivate = PrivateKey.fromBase58('EKFZWMtRmcQELaJvqcEyEEJqh874B3PndA8kpxSst6AiHtErn7Xw'); //B62qqzMHkbogU9gnQ3LjrKomimsXYt4qHcXc8Cw4aX7tok8DjuDsAzx
       let instructorPublic = instructorPrivate.toPublicKey();
+
+      let newStudent = PrivateKey.fromBase58("EKDzuEofrhNa2iSHS7Zq19fy6p7cX3FYrQ2pQ99uab1JjM4zLwA4");// B62qk5mbK8NfRVXEw2ubyD2QbuU7WWhevE42yHz9rxgwjt21BtEa6Jg
+      let newStudentPublic = newStudent.toPublicKey();
       localBlockchainSetup.localBlockchain.addAccount(senderPublic, '10_000_000_000');
       localBlockchainSetup.localBlockchain.addAccount(instructorPublic, '10_000_000_000');
+      localBlockchainSetup.localBlockchain.addAccount(newStudentPublic, '10_000_000_000');
   
     }
   },
@@ -130,29 +134,29 @@ const functions = {
       console.log("backing stores initialized");
       let bjjMerkleStore = await bbjBackingStore.getMerkleMap();
       console.log("BJJ merkle store initialized");
-      let judoMerkleStore = await judoBackingStore.getMerkleMap();
-      console.log("Judo merkle store initialized");
-      let karateMerkleStore = await karateBackingStore.getMerkleMap();
-      console.log("Karate merkle store initialized");
+      // let judoMerkleStore = await judoBackingStore.getMerkleMap();
+      // console.log("Judo merkle store initialized");
+      // let karateMerkleStore = await karateBackingStore.getMerkleMap();
+      // console.log("Karate merkle store initialized");
       let txn1 = await Mina.transaction({ sender: s.publicKey }, () => {
         state.zkapp!.setbBjjMapRoot(bjjMerkleStore.map.getRoot());
       });
       await txn1.prove();
       let result = await txn1.sign([s.privateKey]).send();
-      console.log("BJJ root synced ", bjjMerkleStore.map.getRoot().toString() + " == " + state.zkapp!.bjjMapRoot.get().toString());
-      txn1 = await Mina.transaction({ sender: s.publicKey }, () => {
-        state.zkapp!.setJudoMapRoot(judoMerkleStore.map.getRoot());
-      });
-      await txn1.prove();
-      result = await txn1.sign([s.privateKey]).send();
-      console.log("Judo root synced ", judoMerkleStore.map.getRoot().toString() + " == " + state.zkapp!.judoMapRoot.get().toString());
+      // console.log("BJJ root synced ", bjjMerkleStore.map.getRoot().toString() + " == " + state.zkapp!.bjjMapRoot.get().toString());
+      // txn1 = await Mina.transaction({ sender: s.publicKey }, () => {
+      //   state.zkapp!.setJudoMapRoot(judoMerkleStore.map.getRoot());
+      // });
+      // await txn1.prove();
+      // result = await txn1.sign([s.privateKey]).send();
+      // console.log("Judo root synced ", judoMerkleStore.map.getRoot().toString() + " == " + state.zkapp!.judoMapRoot.get().toString());
       
-      txn1 = await Mina.transaction({ sender: s.publicKey }, () => {
-        state.zkapp!.setKarateMapRoot(judoMerkleStore.map.getRoot());
-      });
-      await txn1.prove();
-      result = await txn1.sign([s.privateKey]).send();
-      console.log("Karate root synced ", karateMerkleStore.map.getRoot().toString() + " == " + state.zkapp!.karateMapRoot.get().toString());
+      // txn1 = await Mina.transaction({ sender: s.publicKey }, () => {
+      //   state.zkapp!.setKarateMapRoot(judoMerkleStore.map.getRoot());
+      // });
+      // await txn1.prove();
+      // result = await txn1.sign([s.privateKey]).send();
+      // console.log("Karate root synced ", karateMerkleStore.map.getRoot().toString() + " == " + state.zkapp!.karateMapRoot.get().toString());
 
     } else {
 

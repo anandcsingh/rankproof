@@ -5,6 +5,7 @@ export class MinaLocalBlockchain {
   initialized: boolean;
   accounts: [Sender, Sender, Sender];
   local: any;
+  newStudent: any;
 
   constructor(useProof: boolean) {
     this.local = Mina.LocalBlockchain({ proofsEnabled: useProof });
@@ -38,8 +39,15 @@ export class MinaLocalBlockchain {
       privateKey: instructorPrivate,
       publicKey: instructorPublic,
     };
+
+    let newStudent = PrivateKey.fromBase58(
+      'EKDzuEofrhNa2iSHS7Zq19fy6p7cX3FYrQ2pQ99uab1JjM4zLwA4'
+    ); // B62qk5mbK8NfRVXEw2ubyD2QbuU7WWhevE42yHz9rxgwjt21BtEa6Jg
+    let newStudentPublic = newStudent.toPublicKey();
+    this.newStudent = { sender: newStudent, publicKey: newStudentPublic };
     this.local.addAccount(sender.publicKey, '10_000_000_000');
     this.local.addAccount(instructorAccount.publicKey, '10_000_000_000');
+    this.local.addAccount(newStudentPublic, '10_000_000_000');
 
     this.accounts = [deployerAccount, sender, instructorAccount];
   }
