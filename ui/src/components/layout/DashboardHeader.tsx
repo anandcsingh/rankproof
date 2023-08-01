@@ -9,9 +9,9 @@ const Header = () => {
 
   return (
 
-    <nav className="bg-gray-800">
+    <nav className="bg-gray-800 z-100">
 
-      <header className="fixed w-full">
+      <header className="fixed w-full zclass">
         <nav className="bg-white border-gray-200 py-2.5 dark:bg-gray-900">
           <div className="flex flex-wrap items-center justify-between max-w-screen-xl px-4 mx-auto">
 

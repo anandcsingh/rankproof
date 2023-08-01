@@ -12,9 +12,9 @@ const DashboardProfile: React.FC<DashboardProfileProps> = ({ disciplines }) => {
 
   const verifiedClass = "card w-96 bg-yellow-300 text-primary-content";
   const unVerifiedClass = "card w-96 bg-zinc-300 text-primary-content";
-
+  const [verified, setverified] = useState("bg-blue-100");
   return (
-    <div className="relative bg-indigo-200 dark:bg-indigo-500 p-4 sm:p-6 rounded-sm overflow-hidden mb-8">
+    <div className="relative bg-indigo-200 dark:bg-indigo-500 p-4 sm:p-6 rounded-sm overflow-hidden">
       {/* Background illustration */}
       <div className="absolute right-0 top-0 -mt-4 mr-16 pointer-events-none hidden xl:block" aria-hidden="true">
         <svg width="319" height="198" xmlnsXlink="http://www.w3.org/1999/xlink">
@@ -59,18 +59,30 @@ const DashboardProfile: React.FC<DashboardProfileProps> = ({ disciplines }) => {
       {/* Content */}
       <div className="relative">
         <h1 className="text-2xl md:text-3xl text-slate-800 dark:text-slate-100 font-bold mb-1">Good afternoon, Smoo👋</h1>
-        <p className="dark:text-indigo-200">Start your martial arts journey today, Disciplines:</p>
-        
-        <div className="grid grid-cols-4 gap-4 items-center	">
-        {disciplines.map((discipline, index) => (
-          <div key={index}>
-            <span className="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">{discipline.discipline} : {discipline.rank}</span>
-          </div>
-          
+        <p className="dark:text-indigo-200 pb-2">Start your martial arts journey today, Disciplines:</p>
 
-        ))}
-        <a className="inline-block rounded btn-primary px-12 py-3 text-sm font-medium text-white transition hover:bg-indigo-700 focus:outline-none focus:ring focus:ring-yellow-400"  href='#add_action_modal'>ADD New Martial Art</a>
-      </div>
+        <div className="grid grid-cols-4 gap-4 items-center	">
+          {disciplines.map((discipline, index) => (
+
+            <div key={index}>
+              <a href="#my_modal_8">
+                {discipline.verified ? <span className="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-3 rounded dark:bg-blue-900 dark:text-blue-300">{discipline.discipline} : {discipline.rank}</span> : <span className="bg-yellow-300 text-blue-800 text-xs font-medium mr-2 px-2.5 py-3 rounded dark:bg-blue-900 dark:text-blue-300">{discipline.discipline} : {discipline.rank}</span>}
+              </a>
+              <div className="modal" id="my_modal_8">
+                <div className="modal-box bg-white">
+                  <h3 className="font-bold text-lg">Hello!</h3>
+                  <p className="py-4">This modal works with anchor links</p>
+                  <div className="modal-action">
+                    <a href="#" className="btn btn-primary">Close</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+          ))}
+          <a className="inline-block rounded btn-primary px-12 py-3 text-center text-sm font-medium text-white transition hover:bg-indigo-700 focus:outline-none focus:ring focus:ring-yellow-400" href='#add_action_modal'>ADD New Martial Art</a>
+        </div>
       </div>
     </div>
 

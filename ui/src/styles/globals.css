@@ -52,6 +52,10 @@ a {
   text-decoration: none;
 }
 
+.zclass {
+  z-index: 9999;
+}
+
 .rankproof-page {
   width: 100%;
 }
