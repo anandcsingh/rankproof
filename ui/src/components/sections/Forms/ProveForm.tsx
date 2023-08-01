@@ -37,8 +37,9 @@ const ProveForm = () => {
 
     await client.fetchAccount({ publicKey: PublicKey.fromBase58(Authentication.contractAddress) });
     setAuthState({ ...authState, alertAvailable: true, alertMessage: `Invoking contracts, please wait this can take a few mins`, alertNeedsSpinner: true });
+    console.log(`Proving martial art rank for ${practitionerID} to ${inquirerID} for discipline ${disciplineValue}`);
 
-    await client.prove(practitionerID, disciplineValue, inquirerID);
+    await client.prove(practitionerID, inquirerID, disciplineValue);
     setAuthState({ ...authState, alertAvailable: true, alertMessage: `Proving transaction, please wait this can take a few mins`, alertNeedsSpinner: true });
 
     await client.proveUpdateTransaction();
@@ -79,7 +80,7 @@ const ProveForm = () => {
           <label className="label">
             <span className="text-base label-text">Marital Art discipline</span>
           </label>
-          <select className="select select-bordered w-full max-w-xs bg-white">
+          <select onChange={handleDiscipleineChange} className="select select-bordered w-full max-w-xs bg-white">
             <option>Select a Martial Art</option>
             <option>BJJ</option>
             <option>Judo</option>

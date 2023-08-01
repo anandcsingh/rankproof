@@ -8,6 +8,7 @@ import {
   MerkleMapWitness,
   CircuitString,
   Bool,
+  AccountUpdate,
 } from 'snarkyjs'
 import { BackingStore, MerkleMapDatabase } from '../../../../contracts/build/src/models/MartialArtistRepository.js';
 
@@ -20,7 +21,7 @@ import type { AllMartialArtsEvents } from '../../../../contracts/src/AllMartialA
 import { MartialArtistRepository } from '../../../../contracts/src/models/MartialArtistRepository.js';
 import { FirebaseBackingStore } from '../../../../contracts/build/src/models/firebase/FirebaseBackingStore.js';
 import { MartialArtist } from '../../../../contracts/build/src/models/MartialArtist.js';
-
+import { MinaLocalBlockchain } from '../../../../contracts/build/src/local/MinaLocalBlockchain.js';
 
 export default class ActionResult {
   success: boolean;
@@ -38,6 +39,12 @@ const state = {
   pendingMartialArtist: null as null | undefined | MartialArtist,
 }
 
+const localBlockchainSetup = {
+  useLocal: true,
+  localBlockchain: null as null | any,
+}
+
+
 // ---------------------------------------------------------------------------------------
 
 const functions = {
@@ -45,11 +52,26 @@ const functions = {
     await isReady;
   },
   setActiveInstanceToBerkeley: async (args: {}) => {
-    const Berkeley = Mina.Network(
-      'https://proxy.berkeley.minaexplorer.com/graphql'
-    );
-    console.log('Berkeley Instance Created');
-    Mina.setActiveInstance(Berkeley);
+    if (!localBlockchainSetup.useLocal) {
+      const Berkeley = Mina.Network(
+        'https://proxy.berkeley.minaexplorer.com/graphql'
+      );
+      console.log('Berkeley Instance Created');
+      Mina.setActiveInstance(Berkeley);
+    } else {
+      localBlockchainSetup.localBlockchain = Mina.LocalBlockchain({ proofsEnabled: false });
+      Mina.setActiveInstance(localBlockchainSetup.localBlockchain);
+      console.log("using local blockchain instead of Berkeley");
+      console.log("attaching accounts to local blockchain");
+      let senderPrivate = PrivateKey.fromBase58('EKFUES7YfgYm38njcBHzxyU6RPZQdZnfThcMzLrHL9LjyxJKfXzY');
+      let senderPublic = senderPrivate.toPublicKey();
+
+      let instructorPrivate = PrivateKey.fromBase58('EKFZWMtRmcQELaJvqcEyEEJqh874B3PndA8kpxSst6AiHtErn7Xw');
+      let instructorPublic = instructorPrivate.toPublicKey();
+      localBlockchainSetup.localBlockchain.addAccount(senderPublic, '10_000_000_000');
+      localBlockchainSetup.localBlockchain.addAccount(instructorPublic, '10_000_000_000');
+  
+    }
   },
   loadContract: async (args: {}) => {
 
@@ -58,23 +80,87 @@ const functions = {
     console.log("contract AllMartialArtsEvents loaded");
   },
   compileContract: async (args: {}) => {
-    console.log("compiling AllMartialArtsEvents contract");
-    state.AllMartialArtsEvents!.compile();
-    console.log("contract AllMartialArtsEvents compiled");
+    if (!localBlockchainSetup.useLocal) {
+      console.log("compiling AllMartialArtsEvents contract");
+      state.AllMartialArtsEvents!.compile();
+      console.log("contract AllMartialArtsEvents compiled");
+    } else {
+      console.log("no compiling using local blockchain");
+    }
+
   },
   fetchAccount: async (args: { publicKey58: string }) => {
-    console.log("fetching account AllMartialArtsEvents:", args.publicKey58);
-    console.log("fetch @ ", new Date().toLocaleTimeString());
-    const publicKey = PublicKey.fromBase58(args.publicKey58);
-    let fetch = await fetchAccount({ publicKey });
-    console.log("fetched @ ", new Date().toLocaleTimeString());
-    return fetch;
+    if (!localBlockchainSetup.useLocal) {
+      console.log("fetching account AllMartialArtsEvents:", args.publicKey58);
+      console.log("fetch @ ", new Date().toLocaleTimeString());
+      const publicKey = PublicKey.fromBase58(args.publicKey58);
+      let fetch = await fetchAccount({ publicKey });
+      console.log("fetched @ ", new Date().toLocaleTimeString());
+      return fetch;
+    } else {
+      console.log("using local blockchain");
+      return {error:null};
+    }
+
   },
   initZkappInstance: async (args: { publicKey58: string }) => {
-    const publicKey = PublicKey.fromBase58(args.publicKey58);
-    state.zkapp = new state.AllMartialArtsEvents!(publicKey);
-    console.log("zkapp AllMartialArtsEvents instance initialized");
-    console.log("zkapp AllMartialArtsEvents address: ", args.publicKey58);
+
+    if (localBlockchainSetup.useLocal) {
+      let [deployerAccount, s, i] = new MinaLocalBlockchain(
+        false
+      ).accounts;
+      let zkAppPrivateKey = PrivateKey.random();
+      let zkAppAddress = zkAppPrivateKey.toPublicKey();
+      state.zkapp = new state.AllMartialArtsEvents!(zkAppAddress);
+      const txn = await Mina.transaction(deployerAccount.publicKey, () => {
+        AccountUpdate.fundNewAccount(deployerAccount.publicKey);
+        state.zkapp!.deploy();
+      });
+      await txn.prove();
+      // this tx needs .sign(), because `deploy()` adds an account update that requires signature authorization
+      await txn.sign([deployerAccount.privateKey, zkAppPrivateKey]).send();
+      console.log("zkapp AllMartialArtsEvents instance initialized locally");
+
+      
+
+      console.log("sync backing store roots with contract roots");
+      let bbjBackingStore = new FirebaseBackingStore("BJJ");
+      let judoBackingStore = new FirebaseBackingStore("Judo");
+      let karateBackingStore = new FirebaseBackingStore("Karate");
+      console.log("backing stores initialized");
+      let bjjMerkleStore = await bbjBackingStore.getMerkleMap();
+      console.log("BJJ merkle store initialized");
+      let judoMerkleStore = await judoBackingStore.getMerkleMap();
+      console.log("Judo merkle store initialized");
+      let karateMerkleStore = await karateBackingStore.getMerkleMap();
+      console.log("Karate merkle store initialized");
+      let txn1 = await Mina.transaction({ sender: s.publicKey }, () => {
+        state.zkapp!.setbBjjMapRoot(bjjMerkleStore.map.getRoot());
+      });
+      await txn1.prove();
+      let result = await txn1.sign([s.privateKey]).send();
+      console.log("BJJ root synced ", bjjMerkleStore.map.getRoot().toString() + " == " + state.zkapp!.bjjMapRoot.get().toString());
+      txn1 = await Mina.transaction({ sender: s.publicKey }, () => {
+        state.zkapp!.setJudoMapRoot(judoMerkleStore.map.getRoot());
+      });
+      await txn1.prove();
+      result = await txn1.sign([s.privateKey]).send();
+      console.log("Judo root synced ", judoMerkleStore.map.getRoot().toString() + " == " + state.zkapp!.judoMapRoot.get().toString());
+      
+      txn1 = await Mina.transaction({ sender: s.publicKey }, () => {
+        state.zkapp!.setKarateMapRoot(judoMerkleStore.map.getRoot());
+      });
+      await txn1.prove();
+      result = await txn1.sign([s.privateKey]).send();
+      console.log("Karate root synced ", karateMerkleStore.map.getRoot().toString() + " == " + state.zkapp!.karateMapRoot.get().toString());
+
+    } else {
+
+      const publicKey = PublicKey.fromBase58(args.publicKey58);
+      state.zkapp = new state.AllMartialArtsEvents!(publicKey);
+      console.log("zkapp AllMartialArtsEvents instance initialized");
+      console.log("zkapp AllMartialArtsEvents address: ", args.publicKey58);
+    }
   },
   getStorageRootField: async (args: { discipline: string }) => {
     console.log("getting storage root for discipline: ", args.discipline);
@@ -82,12 +168,15 @@ const functions = {
 
     if (args.discipline == "BJJ") {
       currentNum = state.zkapp!.bjjMapRoot.get();
+    console.log("storage from BJJ root: ", currentNum.toString());
       return currentNum;
     } else if (args.discipline == "Judo") {
       currentNum = state.zkapp!.judoMapRoot.get();
+      console.log("storage from BJJ root: ", currentNum.toString());
       return currentNum;
     } else if (args.discipline == "Karate") {
       currentNum = state.zkapp!.karateMapRoot.get();
+      console.log("storage from BJJ root: ", currentNum.toString());
       return currentNum;
     }
     console.log("storage root: ", currentNum.toString());
@@ -274,9 +363,11 @@ const functions = {
     const backingStoreRoot = merkleStore.map.getRoot();
     const contractRoot = await functions.getStorageRootField({ discipline: args.discipline });
 
+    console.log("checking roots");
     // verify roots match
     const rootsVerified = await functions.rootsVerified({ merkleStore: merkleStore, contractRoot: contractRoot, discipline: args.discipline });
     if (!rootsVerified.success) return rootsVerified;
+    console.log("roots verified");
 
     let studentKey = PublicKey.fromBase58(args.address);
     let inquirerKey = PublicKey.fromBase58(args.inquirer);
@@ -291,7 +382,7 @@ const functions = {
         message: "Student does not exist",
       }
     }
-   
+
     // get hash and witness for student
     let hash = state.pendingMartialArtist.hash();
     const witness = merkleStore.map.getWitness(state.pendingMartialArtist.id);

@@ -28,7 +28,7 @@ export default class AllMaWorkerEventsClient {
   }
 
   setupLocalBlockchain() {
-  
+    
   }
 
   setActiveInstanceToBerkeley() {
