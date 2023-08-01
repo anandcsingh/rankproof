@@ -59,13 +59,13 @@ const AddForm = () => {
     let client = Authentication.zkClient! as AllMaWorkerEventsClient;
     console.log('client', client);
     console.log('adding martial art...', disciplineValue, rankValue);
-    console.log(`fetching account ... ${Authentication.contractAddress}`);
+    console.log(`fetching account ... ${Authentication.contractAddress} @ ${new Date().toLocaleTimeString()}}`);
     setAuthState({ ...authState, alertAvailable: true, alertMessage: `Fetching account, please wait this can take a few mins`, alertNeedsSpinner: true });
 
     await client.fetchAccount({ publicKey: PublicKey.fromBase58(Authentication.contractAddress) });
     setAuthState({ ...authState, alertAvailable: true, alertMessage: `Invoking contracts, please wait this can take a few mins`, alertNeedsSpinner: true });
 
-    console.log(`fetching account done ${Authentication.contractAddress}`);
+    console.log(`fetching account done ${Authentication.contractAddress} @ ${new Date().toLocaleTimeString()}`);
     let result = await client.add(studentID, rankValue, disciplineValue);
     console.log("result", result);
     if (result && result.success) {

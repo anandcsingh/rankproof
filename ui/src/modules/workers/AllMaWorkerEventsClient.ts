@@ -44,6 +44,7 @@ export default class AllMaWorkerEventsClient {
   }
 
   fetchAccount({ publicKey }: { publicKey: PublicKey }): ReturnType<typeof fetchAccount> {
+    console.log("fetchAccount inside client", publicKey.toBase58());
     const result = this._call('fetchAccount', { publicKey58: publicKey.toBase58() });
     return (result as ReturnType<typeof fetchAccount>);
   }

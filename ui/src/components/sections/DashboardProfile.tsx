@@ -13,6 +13,12 @@ const DashboardProfile: React.FC<DashboardProfileProps> = ({ disciplines }) => {
   const verifiedClass = "card w-96 bg-yellow-300 text-primary-content";
   const unVerifiedClass = "card w-96 bg-zinc-300 text-primary-content";
   const [verified, setverified] = useState("bg-blue-100");
+  const [authState, _] = useContext(AuthContext);
+
+  const shortName = () => {
+      let address = authState.userAddress;
+      return address.substring(0, 5) + "..." + address.substring(address.length - 5, address.length);
+  }
   return (
     <div className="relative bg-indigo-200 dark:bg-indigo-500 p-4 sm:p-6 rounded-sm overflow-hidden">
       {/* Background illustration */}
@@ -58,7 +64,9 @@ const DashboardProfile: React.FC<DashboardProfileProps> = ({ disciplines }) => {
       </div>
       {/* Content */}
       <div className="relative">
-        <h1 className="text-2xl md:text-3xl text-slate-800 dark:text-slate-100 font-bold mb-1">Good afternoon, Smoo👋</h1>
+        <h1 className="text-2xl md:text-3xl text-slate-800 dark:text-slate-100 font-bold mb-1">
+          Good afternoon, { authState.userAuthenticated && shortName() } 👋
+        </h1>
         <p className="dark:text-indigo-200 pb-2">Start your martial arts journey today, Disciplines:</p>
 
         <div className="grid grid-cols-4 gap-4 items-center	">

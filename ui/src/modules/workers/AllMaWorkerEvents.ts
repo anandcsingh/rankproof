@@ -40,7 +40,7 @@ const state = {
 }
 
 const localBlockchainSetup = {
-  useLocal: true,
+  useLocal: false,
   localBlockchain: null as null | any,
 }
 
@@ -94,6 +94,8 @@ const functions = {
 
   },
   fetchAccount: async (args: { publicKey58: string }) => {
+    console.log("fetching account AllMartialArtsEvents from worker:", args.publicKey58);
+
     if (!localBlockchainSetup.useLocal) {
       console.log("fetching account AllMartialArtsEvents:", args.publicKey58);
       console.log("fetch @ ", new Date().toLocaleTimeString());
@@ -102,7 +104,7 @@ const functions = {
       console.log("fetched @ ", new Date().toLocaleTimeString());
       return fetch;
     } else {
-      console.log("using local blockchain");
+      console.log("no fetching using local blockchain");
       return {error:null};
     }
 

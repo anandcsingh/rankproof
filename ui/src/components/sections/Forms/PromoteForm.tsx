@@ -41,11 +41,12 @@ const PromoteForm = () => {
      let studentID = studentValue;
      let client = Authentication.zkClient! as AllMaWorkerEventsClient;
     setAuthState({ ...authState, alertAvailable: true, alertMessage: `Fetching contract for promotion, please wait this can take a few mins`, alertNeedsSpinner: true });
+    console.log(`fetching account ${Authentication.contractAddress} @ ${new Date().toLocaleTimeString()}`);
 
      await client.fetchAccount({ publicKey: PublicKey.fromBase58(Authentication.contractAddress) });
     setAuthState({ ...authState, alertAvailable: true, alertMessage: `Invoking contracts for promotion, please wait this can take a few mins`, alertNeedsSpinner: true });
 
-     console.log(`fetching account done ${Authentication.contractAddress}`);
+     console.log(`fetching account done ${Authentication.contractAddress} @ ${new Date().toLocaleTimeString()}`);
 
     let result = await client.promoteStudent(studentID, rankValue, instructorID, disciplineValue);
     console.log("result", result);
@@ -121,7 +122,7 @@ const PromoteForm = () => {
                         <option>Select a Rank</option>
                         <option>White Belt</option>
                         <option>Blue Belt</option>
-                        <option>Pruple Belt</option>
+                        <option>Purple Belt</option>
                         <option>Brown Belt</option>
                         <option>Black Belt</option>
                       </select>

@@ -38,31 +38,45 @@ const PromoteForm = () => {
      let studentID = studentValue;
      console.log("studentID", studentID);
      let client = Authentication.zkClient! as AllMaWorkerEventsClient;
-    setAuthState({ ...authState, alertAvailable: true, alertMessage: `Fetching account, please wait this can take a few mins`, alertNeedsSpinner: true });
+    setAuthState({ ...authState, alertAvailable: true, alertMessage: `Fetching account for revoke student, please wait this can take a few mins`, alertNeedsSpinner: true });
 
      await client.fetchAccount({ publicKey: PublicKey.fromBase58(Authentication.contractAddress) });
-    setAuthState({ ...authState, alertAvailable: true, alertMessage: `Invoking contracts, please wait this can take a few mins`, alertNeedsSpinner: true });
+    setAuthState({ ...authState, alertAvailable: true, alertMessage: `Invoking contracts fro revoke student, please wait this can take a few mins`, alertNeedsSpinner: true });
 
-    await client.revokeStudent(studentID, instructorID, disciplineValue);
-    
-    setAuthState({ ...authState, alertAvailable: true, alertMessage: `Proving transaction, please wait this can take a few mins`, alertNeedsSpinner: true });
+    let result = await client.revokeStudent(studentID, instructorID, disciplineValue);
+    console.log("result", result);
+    if (result && result.success) {
+      console.log("result", result);
+      console.log("proving update transaction...");
+      setAuthState({ ...authState, alertAvailable: true, alertMessage: `Proving transaction for revoke student, please wait this can take a few mins`, alertNeedsSpinner: true });
 
-     await client.proveUpdateTransaction();
-     
-    setAuthState({ ...authState, alertAvailable: true, alertMessage: `Sending transaction, please approve the transaction on your wallet`, alertNeedsSpinner: true });
+      await client.proveUpdateTransaction();
+      console.log("sending transaction...");
+      setAuthState({ ...authState, alertAvailable: true, alertMessage: `Sending transaction for revoke student, please approve the transaction on your wallet`, alertNeedsSpinner: true });
 
-     let hash = await client.sendTransaction();
-      if(hash) {
-        await client.updateBackingStore();
+      let hash = await client.sendTransaction();
+      console.log("transaction sent");
 
+      // if hash is not empty or null, then we have a transaction hash
+      if (hash) {
         let hashStr = `https://berkeley.minaexplorer.com/transaction/${hash}`;
         let hashlink = `<a href="${hashStr}" class="btn btn-sm" target="_blank">View transaction</a>`;
-        setAuthState({ ...authState, alertAvailable: true, alertMessage: `Revoke martial artist transaction submitted ${hashlink}`, alertNeedsSpinner: false });
-        
+        console.log("transaction", hashStr);
+
+        result = await client.updateBackingStore(disciplineValue);
+        console.log("result", result);
+
+        if (result.success) {
+          setAuthState({ ...authState, alertAvailable: true, alertMessage: `Revoke martial artist transaction submitted ${hashlink}`, alertNeedsSpinner: false });
+        }
+        else {
+          setAuthState({ ...authState, hasAlert: true, alertMessage: result.message, needsLoading: false });
+        }
       }
       else {
         setAuthState({ ...authState, hasAlert: true, alertMessage: `Revoke martial artist transaction failed, try again later`, needsLoading: false });
       }
+    }
   }
 
   

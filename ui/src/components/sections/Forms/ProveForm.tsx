@@ -33,18 +33,20 @@ const ProveForm = () => {
     let inquirerID = inquirerValue;
 
     let client = Authentication.zkClient! as AllMaWorkerEventsClient;
-    setAuthState({ ...authState, alertAvailable: true, alertMessage: `Fetching account, please wait this can take a few mins`, alertNeedsSpinner: true });
+    setAuthState({ ...authState, alertAvailable: true, alertMessage: `Fetching account for prove rank, please wait this can take a few mins`, alertNeedsSpinner: true });
+    console.log(`fetching account ${Authentication.contractAddress} @ ${new Date().toLocaleTimeString()}`);
 
     await client.fetchAccount({ publicKey: PublicKey.fromBase58(Authentication.contractAddress) });
-    setAuthState({ ...authState, alertAvailable: true, alertMessage: `Invoking contracts, please wait this can take a few mins`, alertNeedsSpinner: true });
+    setAuthState({ ...authState, alertAvailable: true, alertMessage: `Invoking contracts for prove rank, please wait this can take a few mins`, alertNeedsSpinner: true });
     //console.log(`Proving martial art rank for ${practitionerID} to ${inquirerID} for discipline ${disciplineValue}`);
+    console.log(`fetching account done ${Authentication.contractAddress} @ ${new Date().toLocaleTimeString()}`);
 
     await client.prove(practitionerID, inquirerID, disciplineValue);
     //await client.proveYourRank(inquirerID, "white", practitionerID, disciplineValue);
-    setAuthState({ ...authState, alertAvailable: true, alertMessage: `Proving transaction, please wait this can take a few mins`, alertNeedsSpinner: true });
+    setAuthState({ ...authState, alertAvailable: true, alertMessage: `Proving transaction fro prove rank, please wait this can take a few mins`, alertNeedsSpinner: true });
 
     await client.proveUpdateTransaction();
-    setAuthState({ ...authState, alertAvailable: true, alertMessage: `Sending transaction, please approve the transaction on your wallet`, alertNeedsSpinner: true });
+    setAuthState({ ...authState, alertAvailable: true, alertMessage: `Sending transaction for prove rank, please approve the transaction on your wallet`, alertNeedsSpinner: true });
 
     let hash = await client.sendTransaction();
     if (hash) {
