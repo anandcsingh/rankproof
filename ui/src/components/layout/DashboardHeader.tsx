@@ -1,11 +1,15 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import Router from 'next/router';
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import React from 'react';
 import Authentication from '@/modules/Authentication';
+import { AuthContext } from './AuthPage';
 
 const Header = () => {
+
+  const [authState, setAuthState] = useContext(AuthContext);
+
 
   return (
 
@@ -27,7 +31,10 @@ const Header = () => {
                  href='/dashboard' >
                     Launch App
                 </Link> */}
-              <p className='mr-2'>Smoo Doe</p>
+              { authState.userAuthenticated && <p className='mr-2'>
+                {authState.userAddress.substring(0, 5) + "..." + authState.userAddress.substring(authState.userAddress.length - 5, authState.userAddress.length)}
+                </p> 
+              }
               <button type="button" className="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-primary rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
   Notifications
   <span className="inline-flex items-center justify-center w-4 h-4 ml-2 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">

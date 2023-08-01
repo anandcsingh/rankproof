@@ -56,7 +56,7 @@ export class UserMartialArts {
 
             return {
                 hasMartialArt: true,
-                isInstructor: students!.length > 0,
+                isInstructor: practioner!.verified && practioner!.rank == "Black Belt",
                 publicKey: publicKey,
                 discipline: discipline,
                 rank: practioner!.rank,

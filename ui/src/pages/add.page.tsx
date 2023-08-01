@@ -154,7 +154,7 @@ const Add = () => {
                       <option>Select a Rank</option>
                       <option>White Belt</option>
                       <option>Blue Belt</option>
-                      <option>Pruple Belt</option>
+                      <option>Purple Belt</option>
                       <option>Brown Belt</option>
                       <option>Black Belt</option>
                     </select>

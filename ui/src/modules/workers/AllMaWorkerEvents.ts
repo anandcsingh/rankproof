@@ -357,7 +357,8 @@ const functions = {
       }
     }
   },
-  prove: async (args: { address: string, inquirer: string, discipline: string }): Promise<ActionResult> => {
+  proveYourRank: async (args: { studentPublicKey: string, rank: string, instructorPublicKey: string, discipline: string }) => {
+    console.log("prove your rank worker", args.studentPublicKey, args.rank, args.instructorPublicKey, args.discipline);
     let backingStore = new FirebaseBackingStore(args.discipline);
     const merkleStore = await backingStore.getMerkleMap();
     const backingStoreRoot = merkleStore.map.getRoot();
@@ -369,24 +370,31 @@ const functions = {
     if (!rootsVerified.success) return rootsVerified;
     console.log("roots verified");
 
-    let studentKey = PublicKey.fromBase58(args.address);
-    let inquirerKey = PublicKey.fromBase58(args.inquirer);
+    console.log("getting student and inquirer keys");
+    console.log("student: ", args.instructorPublicKey);
+    console.log("inquirer: ", args.studentPublicKey);
+    let studentKey = PublicKey.fromBase58(args.instructorPublicKey);
+    let inquirerKey = PublicKey.fromBase58(args.studentPublicKey);
 
     // get student existing martial artist in backing store
-    state.pendingMartialArtist = await backingStore.get(PublicKey.fromBase58(args.address));
-
+    console.log("getting student martial artist");
+    state.pendingMartialArtist = await backingStore.get(PublicKey.fromBase58(args.instructorPublicKey));
+    console.log("student martial artist: ", backingStore.getObjectFromStruct(state.pendingMartialArtist!));
     // ensure student exists
     if (state.pendingMartialArtist == null) {
+      console.log("student does not exist");
       return {
         success: false,
         message: "Student does not exist",
       }
     }
 
+    console.log("getting witness");
     // get hash and witness for student
     let hash = state.pendingMartialArtist.hash();
     const witness = merkleStore.map.getWitness(state.pendingMartialArtist.id);
 
+    console.log("creating transaction");
     // create discipline specific transaction
     const transaction = await Mina.transaction(
       { sender: state.pendingMartialArtist!.publicKey },
@@ -401,7 +409,71 @@ const functions = {
         }
       }
     );
+    console.log("transaction created");
+    console.log("adding transaction to state");
+    console.log("transaction: ", transaction);
+    // add pending transaction to state
+    state.transaction = transaction;
+    return {
+      success: true,
+      message: "Transaction created",
+    }
+  },
+  prove: async (args: { address: string, inquirer: string, discipline: string }): Promise<ActionResult> => {
+    console.log("prove worker", args.address, args.inquirer, args.discipline);
+    let backingStore = new FirebaseBackingStore(args.discipline);
+    const merkleStore = await backingStore.getMerkleMap();
+    const backingStoreRoot = merkleStore.map.getRoot();
+    const contractRoot = await functions.getStorageRootField({ discipline: args.discipline });
 
+    console.log("checking roots");
+    // verify roots match
+    const rootsVerified = await functions.rootsVerified({ merkleStore: merkleStore, contractRoot: contractRoot, discipline: args.discipline });
+    if (!rootsVerified.success) return rootsVerified;
+    console.log("roots verified");
+
+    console.log("getting student and inquirer keys");
+    console.log("student: ", args.address);
+    console.log("inquirer: ", args.inquirer);
+    let studentKey = PublicKey.fromBase58(args.address);
+    let inquirerKey = PublicKey.fromBase58(args.inquirer);
+
+    // get student existing martial artist in backing store
+    console.log("getting student martial artist");
+    state.pendingMartialArtist = await backingStore.get(PublicKey.fromBase58(args.address));
+    console.log("student martial artist: ", backingStore.getObjectFromStruct(state.pendingMartialArtist!));
+    // ensure student exists
+    if (state.pendingMartialArtist == null) {
+      console.log("student does not exist");
+      return {
+        success: false,
+        message: "Student does not exist",
+      }
+    }
+
+    console.log("getting witness");
+    // get hash and witness for student
+    let hash = state.pendingMartialArtist.hash();
+    const witness = merkleStore.map.getWitness(state.pendingMartialArtist.id);
+
+    console.log("creating transaction");
+    // create discipline specific transaction
+    const transaction = await Mina.transaction(
+      { sender: state.pendingMartialArtist!.publicKey },
+      () => {
+
+        if (args.discipline == "BJJ") {
+          state.zkapp!.proveJuijiteiro(studentKey, hash, inquirerKey, witness);
+        } else if (args.discipline == "Judo") {
+          state.zkapp!.proveJudoka(studentKey, hash, inquirerKey, witness);
+        } else if (args.discipline == "Karate") {
+          state.zkapp!.proveKarateka(studentKey, hash, inquirerKey, witness);
+        }
+      }
+    );
+    console.log("transaction created");
+    console.log("adding transaction to state");
+    console.log("transaction: ", transaction);
     // add pending transaction to state
     state.transaction = transaction;
     return {
@@ -410,6 +482,7 @@ const functions = {
     }
   },
   revokeStudent: async (args: { studentPublicKey: string, instructorPublicKey: string, discipline: string }) => {
+    console.log("revoke worker", args.studentPublicKey, args.instructorPublicKey, args.discipline);
     let backingStore = new FirebaseBackingStore(args.discipline);
     const merkleStore = await backingStore.getMerkleMap();
     const backingStoreRoot = merkleStore.map.getRoot();

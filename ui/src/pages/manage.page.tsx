@@ -320,7 +320,7 @@ export default function Dashboard() {
                             <option>Select a Rank</option>
                             <option>White</option>
                             <option>Blue</option>
-                            <option>Pruple</option>
+                            <option>Purple</option>
                             <option>Brown</option>
                             <option>Black</option>
                           </select>

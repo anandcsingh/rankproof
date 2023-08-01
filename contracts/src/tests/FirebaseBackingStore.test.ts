@@ -7,10 +7,12 @@ import {
   AccountUpdate,
   MerkleMap,
   CircuitString,
+  Bool,
 } from 'snarkyjs';
 import { FirebaseBackingStore } from '../models/firebase/FirebaseBackingStore.js';
 import { ProofOfRankData } from './ProofOfRankData.js';
 import { MinaLocalBlockchain } from '../local/MinaLocalBlockchain.js';
+import { tr } from '@faker-js/faker';
 let collectionName = 'BJJ';
 let backingStore = new FirebaseBackingStore(collectionName);
 await backingStore.clearStore();
@@ -22,11 +24,29 @@ console.log(`actualRoot: ${actualRoot}`);
 console.log(`expectedRoot: ${expectedRoot}`);
 console.log(`${emptyAssertion}: Can create empty MerkleMap`);
 
+let rootNode = {
+  id: 1,
+  publicKey: 'B62qikdZJTeh7toNWtckkRtDBnnCNT4EPjhy6stYuND2uGjLgueRvT3',
+  firstName: 'Helio',
+  lastName: 'Gracie',
+  rank: 'Red Belt',
+  verified: true,
+  instructor: '',
+  createdDate: '',
+  modifiedDate: '',
+  discipline: collectionName,
+};
+let root = await backingStore.getMartialArtistFromDocSnap(rootNode);
+await backingStore.upsert(root);
+console.log('root key', root.publicKey.toBase58());
+
 const [deployerAccount, studentAccount, instructorAccount] =
   new MinaLocalBlockchain(false).accounts;
 let data = new ProofOfRankData();
 let student = data.getStudent(studentAccount);
-student.id = Field(1);
+student.verified = Bool(true);
+student.instructor = instructorAccount.publicKey;
+student.id = Field(2);
 await backingStore.upsert(student);
 map = (await backingStore.getMerkleMap()).map;
 expectedRoot =
@@ -38,6 +58,8 @@ console.log(`expectedRoot: ${expectedRoot}`);
 console.log(`${addedAssertion}: Can create MerkleMap with one Martial Artists`);
 
 let instructor = data.getInstructor(instructorAccount);
+instructor.instructor = root.publicKey;
+instructor.id = Field(3);
 await backingStore.upsert(instructor);
 map = (await backingStore.getMerkleMap()).map;
 expectedRoot =
@@ -74,4 +96,4 @@ console.log(
   `${sizeAssertion}: Can get all Martial Artists from FirebaseBackingStore`
 );
 
-await backingStore.clearStore();
+//await backingStore.clearStore();

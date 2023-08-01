@@ -2,6 +2,7 @@ import QRCodeScanner from "@/components/QRCodeScanner";
 import { AuthContext } from "@/components/layout/AuthPage";
 import Authentication from "@/modules/Authentication";
 import AllMaWorkerClient from "@/modules/workers/AllMaWorkerClient";
+import AllMaWorkerEventsClient from "@/modules/workers/AllMaWorkerEventsClient";
 import Router from 'next/router';
 import { useContext, useState } from "react";
 import { PublicKey } from "snarkyjs";
@@ -36,13 +37,13 @@ const PromoteForm = () => {
     let instructorID = Authentication.address;
      let studentID = studentValue;
      console.log("studentID", studentID);
-     let client = Authentication.zkClient! as AllMaWorkerClient;
+     let client = Authentication.zkClient! as AllMaWorkerEventsClient;
     setAuthState({ ...authState, alertAvailable: true, alertMessage: `Fetching account, please wait this can take a few mins`, alertNeedsSpinner: true });
 
      await client.fetchAccount({ publicKey: PublicKey.fromBase58(Authentication.contractAddress) });
     setAuthState({ ...authState, alertAvailable: true, alertMessage: `Invoking contracts, please wait this can take a few mins`, alertNeedsSpinner: true });
 
-    await client.revokeBjjStudent(studentID, instructorID);
+    await client.revokeStudent(studentID, instructorID, disciplineValue);
     
     setAuthState({ ...authState, alertAvailable: true, alertMessage: `Proving transaction, please wait this can take a few mins`, alertNeedsSpinner: true });
 

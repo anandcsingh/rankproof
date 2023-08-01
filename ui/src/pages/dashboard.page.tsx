@@ -9,6 +9,7 @@ import Authentication from '@/modules/Authentication';
 import DashboardActions from '@/components/sections/DashboardActions/DashboardActions';
 import LineagePage from '@/components/sections/LineagePage';
 import DashboardContainer from '@/components/sections/DashboardContainer';
+import DashboardHeader from '@/components/layout/DashboardHeader';
 export default function Dashboard() {
 
   const [address, setAddress] = useState('');
@@ -28,6 +29,12 @@ export default function Dashboard() {
 
   return (
       <AuthPage validate={true}>
+      <DashboardHeader />
+      <main>
+           <div className='rankproof-page'>
+   
+             <div className='rankproof-content-wrap'>
+   
                 <DashboardContainer showDummyData={true} dummyDataIsInstructor={true} />
                 <footer className="bg-gray-100 dark:bg-gray-800">
             <div className="max-w-screen-xl p-4 py-6 mx-auto lg:py-16 md:p-8 lg:p-10">
@@ -70,6 +77,11 @@ export default function Dashboard() {
               </div>
             </div>
           </footer>
+          
+          </div>
+
+</div>
+</main>
        </AuthPage>
   );
 }

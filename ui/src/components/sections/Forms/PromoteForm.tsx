@@ -1,7 +1,7 @@
 import QRCodeScanner from "@/components/QRCodeScanner";
 import { AuthContext } from "@/components/layout/AuthPage";
 import Authentication from "@/modules/Authentication";
-import AllMaWorkerClient from "@/modules/workers/AllMaWorkerClient";
+import AllMaWorkerEventsClient from "@/modules/workers/AllMaWorkerEventsClient";
 import Router from 'next/router';
 import { useContext, useState } from "react";
 import { PublicKey } from "snarkyjs";
@@ -36,66 +36,51 @@ const PromoteForm = () => {
   
     setAuthState({ ...authState, alertAvailable: true, alertMessage: `Promoting Martial Artist, please wait this can take a few mins`, alertNeedsSpinner: true });
     Router.back();
-    console.log("Discipline: ", disciplineValue);
-    console.log("Rank: ", rankValue);
-    console.log("student: ", studentValue);
-    console.log("Notify Instructor: ", notifyStudentValue);
 
     let instructorID = Authentication.address;
      let studentID = studentValue;
-     console.log("studentID", studentID);
-     let client = Authentication.zkClient! as AllMaWorkerClient;
-     console.log('client', client);
-     console.log('adding martial art...', disciplineValue, rankValue);
-     console.log('fetching account...');
-    setAuthState({ ...authState, alertAvailable: true, alertMessage: `Fetching account, please wait this can take a few mins`, alertNeedsSpinner: true });
+     let client = Authentication.zkClient! as AllMaWorkerEventsClient;
+    setAuthState({ ...authState, alertAvailable: true, alertMessage: `Fetching contract for promotion, please wait this can take a few mins`, alertNeedsSpinner: true });
 
      await client.fetchAccount({ publicKey: PublicKey.fromBase58(Authentication.contractAddress) });
-    setAuthState({ ...authState, alertAvailable: true, alertMessage: `Invoking contracts, please wait this can take a few mins`, alertNeedsSpinner: true });
+    setAuthState({ ...authState, alertAvailable: true, alertMessage: `Invoking contracts for promotion, please wait this can take a few mins`, alertNeedsSpinner: true });
 
      console.log(`fetching account done ${Authentication.contractAddress}`);
- 
-     if(disciplineValue == "BJJ") {
-        console.log("promoting bjj...");
-        await client.promoteBjjStudent(studentID, rankValue, instructorID);
-      } else if(disciplineValue == "Judo") {
-        console.log("promoting judo...");
-        await client.promoteJudoStudent(studentID, rankValue, instructorID);
-      } else if(disciplineValue == "Karate") {
-        console.log("promoting karate...");
-        await client.promoteKarateStudent(studentID, rankValue, instructorID);
-      }
-     console.log("proving update transaction...");
-    setAuthState({ ...authState, alertAvailable: true, alertMessage: `Proving transaction, please wait this can take a few mins`, alertNeedsSpinner: true });
 
-     await client.proveUpdateTransaction();
-     console.log("sending transaction...");
-    setAuthState({ ...authState, alertAvailable: true, alertMessage: `Sending transaction, please approve the transaction on your wallet`, alertNeedsSpinner: true });
+    let result = await client.promoteStudent(studentID, rankValue, instructorID, disciplineValue);
+    console.log("result", result);
+    if (result && result.success) {
+      console.log("result", result);
+      console.log("proving update transaction...");
+      setAuthState({ ...authState, alertAvailable: true, alertMessage: `Proving transaction for promotion, please wait this can take a few mins`, alertNeedsSpinner: true });
 
-     let hash = await client.sendTransaction();
-     console.log("transaction sent");
- 
-     
-     // if hash is not empty or null, then we have a transaction hash
-      if(hash) {
-     
-      if(disciplineValue == "BJJ") {
-        await client.updateBjjBackingStore(studentID, rankValue);
-        } else if (disciplineValue == "Judo") {
-          await client.updateJudoBackingStore(studentID, rankValue);
-        } else if (disciplineValue == "Karate") {
-          await client.updateKarateBackingStore(studentID, rankValue);
-        }
+      await client.proveUpdateTransaction();
+      console.log("sending transaction...");
+      setAuthState({ ...authState, alertAvailable: true, alertMessage: `Sending transaction for promotion, please approve the transaction on your wallet`, alertNeedsSpinner: true });
 
+      let hash = await client.sendTransaction();
+      console.log("transaction sent");
+
+      // if hash is not empty or null, then we have a transaction hash
+      if (hash) {
         let hashStr = `https://berkeley.minaexplorer.com/transaction/${hash}`;
         let hashlink = `<a href="${hashStr}" class="btn btn-sm" target="_blank">View transaction</a>`;
-        setAuthState({ ...authState, alertAvailable: true, alertMessage: `Add martial art transaction submitted ${hashlink}`, alertNeedsSpinner: false });
+        console.log("transaction", hashStr);
 
-        
+        result = await client.updateBackingStore(disciplineValue);
+        console.log("result", result);
+
+        if (result.success) {
+          setAuthState({ ...authState, alertAvailable: true, alertMessage: `Promote student transaction submitted ${hashlink}`, alertNeedsSpinner: false });
+        }
+        else {
+          setAuthState({ ...authState, hasAlert: true, alertMessage: result.message, needsLoading: false });
+        }
       }
       else {
-        setAuthState({ ...authState, hasAlert: true, alertMessage: `Add martial art transaction failed, try again later`, needsLoading: false });
+        setAuthState({ ...authState, hasAlert: true, alertMessage: `Promote transaction failed, try again later`, needsLoading: false });
       }
+    }
   }
 
   

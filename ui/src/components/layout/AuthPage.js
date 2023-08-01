@@ -159,15 +159,14 @@ const AuthPage = ({ validate, children }) => {
         <title>RankProof zkApp</title>
         <link rel="icon" href="/assets/favicon.ico" />
       </Head>
-      <DashboardHeader />
-      <main>
-        <div className='rankproof-page'>
-
-          <div className='rankproof-content-wrap'>
-
+    
 
           {!state.hasBeenSetup ?
-         
+           <main>
+           <div className='rankproof-page'>
+   
+             <div className='rankproof-content-wrap'>
+   
               <div className="hero min-h-screen bg-base-200">
                 <div className="hero-content text-center">
                   <div className="max-w-md">
@@ -207,13 +206,16 @@ const AuthPage = ({ validate, children }) => {
                     </div>
 
                     <div className='pt-20'>
-                      <span className="loading loading-dots loading-lg"></span>
+                      <span className="loading loading-bars loading-lg"></span>
 
                     </div>
                   </div>
                 </div>
               </div>
+              </div>
 
+</div>
+</main>
 
               :
               <div>
@@ -222,10 +224,7 @@ const AuthPage = ({ validate, children }) => {
                 </AuthContext.Provider>
               </div>}
 
-          </div>
-
-        </div>
-      </main>
+         
     </>
 
   );

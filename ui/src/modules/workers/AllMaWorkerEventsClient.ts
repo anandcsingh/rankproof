@@ -10,14 +10,14 @@ import type { ZkappWorkerRequest, ZkappWorkerReponse, WorkerFunctions } from './
 import ActionResult from './AllMaWorkerEvents';
 export default class AllMaWorkerEventsClient {
   
-  async revokeStudent(studentID: string, instructorID: string, discipline: string): Promise<ActionResult> {
-    console.log("prove client", studentID, instructorID, discipline);
-    const result = await this._call('revokeStudent', { studentID, instructorID, discipline });
+  async revokeStudent(studentPublicKey: string, instructorPublicKey: string, discipline: string): Promise<ActionResult> {
+    console.log("prove client", studentPublicKey, instructorPublicKey, discipline);
+    const result = await this._call('revokeStudent', { studentPublicKey, instructorPublicKey, discipline });
     return result as ActionResult;
   }
-  async prove(practitionerID: string, inquirerID: string, discipline: string): Promise<ActionResult> {
-    console.log("prove client", practitionerID, inquirerID, discipline);
-    const result = await this._call('prove', { practitionerID, inquirerID, discipline });
+  async prove(address: string, inquirer: string, discipline: string): Promise<ActionResult> {
+    console.log("prove client", address, inquirer, discipline);
+    const result = await this._call('prove', { address, inquirer, discipline });
     return result as ActionResult;
   }
 
@@ -77,6 +77,18 @@ export default class AllMaWorkerEventsClient {
     const result = await this._call('promoteStudent', { studentPublicKey, rank, instructorPublicKey, discipline });
     return result as ActionResult;
   }
+
+  async proveYourRank(
+    studentPublicKey: string,
+    rank: string,
+    instructorPublicKey: string,
+    discipline: string
+  ): Promise<ActionResult>
+  {
+    const result = await this._call('proveYourRank', { studentPublicKey, instructorPublicKey, discipline });
+    return result as ActionResult;
+  }
+
   async proveUpdateTransaction(): Promise<void> {
     await this._call('proveUpdateTransaction', {});
   }

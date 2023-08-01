@@ -37,9 +37,10 @@ const ProveForm = () => {
 
     await client.fetchAccount({ publicKey: PublicKey.fromBase58(Authentication.contractAddress) });
     setAuthState({ ...authState, alertAvailable: true, alertMessage: `Invoking contracts, please wait this can take a few mins`, alertNeedsSpinner: true });
-    console.log(`Proving martial art rank for ${practitionerID} to ${inquirerID} for discipline ${disciplineValue}`);
+    //console.log(`Proving martial art rank for ${practitionerID} to ${inquirerID} for discipline ${disciplineValue}`);
 
     await client.prove(practitionerID, inquirerID, disciplineValue);
+    //await client.proveYourRank(inquirerID, "white", practitionerID, disciplineValue);
     setAuthState({ ...authState, alertAvailable: true, alertMessage: `Proving transaction, please wait this can take a few mins`, alertNeedsSpinner: true });
 
     await client.proveUpdateTransaction();

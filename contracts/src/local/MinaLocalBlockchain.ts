@@ -18,6 +18,7 @@ export class MinaLocalBlockchain {
     } = this.local.testAccounts[0]);
 
     let senderPrivate = PrivateKey.fromBase58(
+      // public key B62qjBcYihfVGHyQGuxgG5m4QbPrq6jEEMys5p4fe4Pt33CmWy7Bvuq
       'EKFUES7YfgYm38njcBHzxyU6RPZQdZnfThcMzLrHL9LjyxJKfXzY'
       //'EKEUf9qCfAj4d9tVFQ7RpUHzny3e4xmed5MZRCSnQNJkEYsDVYPU'
     );
@@ -28,6 +29,7 @@ export class MinaLocalBlockchain {
     };
 
     let instructorPrivate = PrivateKey.fromBase58(
+      // public key B62qqzMHkbogU9gnQ3LjrKomimsXYt4qHcXc8Cw4aX7tok8DjuDsAzx
       'EKFZWMtRmcQELaJvqcEyEEJqh874B3PndA8kpxSst6AiHtErn7Xw'
       // 'EKEx9KsVNBXumarh3Xs5KmTtFZpCaAVMAEpg974vEkG3xzB962aD'
     );

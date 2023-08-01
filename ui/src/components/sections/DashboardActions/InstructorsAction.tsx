@@ -17,7 +17,7 @@ const InstructorsAction: React.FC<DashboardActionsProps> = ({ isInstructor, disc
                             </svg>
                         </span>
 
-                        <h2 className="mt-2 font-bold">Instructors</h2>
+                        <h2 className="mt-2 font-bold">My Students</h2>
 
                         <p className="hidden sm:mt-1 sm:block sm:text-sm sm:text-gray-600">
                             Manage my students across disciplines.
