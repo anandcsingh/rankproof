@@ -64,8 +64,11 @@ const functions = {
   },
   fetchAccount: async (args: { publicKey58: string }) => {
     console.log("fetching account AllMartialArtsEvents:", args.publicKey58);
+    console.log("fetch @ ", new Date().toLocaleTimeString());
     const publicKey = PublicKey.fromBase58(args.publicKey58);
-    return await fetchAccount({ publicKey });
+    let fetch = await fetchAccount({ publicKey });
+    console.log("fetched @ ", new Date().toLocaleTimeString());
+    return fetch;
   },
   initZkappInstance: async (args: { publicKey58: string }) => {
     const publicKey = PublicKey.fromBase58(args.publicKey58);
@@ -117,7 +120,7 @@ const functions = {
     // verify roots match
     if (backingStoreRoot.toString() != args.contractRoot.toString()) {
       console.log("backing store root: ", backingStoreRoot.toString());
-      console.log("contract root: ", args.contractRoot);
+      console.log("contract root: ", args.contractRoot.toString());
       console.log("Roots do not match");
 
       return {

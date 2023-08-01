@@ -66,7 +66,11 @@ const DashboardProfile: React.FC<DashboardProfileProps> = ({ disciplines }) => {
 
             <div key={index}>
               <a href="#my_modal_8">
-                {discipline.verified ? <span className="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-3 rounded dark:bg-blue-900 dark:text-blue-300">{discipline.discipline} : {discipline.rank}</span> : <span className="bg-yellow-300 text-blue-800 text-xs font-medium mr-2 px-2.5 py-3 rounded dark:bg-blue-900 dark:text-blue-300">{discipline.discipline} : {discipline.rank}</span>}
+                { !discipline.verified ? 
+                  <span className="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-3 rounded dark:bg-blue-900 dark:text-blue-300">
+                    {discipline.discipline} : {discipline.rank}
+                  </span> : 
+                  <span className="bg-yellow-300 text-blue-800 text-xs font-medium mr-2 px-2.5 py-3 rounded dark:bg-blue-900 dark:text-blue-300">{discipline.discipline} : {discipline.rank}</span>}
               </a>
               <div className="modal" id="my_modal_8">
                 <div className="modal-box bg-white">
