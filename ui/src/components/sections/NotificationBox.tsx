@@ -15,10 +15,10 @@ export default function NotificationBox() {
         <>
         {authState.alertAvailable &&
         <div>
-            <div className="alert alert-info relative">
+            <div className="bg-teal-100 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md" role="alert">
                 {authState.alertNeedsSpinner && <span className="loading loading-dots loading-xs"></span>}
                 <span dangerouslySetInnerHTML={{__html: authState.alertMessage}}></span>
-                <a href="#" onClick={clearAlert} className="btn btn-sm btn-circle btn-ghost absolute right-0">X</a>
+                <a href="#" onClick={clearAlert} className="btn btn-sm btn-circle btn-ghost float-right">X</a>
             </div>
             <div className='divider'></div>
             </div>
