@@ -21,7 +21,7 @@ const PromoteAction: React.FC<DashboardActionsProps> = ({ isInstructor }) => {
                         <h2 className="mt-2 font-bold">Promote</h2>
 
                         <p className="hidden sm:mt-1 sm:block sm:text-sm sm:text-gray-600">
-                            Promote my students to a new rank.
+                            Promote my students across disciplines.
                         </p>
                     </a>
 

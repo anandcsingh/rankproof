@@ -17,7 +17,7 @@ export interface DashboardContainerProps {
     showDummyData: boolean;
     dummyDataIsInstructor: boolean;
   }
-const DashboardContainer: React.FC<DashboardContainerProps> = ({ showDummyData, dummyDataIsInstructor }) => {
+const DashboardContainerDataLoader: React.FC<DashboardContainerProps> = ({ showDummyData, dummyDataIsInstructor }) => {
 
     const [disciplinesLoaded, setDisciplinesLoaded] = useState(false);
     const [disciplines, setDisciplines] = useState(Array<UserMartialArt>());
@@ -35,14 +35,19 @@ const DashboardContainer: React.FC<DashboardContainerProps> = ({ showDummyData, 
     useEffect(() => {
 
         (async () => {
-            if(showDummyData) {
+            console.log("DashboardContainer: useEffect loaded");
+            if(!authState.userAuthenticated && showDummyData) {
+                console.log("USING DUMMY DATA!");
                 authState.userAuthenticated = true;
                 authState.userAddress = getDummyAddress();
                 Authentication.address = getDummyAddress();
-
+            }
             if (authState.userAuthenticated) {
                 const disciplines = new UserMartialArts();
                 const userDisciplines = await disciplines.getMartialArts(authState.userAddress);
+
+                console.log("found user disciplines: " + userDisciplines.length);
+
                 setDisciplines(userDisciplines);
                 setDisciplinesLoaded(true);
 
@@ -50,7 +55,7 @@ const DashboardContainer: React.FC<DashboardContainerProps> = ({ showDummyData, 
                 const instructor = userDisciplines.find((discipline) => discipline.isInstructor);
                 setIsInstructor(instructor ? true : false);
             } 
-        }
+        
 
         })();
 
@@ -59,7 +64,7 @@ const DashboardContainer: React.FC<DashboardContainerProps> = ({ showDummyData, 
     return (
         <div className="bg-white lg:py-10 min-h-screen">
             <section className="bg-white place-self-center lg:col-span-7 space-y-8">
-                <div className="m-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-8">
+                <div className="m-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
                     <NotificationBox />
                     <div>
                         {disciplinesLoaded &&
@@ -92,18 +97,9 @@ const DashboardContainer: React.FC<DashboardContainerProps> = ({ showDummyData, 
 
         </div>
 
-        // <div className="pt-24">
-        //                 {disciplinesLoaded && <DashboardProfile disciplines={disciplines} />}
-        //                 {disciplinesLoaded && <DashboardActions isInstructor={isInstructor} />}
-        //                 {disciplinesLoaded && <InstructorMartialArts disciplines={disciplines} />}
-        //                 {/* {authState.userAuthenticated && 
-        //                     <LineagePage />
-        //                 } */}
-        //                 <LineagePage />
-
-        //             </div>
     );
 };
 
-export default DashboardContainer;
+export default DashboardContainerDataLoader;
+
 

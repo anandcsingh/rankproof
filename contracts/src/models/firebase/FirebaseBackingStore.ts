@@ -70,7 +70,6 @@ export class FirebaseBackingStore extends BackingStore {
       where('verified', '==', true),
       orderBy('id')
     );
-    //const maQuery = query(collection(database, this.collectionName));
 
     const querySnapshot = await getDocs(maQuery);
     querySnapshot.forEach((doc) => {

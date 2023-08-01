@@ -13,7 +13,7 @@ import { ProofOfRankData } from './ProofOfRankData.js';
 import { MinaLocalBlockchain } from '../local/MinaLocalBlockchain.js';
 let collectionName = 'BJJ';
 let backingStore = new FirebaseBackingStore(collectionName);
-backingStore.clearStore();
+await backingStore.clearStore();
 let map = (await backingStore.getMerkleMap()).map;
 let expectedRoot = Field(new MerkleMap().getRoot()).toString();
 let actualRoot = map.getRoot().toString();
@@ -74,4 +74,4 @@ console.log(
   `${sizeAssertion}: Can get all Martial Artists from FirebaseBackingStore`
 );
 
-backingStore.clearStore();
+await backingStore.clearStore();

@@ -36,12 +36,6 @@ const state = {
   transaction: null as null | Transaction,
   AllMartialArtsEvents: null as null | typeof AllMartialArtsEvents,
   pendingMartialArtist: null as null | undefined | MartialArtist,
-  addMap: null as null | any,
-  promoteMap: null as null | any,
-  proveMap: null as null | any,
-  revokeMap: null as null | any,
-  getRootMap: null as null | any,
-  setRootMap: null as null | any,
 }
 
 // ---------------------------------------------------------------------------------------
@@ -78,47 +72,26 @@ const functions = {
     state.zkapp = new state.AllMartialArtsEvents!(publicKey);
     console.log("zkapp AllMartialArtsEvents instance initialized");
     console.log("zkapp AllMartialArtsEvents address: ", args.publicKey58);
-    state.addMap = {};
-    state.addMap.BJJ = state.zkapp.addJuijiteiro;
-    state.addMap.Judo = state.zkapp.addJudoka;
-    state.addMap.Karate = state.zkapp.addKarateka;
-
-    state.promoteMap = {};
-    state.promoteMap.BJJ = state.zkapp.promoteJuijiteiro;
-    state.promoteMap.Judo = state.zkapp.promoteJudoka;
-    state.promoteMap.Karate = state.zkapp.promoteKarateka;
-
-    state.proveMap = {};
-    state.proveMap.BJJ = state.zkapp.proveJuijiteiro;
-    state.proveMap.Judo = state.zkapp.proveJudoka;
-    state.proveMap.Karate = state.zkapp.proveKarateka;
-
-    state.revokeMap = {};
-    state.revokeMap.BJJ = state.zkapp.revokeJuijiteiro;
-    state.revokeMap.Judo = state.zkapp.revokeJudoka;
-    state.revokeMap.Karate = state.zkapp.revokeKarateka;
-
-    state.getRootMap = {};
-    state.getRootMap.BJJ = state.zkapp.bjjMapRoot;
-    state.getRootMap.Judo = state.zkapp.judoMapRoot;
-    state.getRootMap.Karate = state.zkapp.karateMapRoot;
   },
-  getStorageRoot: async (args: { discipline: string }) => {
+  getStorageRootField: async (args: { discipline: string }) => {
     console.log("getting storage root for discipline: ", args.discipline);
     let currentNum = Field(0);
 
     if (args.discipline == "BJJ") {
       currentNum = state.zkapp!.bjjMapRoot.get();
-      return JSON.stringify(currentNum.toJSON());
+      return currentNum;
     } else if (args.discipline == "Judo") {
       currentNum = state.zkapp!.judoMapRoot.get();
-      return JSON.stringify(currentNum.toJSON());
+      return currentNum;
     } else if (args.discipline == "Karate") {
       currentNum = state.zkapp!.karateMapRoot.get();
-      return JSON.stringify(currentNum.toJSON());
+      return currentNum;
     }
     console.log("storage root: ", currentNum.toString());
-    return JSON.stringify(currentNum.toJSON());
+    return currentNum;
+  },
+  getStorageRoot: async (args: { discipline: string }) => {
+    return JSON.stringify(await functions.getStorageRootField({ discipline: args.discipline }));
   },
   setStorageRoot: async (args: { root: string, discipline: string }) => {
     let storage = Field(args.root);
@@ -138,11 +111,11 @@ const functions = {
     // set pending transaction to state
     state.transaction = transaction;
   },
-  rootsVerified: async (args: { merkleStore: MerkleMapDatabase, contractRoot: string, discipline: string }): Promise<ActionResult> => {
+  rootsVerified: async (args: { merkleStore: MerkleMapDatabase, contractRoot: Field, discipline: string }): Promise<ActionResult> => {
     const backingStoreRoot = args.merkleStore.map.getRoot();
 
     // verify roots match
-    if (backingStoreRoot.toString() != args.contractRoot) {
+    if (backingStoreRoot.toString() != args.contractRoot.toString()) {
       console.log("backing store root: ", backingStoreRoot.toString());
       console.log("contract root: ", args.contractRoot);
       console.log("Roots do not match");
@@ -163,7 +136,7 @@ const functions = {
     let backingStore = new FirebaseBackingStore(args.discipline);
     const merkleStore = await backingStore.getMerkleMap();
     const backingStoreRoot = merkleStore.map.getRoot();
-    const contractRoot = await state.getRootMap[args.discipline].get();
+    const contractRoot = await functions.getStorageRootField({ discipline: args.discipline });
     console.log("contract root in worker add: ", contractRoot);
     // verify roots match
     const rootsVerified = await functions.rootsVerified({ merkleStore: merkleStore, contractRoot: contractRoot, discipline: args.discipline });
@@ -222,7 +195,7 @@ const functions = {
     let backingStore = new FirebaseBackingStore(args.discipline);
     const merkleStore = await backingStore.getMerkleMap();
     const backingStoreRoot = merkleStore.map.getRoot();
-    const contractRoot = await state.getRootMap[args.discipline].get();
+    const contractRoot = await functions.getStorageRootField({ discipline: args.discipline });
 
     // verify roots match
     const rootsVerified = await functions.rootsVerified({ merkleStore: merkleStore, contractRoot: contractRoot, discipline: args.discipline });
@@ -240,7 +213,7 @@ const functions = {
     let backingStore = new FirebaseBackingStore(args.discipline);
     const merkleStore = await backingStore.getMerkleMap();
     const backingStoreRoot = merkleStore.map.getRoot();
-    const contractRoot = await state.getRootMap[args.discipline].get();
+    const contractRoot = await functions.getStorageRootField({ discipline: args.discipline });
 
     // verify roots match
     const rootsVerified = await functions.rootsVerified({ merkleStore: merkleStore, contractRoot: contractRoot, discipline: args.discipline });
@@ -296,7 +269,7 @@ const functions = {
     let backingStore = new FirebaseBackingStore(args.discipline);
     const merkleStore = await backingStore.getMerkleMap();
     const backingStoreRoot = merkleStore.map.getRoot();
-    const contractRoot = await state.getRootMap[args.discipline].get();
+    const contractRoot = await functions.getStorageRootField({ discipline: args.discipline });
 
     // verify roots match
     const rootsVerified = await functions.rootsVerified({ merkleStore: merkleStore, contractRoot: contractRoot, discipline: args.discipline });
@@ -346,7 +319,7 @@ const functions = {
     let backingStore = new FirebaseBackingStore(args.discipline);
     const merkleStore = await backingStore.getMerkleMap();
     const backingStoreRoot = merkleStore.map.getRoot();
-    const contractRoot = await state.getRootMap[args.discipline].get();
+    const contractRoot = await functions.getStorageRootField({ discipline: args.discipline });
 
     // verify roots match
     const rootsVerified = await functions.rootsVerified({ merkleStore: merkleStore, contractRoot: contractRoot, discipline: args.discipline });
