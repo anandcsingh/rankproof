@@ -75,6 +75,15 @@ export class FirebaseBackingStore extends BackingStore {
     const querySnapshot = await getDocs(maQuery);
     querySnapshot.forEach((doc) => {
       let ma = this.getMartialArtistFromDocSnap(doc.data());
+
+      console.log(
+        this.collectionName,
+        ma.verified.toBoolean(),
+        'instructor: ',
+        ma.instructor.toBase58(),
+        'publicKey: ',
+        ma.publicKey.toBase58()
+      );
       all.set(ma.publicKey, ma);
     });
     return all;
