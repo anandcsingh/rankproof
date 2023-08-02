@@ -178,11 +178,11 @@ const functions = {
       return currentNum;
     } else if (args.discipline == "Judo") {
       currentNum = state.zkapp!.judoMapRoot.get();
-      console.log("storage from BJJ root: ", currentNum.toString());
+      console.log("storage from Judo root: ", currentNum.toString());
       return currentNum;
     } else if (args.discipline == "Karate") {
       currentNum = state.zkapp!.karateMapRoot.get();
-      console.log("storage from BJJ root: ", currentNum.toString());
+      console.log("storage from Karate root: ", currentNum.toString());
       return currentNum;
     }
     console.log("storage root: ", currentNum.toString());

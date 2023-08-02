@@ -57,12 +57,12 @@ let instructorAccount = {
 const transactionFee = 100_000_000;
 
 let zkApp = new AllMartialArtsEvents(contractAddress);
-let collectionName = 'BJJ';
+let collectionName = 'Judo';
 
 // deploy zkApp
 let backingStore = new FirebaseBackingStore(collectionName);
 
-let root = zkApp.bjjMapRoot.get();
+let root = zkApp.judoMapRoot.get();
 let backingStoreRoot = (await backingStore.getMerkleMap()).map
   .getRoot()
   .toString();
@@ -80,7 +80,7 @@ if (!emptyAssertion) {
   let txn = await Mina.transaction(
     { sender: studentAccount.publicKey, fee: transactionFee },
     () => {
-      zkApp.setbBjjMapRoot(backingStoreMap.map.getRoot());
+      zkApp.setJudoMapRoot(backingStoreMap.map.getRoot());
     }
   );
   console.log('proving transaction');
@@ -93,7 +93,7 @@ if (!emptyAssertion) {
 
 let question = prompt('Transaction completed? ');
 backingStore = new FirebaseBackingStore(collectionName);
-contractRoot = zkApp.bjjMapRoot.get().toString();
+contractRoot = zkApp.judoMapRoot.get().toString();
 backingStoreRoot = (await backingStore.getMerkleMap()).map.getRoot().toString();
 console.log('contract root: ', contractRoot);
 console.log(`${emptyAssertion}: Synced zkApp with backingStore`);
