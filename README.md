@@ -18,6 +18,11 @@ My submission for Mina Protocol's zkIgnite Cohort 1. RankProof is a platform for
 
 [Authentication.js](https://github.com/anandcsingh/rankproof/blob/main/ui/src/modules/Authentication.js)
 
+## Architecture
+
+![image](https://github.com/anandcsingh/rankproof/assets/4129994/7c0c4543-338f-4648-a3b4-22782a241701)
+
+
 ## Setup
 
 See Mina docs [How to write a zkApp](https://docs.minaprotocol.com/zkapps/how-to-write-a-zkapp)
