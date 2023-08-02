@@ -12,6 +12,9 @@ My submission for Mina Protocol's zkIgnite Cohort 1. RankProof is a platform for
 
 [AllMaWorkerEvents.ts](https://github.com/anandcsingh/rankproof/blob/main/ui/src/modules/workers/AllMaWorkerEvents.ts)
 
+### RankProof Data Layer
+[FirebaseBackingStore.ts](https://github.com/anandcsingh/rankproof/blob/main/contracts/src/models/firebase/FirebaseBackingStore.ts)
+
 ### Authentication
 
 [AuthPage.js](https://github.com/anandcsingh/rankproof/blob/main/ui/src/components/layout/AuthPage.js)
