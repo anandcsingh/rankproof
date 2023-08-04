@@ -40,7 +40,7 @@ const state = {
 }
 
 const localBlockchainSetup = {
-  useLocal: false,
+  useLocal: true,
   localBlockchain: null as null | any,
 }
 

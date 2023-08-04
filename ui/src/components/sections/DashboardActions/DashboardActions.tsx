@@ -29,7 +29,7 @@ const DashboardActions: React.FC<DashboardActionsProps> = ({ isInstructor, disci
       <ShareAction isInstructor={isInstructor} disciplines={disciplines} />
       <PromoteAction isInstructor={isInstructor} disciplines={disciplines} />
       <RevokeAction isInstructor={isInstructor} disciplines={disciplines} />
-      <ProveAction isInstructor={isInstructor} disciplines={disciplines} />
+      { (disciplines && disciplines.length > 0) && <ProveAction isInstructor={isInstructor} disciplines={disciplines} /> }
     </div>
 }
     </>

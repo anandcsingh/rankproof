@@ -69,16 +69,17 @@ const DashboardProfile: React.FC<DashboardProfileProps> = ({ disciplines }) => {
         </h1>
         <p className="dark:text-indigo-200 pb-2">Start your martial arts journey today, Disciplines:</p>
 
-        <div className="grid grid-cols-4 gap-4 items-center	">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 items-center	">
+          <div className='grid grid-cols-3'>
           {disciplines.map((discipline, index) => (
 
             <div key={index}>
               <a href="#my_modal_8">
                 { !discipline.verified ? 
-                  <span className="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-3 rounded dark:bg-blue-900 dark:text-blue-300">
+                  <div className="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-3 rounded dark:bg-blue-900 dark:text-blue-300">
                     {discipline.discipline} : {discipline.rank}
-                  </span> : 
-                  <span className="bg-yellow-300 text-blue-800 text-xs font-medium mr-2 px-2.5 py-3 rounded dark:bg-blue-900 dark:text-blue-300">{discipline.discipline} : {discipline.rank}</span>}
+                  </div> : 
+                  <div className="bg-yellow-300 text-blue-800 text-xs font-medium mr-2 px-2.5 py-3 rounded dark:bg-blue-900 dark:text-blue-300">{discipline.discipline} : {discipline.rank}</div>}
               </a>
               <div className="modal" id="my_modal_8">
                 <div className="modal-box bg-white">
@@ -92,7 +93,9 @@ const DashboardProfile: React.FC<DashboardProfileProps> = ({ disciplines }) => {
             </div>
 
 
+
           ))}
+          </div>
           <a className="inline-block rounded btn-primary px-12 py-3 text-center text-sm font-medium text-white transition hover:bg-indigo-700 focus:outline-none focus:ring focus:ring-yellow-400" href='#add_action_modal'>ADD New Martial Art</a>
         </div>
       </div>

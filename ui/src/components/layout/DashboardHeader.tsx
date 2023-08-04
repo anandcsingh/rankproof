@@ -13,7 +13,7 @@ const Header = () => {
 
   return (
 
-    <nav className="bg-gray-800 z-100">
+    <nav className="bg-gray-800 z-100 invisible lg:visible">
 
       <header className="fixed w-full zclass">
         <nav className="bg-white border-gray-200 py-2.5 dark:bg-gray-900">
