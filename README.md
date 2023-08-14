@@ -1,6 +1,6 @@
 # Welcome to RankProof
 
-My submission for Mina Protocol's zkIgnite Cohort 1. RankProof is a platform for managing digital certifications for Martial Artists worldwide built on Mina Protocol using snarkyjs and Zero Knowledge Proofs.
+My submission for Mina Protocol's zkIgnite Cohort 1. RankProof is a platform for managing digital certifications for Martial Artists built on Mina Protocol using snarkyjs and Zero Knowledge Proofs.
 
 ## Main components
 
